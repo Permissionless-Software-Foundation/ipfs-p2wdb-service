@@ -5,10 +5,10 @@
 const assert = require('chai').assert
 const sinon = require('sinon')
 
-const AddEntry = require('../../../src/use-cases/entry/add-entry')
+const AddEntry = require('../../../../src/use-cases/entry/add-entry')
 
 // Mocks
-const adaptersMock = require('../mocks/adapters')
+const adaptersMock = require('../../mocks/adapters')
 
 let sandbox
 let uut

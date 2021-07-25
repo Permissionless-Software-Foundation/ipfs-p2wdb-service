@@ -5,11 +5,11 @@
 const assert = require('chai').assert
 const sinon = require('sinon')
 
-const ReadEntry = require('../../../src/use-cases/entry/read-entry')
+const ReadEntry = require('../../../../src/use-cases/entry/read-entry')
 
 // Mocks
 // const LocalDB = require('../mocks/localdb-mock')
-const P2WDB = require('../mocks/p2wdb-mock')
+const P2WDB = require('../../mocks/p2wdb-mock')
 
 let sandbox
 let uut
