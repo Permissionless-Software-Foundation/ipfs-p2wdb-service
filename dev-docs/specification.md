@@ -69,6 +69,7 @@ The REST API and JSON RPC have matching endpoints. They use the same REST verbs 
   - **GET All** - Get all validated entries in the MongoDB database. This endpoint is primarily used for debugging, and may be deprecated in the future. Once the database gets to a large size, this call will be prohibitively expensive and will either need to be deprecated or paginated.
   - **GET by Hash** - Get a single entry from the MongoDB using the `hash` or CID value of the entry.
   - **GET by TXID** - Get a single entry from the MongoDB using the `key` or TXID representing the proof-of-burn.
+  - **GET by App ID** - Get paginated results that match an `appId` value.
 
 - Webhook
   - **POST Webhook** - Add a new webhook to the system.
