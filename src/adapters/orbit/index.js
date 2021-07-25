@@ -76,6 +76,8 @@ class OrbitDBAdapter {
       // dbName =
       //   '/orbitdb/zdpuAtkE6etPNfEKR7eGdgGpEFjJF2QKWNatDTk6VBxU7qJTo/testdb011'
 
+      // console.log('dbName: ', dbName)
+
       // Create the key-value store.
       this.db = await orbitdb.keyvalue(dbName, options)
 

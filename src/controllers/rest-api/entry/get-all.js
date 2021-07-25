@@ -39,7 +39,7 @@ class GetAllEntries {
    * @apiGroup REST P2WDB
    *
    * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/p2wdb/all
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/all
    *
    * @apiDescription
    * Read all the entries from the database.

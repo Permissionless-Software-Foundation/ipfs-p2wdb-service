@@ -4,6 +4,9 @@
   https://troutsblog.com/blog/clean-architecture
 */
 
+// Individual Use Case libraries
+const EntryUseCases = require('./entry')
+const WebhookUseCases = require('./webhook')
 const UserUseCases = require('./user')
 
 class UseCases {
@@ -15,7 +18,9 @@ class UseCases {
       )
     }
 
-    // console.log('use-cases/index.js localConfig: ', localConfig)
+    // Instantiate the use-case libraries.
+    this.entry = new EntryUseCases(localConfig)
+    this.webhook = new WebhookUseCases(localConfig)
     this.user = new UserUseCases(localConfig)
   }
 }

@@ -42,11 +42,11 @@ class EntryController {
     this.getByAppId = new GetByAppId(dependencies)
 
     // Instantiate the router.
-    const baseUrl = '/p2wdb'
+    const baseUrl = '/entry'
     this.router = new Router({ prefix: baseUrl })
   }
 
-  attachControllers (app) {
+  attach (app) {
     if (!app) {
       throw new Error(
         'Must pass app object when attached REST API controllers.'
