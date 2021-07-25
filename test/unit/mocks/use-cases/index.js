@@ -31,12 +31,38 @@ class UserUseCaseMock {
   }
 }
 
+const ReadEntryMock = require('./read-entry.mock')
+
 class UseCasesMock {
   constuctor(localConfig = {}) {
+    // this.entry = {
+    //   readEntry: new ReadEntryMock(),
+    //   addEntry: () => {}
+    // }
+    //
+    // this.webhook = {
+    //   addWebhook: {
+    //     addNewWebhook: async () => {}
+    //   },
+    //   remove: async () => {}
+    // }
+    //
     // this.user = new UserUseCaseMock(localConfig)
   }
 
   user = new UserUseCaseMock()
+
+  webhook = {
+    addWebhook: {
+      addNewWebhook: async () => {}
+    },
+    remove: async () => {}
+  }
+
+  entry = {
+    readEntry: new ReadEntryMock(),
+    addEntry: () => {}
+  }
 }
 
 module.exports = UseCasesMock
