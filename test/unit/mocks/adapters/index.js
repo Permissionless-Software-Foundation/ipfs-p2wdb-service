@@ -11,6 +11,28 @@ const ipfs = {
   }
 }
 
+const p2wdb = {
+  ipfsAdapters: {
+    ipfsCoordAdapter: {
+      ipfsCoord: {}
+    }
+  },
+  insert: async () => {}
+}
+
+const entry = {
+  readEntry: {
+    readAllEntries: () => {}
+  },
+  doesEntryExist: async () => {},
+  insert: async () => {}
+}
+
+const webhook = {
+  addWebhook: async () => {},
+  deleteWebhook: async () => {}
+}
+
 const localdb = {
   Users: class Users {
     static findById () {}
@@ -47,4 +69,4 @@ const localdb = {
   }
 }
 
-module.exports = { ipfs, localdb }
+module.exports = { ipfs, localdb, p2wdb, entry, webhook }
