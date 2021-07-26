@@ -39,10 +39,6 @@ class P2WDB {
         )
       }
 
-      // Start IPFS and ipfs-coord
-      // await _this.ipfsAdapters.start()
-      // console.log('IPFS Adapters are all ready.')
-
       // Start the P2WDB OrbitDB.
       _this.orbit = new this.OribitAdapter({
         ipfs
@@ -82,7 +78,7 @@ class P2WDB {
   async readAll () {
     try {
       const data = await _this.orbit.readAll()
-      console.log('data: ', data)
+      // console.log('data: ', data)
 
       return data
     } catch (err) {
@@ -102,7 +98,7 @@ class P2WDB {
 
       // Get an entry from MongoDB.
       const data = await _this.KeyValue.findOne({ hash })
-      console.log('data: ', data)
+      // console.log('data: ', data)
 
       return data
     } catch (err) {
@@ -118,7 +114,7 @@ class P2WDB {
 
       // Find the data in the local database
       const data = await _this.KeyValue.findOne({ key: txid })
-      console.log('data: ', data)
+      // console.log('data: ', data)
 
       return data
     } catch (err) {
@@ -132,9 +128,12 @@ class P2WDB {
       // console.log('appId: ', appId)
       // const data = _this.orbit.db.get(txid)
 
+      // Return empty array if appId is not defined.
+      if (!appId) return []
+
       // Find the data in the local database
       const data = await _this.KeyValue.find({ appId })
-      console.log('data: ', data)
+      // console.log('data: ', data)
 
       return data
     } catch (err) {
