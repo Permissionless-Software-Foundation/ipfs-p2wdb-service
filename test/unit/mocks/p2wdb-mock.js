@@ -14,6 +14,18 @@ class P2WDB {
   async readAll () {
     return { key: 'value' }
   }
+
+  async readByHash () {
+    return { data: 'some data' }
+  }
+
+  async readByTxid () {
+    return { data: 'some data' }
+  }
+
+  async readByAppId () {
+    return { data: 'some data' }
+  }
 }
 
 module.exports = P2WDB
