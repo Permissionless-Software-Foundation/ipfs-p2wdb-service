@@ -27,7 +27,7 @@ describe('#Controllers', () => {
       // mock IPFS
       sandbox.stub(uut.adapters.ipfs, 'start').resolves({})
       sandbox.stub(uut.adapters.p2wdb, 'start').resolves({})
-      sandbox.stub(uut, 'attachValidationController').resolves({})
+      // sandbox.stub(uut, 'attachValidationController').resolves({})
       adapters.ipfs.ipfsCoordAdapter = {
         attachRPCRouter: () => {}
       }
