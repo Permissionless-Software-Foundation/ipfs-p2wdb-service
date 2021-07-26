@@ -14,80 +14,122 @@ const JSONRPC = require('./json-rpc')
 
 // Load the Clean Architecture Use Case libraries.
 const UseCases = require('../use-cases')
-const useCases = new UseCases({ adapters })
+// const useCases = new UseCases({ adapters })
 
 // Load the REST API Controllers.
 const RESTControllers = require('./rest-api')
 
-// Top-level function for this library.
-// Start the various Controllers and attach them to the app.
-async function attachControllers (app) {
-  // Attach the REST controllers to the Koa app.
-  attachRESTControllers(app)
+class Controllers {
+  constructor (localConfig = {}) {
+    this.adapters = adapters
+    this.useCases = new UseCases({ adapters })
+  }
 
-  // Start IPFS.
-  await adapters.ipfs.start()
+  async attachControllers (app) {
+    // Attach the REST controllers to the Koa app.
+    this.attachRESTControllers(app)
 
-  // Get a handle on the IPFS node.
-  const ipfs = adapters.ipfs.ipfs
+    // Start IPFS.
+    await this.adapters.ipfs.start()
 
-  // Start the P2WDB.
-  await adapters.p2wdb.start(ipfs)
+    // Get a handle on the IPFS node.
+    const ipfs = this.adapters.ipfs.ipfs
 
-  // Start the P2WDB and attach the validation event handler/controller to
-  // the add-entry Use Case.
-  // await attachValidationController()
+    // Start the P2WDB.
+    await this.adapters.p2wdb.start(ipfs)
 
-  attachRPCControllers()
-}
+    // Start the P2WDB and attach the validation event handler/controller to
+    // the add-entry Use Case.
+    await this.attachValidationController()
 
-function attachRESTControllers (app) {
-  const rESTControllers = new RESTControllers({
-    adapters,
-    useCases
-  })
+    this.attachRPCControllers()
+  }
 
-  // Attach the REST API Controllers associated with the boilerplate code to the Koa app.
-  rESTControllers.attachRESTControllers(app)
-}
+  // Top-level function for this library.
+  // Start the various Controllers and attach them to the app.
+  attachRESTControllers (app) {
+    const rESTControllers = new RESTControllers({
+      adapters: this.adapters,
+      useCases: this.useCases
+    })
 
-// Add the JSON RPC router to the ipfs-coord adapter.
-function attachRPCControllers () {
-  const jsonRpcController = new JSONRPC({ adapters, useCases })
+    // Attach the REST API Controllers associated with the boilerplate code to the Koa app.
+    rESTControllers.attachRESTControllers(app)
+  }
 
-  // Attach the input of the JSON RPC router to the output of ipfs-coord.
-  adapters.ipfs.ipfsCoordAdapter.attachRPCRouter(jsonRpcController.router)
-}
+  // Add the JSON RPC router to the ipfs-coord adapter.
+  attachRPCControllers () {
+    const jsonRpcController = new JSONRPC({
+      adapters: this.adapters,
+      useCases: this.useCases
+    })
 
-// Start the P2WDB and its downstream depenencies (IPFS, ipfs-coord, OrbitDB).
-// Also attach the post-validation, peer-replication event handler (controller)
-// to the Add-Entry Use Case.
-async function attachValidationController () {
-  try {
-    // Trigger the addPeerEntry() use-case after a replication-validation event.
-    adapters.p2wdb.orbit.validationEvent.on(
-      'ValidationSucceeded',
-      async function (data) {
-        try {
-          // console.log(
-          //   'ValidationSucceeded event triggering addPeerEntry() with this data: ',
-          //   data
-          // )
-
-          await useCases.entry.addEntry.addPeerEntry(data)
-        } catch (err) {
-          console.error(
-            'Error trying to process peer data with addPeerEntry(): ',
-            err
-          )
-          // Do not throw an error. This is a top-level function.
-        }
-      }
+    // Attach the input of the JSON RPC router to the output of ipfs-coord.
+    this.adapters.ipfs.ipfsCoordAdapter.attachRPCRouter(
+      jsonRpcController.router
     )
-  } catch (err) {
-    console.error('Error in controllers/index.js/startP2wdb()')
-    throw err
+  }
+
+  // Start the P2WDB and its downstream depenencies (IPFS, ipfs-coord, OrbitDB).
+  // Also attach the post-validation, peer-replication event handler (controller)
+  // to the Add-Entry Use Case.
+  async attachValidationController () {
+    try {
+      // Trigger the addPeerEntry() use-case after a replication-validation event.
+      adapters.p2wdb.orbit.validationEvent.on(
+        'ValidationSucceeded',
+        async function (data) {
+          try {
+            // console.log(
+            //   'ValidationSucceeded event triggering addPeerEntry() with this data: ',
+            //   data
+            // )
+
+            await useCases.entry.addEntry.addPeerEntry(data)
+          } catch (err) {
+            console.error(
+              'Error trying to process peer data with addPeerEntry(): ',
+              err
+            )
+            // Do not throw an error. This is a top-level function.
+          }
+        }
+      )
+    } catch (err) {
+      console.error('Error in controllers/index.js/startP2wdb()')
+      throw err
+    }
   }
 }
 
-module.exports = { attachControllers }
+// Top-level function for this library.
+// Start the various Controllers and attach them to the app.
+// async function attachControllers (app) {
+//   // Attach the REST controllers to the Koa app.
+//   attachRESTControllers(app)
+//
+//   // Start IPFS.
+//   await adapters.ipfs.start()
+//
+//   attachRPCControllers()
+// }
+//
+// function attachRESTControllers (app) {
+//   const rESTControllers = new RESTControllers({
+//     adapters,
+//     useCases
+//   })
+//
+//   // Attach the REST API Controllers associated with the boilerplate code to the Koa app.
+//   rESTControllers.attachRESTControllers(app)
+// }
+
+// // Add the JSON RPC router to the ipfs-coord adapter.
+// function attachRPCControllers () {
+//   const jsonRpcController = new JSONRPC({ adapters, useCases })
+//
+//   // Attach the input of the JSON RPC router to the output of ipfs-coord.
+//   adapters.ipfs.ipfsCoordAdapter.attachRPCRouter(jsonRpcController.router)
+// }
+
+module.exports = Controllers
