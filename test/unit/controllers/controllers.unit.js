@@ -7,14 +7,17 @@
 const sinon = require('sinon')
 
 const adapters = require('../../../src/adapters')
-const { attachControllers } = require('../../../src/controllers')
+// const { attachControllers } = require('../../../src/controllers')
+const Controllers = require('../../../src/controllers')
 
 describe('#Controllers', () => {
-  // let uut
+  let uut
   let sandbox
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
+
+    uut = new Controllers()
   })
 
   afterEach(() => sandbox.restore())
@@ -22,7 +25,9 @@ describe('#Controllers', () => {
   describe('#attachControllers', () => {
     it('should attach the controllers', async () => {
       // mock IPFS
-      sandbox.stub(adapters.ipfs, 'start').resolves({})
+      sandbox.stub(uut.adapters.ipfs, 'start').resolves({})
+      sandbox.stub(uut.adapters.p2wdb, 'start').resolves({})
+      // sandbox.stub(uut, 'attachValidationController').resolves({})
       adapters.ipfs.ipfsCoordAdapter = {
         attachRPCRouter: () => {}
       }
@@ -31,7 +36,7 @@ describe('#Controllers', () => {
         use: () => {}
       }
 
-      await attachControllers(app)
+      await uut.attachControllers(app)
     })
   })
 })

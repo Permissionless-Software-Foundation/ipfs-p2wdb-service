@@ -12,6 +12,9 @@ const Passport = require('./passport')
 const Nodemailer = require('./nodemailer')
 const { wlogger } = require('./wlogger')
 const JSONFiles = require('./json-files')
+const P2WDBAdapter = require('./p2wdb')
+const EntryAdapter = require('./entry')
+const WebhookAdapter = require('./webhook')
 
 // Instantiate adapter libraries.
 const ipfs = new IPFSAdapter()
@@ -20,6 +23,9 @@ const logapi = new LogsAPI()
 const passport = new Passport()
 const nodemailer = new Nodemailer()
 const jsonFiles = new JSONFiles()
+const p2wdb = new P2WDBAdapter()
+const entry = new EntryAdapter()
+const webhook = new WebhookAdapter()
 
 module.exports = {
   ipfs,
@@ -28,5 +34,8 @@ module.exports = {
   passport,
   nodemailer,
   wlogger,
-  jsonFiles
+  jsonFiles,
+  p2wdb,
+  entry,
+  webhook
 }

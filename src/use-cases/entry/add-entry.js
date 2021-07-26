@@ -57,10 +57,11 @@ class AddEntry {
     }
   }
 
+  // Trigger by an event when a peer adds a new entry to the database.
   async addPeerEntry (peerData) {
     // Attempt to extract the 'appId' property from the data.
     peerData = this._extractAppId(peerData)
-    // console.log('Entering addPeerEntry() with this data: ', peerData)
+    console.log('Entering addPeerEntry() with this data: ', peerData)
 
     const entry = _this.dbEntry.makePeerEntry(peerData)
 

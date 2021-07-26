@@ -17,7 +17,12 @@ const p2wdb = {
       ipfsCoord: {}
     }
   },
-  insert: async () => {}
+  insert: async () => {},
+  orbit: {
+    validationEvent: {
+      on: () => {}
+    }
+  }
 }
 
 const entry = {

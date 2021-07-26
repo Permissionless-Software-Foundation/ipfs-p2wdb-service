@@ -47,12 +47,12 @@ class EntryAdapter {
         throw new Error('property "key" must be a string')
       }
 
-      // console.log(`entry: ${JSON.stringify(entry, null, 2)}`)
+      console.log(`entry: ${JSON.stringify(entry, null, 2)}`)
 
       const newKeyValue = new this.KeyValue(entry)
       await newKeyValue.save()
 
-      // console.log('newKeyValue: ', newKeyValue)
+      console.log('newKeyValue: ', newKeyValue)
 
       return newKeyValue._id.toString()
     } catch (err) {
