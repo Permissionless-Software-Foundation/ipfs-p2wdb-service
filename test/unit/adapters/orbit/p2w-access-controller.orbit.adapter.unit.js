@@ -4,17 +4,17 @@
 
 const assert = require('chai').assert
 
-const PayToWriteAccessController = require('../../../src/adapters/orbit/pay-to-write-access-controller')
+const PayToWriteAccessController = require('../../../../src/adapters/orbit/pay-to-write-access-controller')
 
 const sinon = require('sinon')
 const mongoose = require('mongoose')
 
 // Local support libraries
-const config = require('../../../config')
+const config = require('../../../../config')
 
 const util = require('util')
 util.inspect.defaultOptions = { depth: 1 }
-const mock = require('../mocks/pay-to-write-mock')
+const mock = require('../../mocks/pay-to-write-mock')
 
 let sandbox
 let uut
@@ -25,13 +25,10 @@ describe('#PayToWriteAccessController', () => {
     console.log(`Connecting to database: ${config.database}`)
     mongoose.Promise = global.Promise
     mongoose.set('useCreateIndex', true) // Stop deprecation warning.
-    await mongoose.connect(
-      config.database,
-      {
-        useUnifiedTopology: true,
-        useNewUrlParser: true
-      }
-    )
+    await mongoose.connect(config.database, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true
+    })
   })
 
   beforeEach(() => {
@@ -303,6 +300,7 @@ describe('#PayToWriteAccessController', () => {
 
       assert.equal(result, false)
     })
+
     it('should return false if input is wrong type', () => {
       const errMsg = {}
       const result = uut.matchErrorMsg(errMsg)
@@ -353,7 +351,8 @@ describe('#PayToWriteAccessController', () => {
     it('should throw error if "signature" property is not provided', async () => {
       try {
         const obj = {
-          txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
+          txid:
+            'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
         }
         await uut.validateAgainstBlockchain(obj)
         assert.fail('unexpected code path')
@@ -364,8 +363,10 @@ describe('#PayToWriteAccessController', () => {
     it('should throw error if "message" property is not provided', async () => {
       try {
         const obj = {
-          txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
-          signature: 'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI'
+          txid:
+            'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
+          signature:
+            'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI'
         }
         await uut.validateAgainstBlockchain(obj)
         assert.fail('unexpected code path')
@@ -375,13 +376,13 @@ describe('#PayToWriteAccessController', () => {
     })
     it('should return false for invalid signature', async () => {
       // Mock
-      sandbox
-        .stub(uut, '_validateSignature')
-        .resolves(false)
+      sandbox.stub(uut, '_validateSignature').resolves(false)
 
       const obj = {
-        txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
-        signature: 'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
+        txid:
+          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
+        signature:
+          'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
         message: 'message'
       }
       const result = await uut.validateAgainstBlockchain(obj)
@@ -394,8 +395,10 @@ describe('#PayToWriteAccessController', () => {
         .throws(new Error('No such mempool or blockchain transaction'))
 
       const obj = {
-        txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
-        signature: 'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
+        txid:
+          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
+        signature:
+          'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
         message: 'message'
       }
       const result = await uut.validateAgainstBlockchain(obj)
@@ -403,17 +406,15 @@ describe('#PayToWriteAccessController', () => {
     })
 
     it('should return return true on successful validation', async () => {
-      sandbox
-        .stub(uut, '_validateSignature')
-        .resolves(true)
+      sandbox.stub(uut, '_validateSignature').resolves(true)
 
-      sandbox
-        .stub(uut, '_validateTx')
-        .resolves(true)
+      sandbox.stub(uut, '_validateTx').resolves(true)
 
       const obj = {
-        txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
-        signature: 'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
+        txid:
+          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
+        signature:
+          'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
         message: 'message'
       }
       const result = await uut.validateAgainstBlockchain(obj)
@@ -423,9 +424,7 @@ describe('#PayToWriteAccessController', () => {
 
   describe('#canAppend', () => {
     it('should return false on error handled', async () => {
-      sandbox
-        .stub(uut.retryQueue, 'addToQueue')
-        .throws(new Error())
+      sandbox.stub(uut.retryQueue, 'addToQueue').throws(new Error())
 
       const result = await uut.canAppend(mock.entryMaxSize)
       assert.isFalse(result)
@@ -440,18 +439,14 @@ describe('#PayToWriteAccessController', () => {
     })
 
     it('should return value in MongoDB if entry already exists in the database', async () => {
-      sandbox
-        .stub(uut.KeyValue, 'find')
-        .resolves([{ isValid: true }])
+      sandbox.stub(uut.KeyValue, 'find').resolves([{ isValid: true }])
 
       const result = await uut.canAppend(mock.entry)
       assert.isTrue(result)
     })
 
     it('should return true if blockchain validation passes', async () => {
-      sandbox
-        .stub(uut.retryQueue, 'addToQueue')
-        .resolves(true)
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
 
       const result = await uut.canAppend(mock.entry)
       assert.isTrue(result)
@@ -460,9 +455,7 @@ describe('#PayToWriteAccessController', () => {
     it('should emit event if hash exist for valid tx', async () => {
       let eventInput
 
-      sandbox
-        .stub(uut.retryQueue, 'addToQueue')
-        .resolves(true)
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
 
       sandbox
         .stub(uut.validationEvent, 'emit')

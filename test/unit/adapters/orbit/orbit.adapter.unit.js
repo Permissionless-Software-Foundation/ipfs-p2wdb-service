@@ -5,10 +5,10 @@
 const sinon = require('sinon')
 const assert = require('chai').assert
 
-const OrbitDBAdapter = require('../../../src/adapters/orbit')
-const KeyValueMock = require('../mocks/model-mock.js')
-const OrbitDBMock = require('../mocks/orbitdb-mock').OrbitDBMock
-const config = require('../../../config')
+const OrbitDBAdapter = require('../../../../src/adapters/orbit')
+const KeyValueMock = require('../../mocks/model-mock.js')
+const OrbitDBMock = require('../../mocks/orbitdb-mock').OrbitDBMock
+const config = require('../../../../config')
 let uut
 let sandbox
 
