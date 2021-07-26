@@ -10,10 +10,10 @@
 const AccessController = require('orbit-db-access-controllers/src/access-controller-interface')
 const pMapSeries = require('p-map-series')
 const BCHJS = require('@psf/bch-js')
+const path = require('path')
 
 // Local libraries
 const config = require('../../../config')
-const ensureAddress = require('./ensure-ac-address')
 const KeyValue = require('../localdb/models/key-value')
 const RetryQueue = require('./retry-queue')
 const validationEvent = require('./validation-event')
@@ -96,7 +96,7 @@ class PayToWriteAccessController extends AccessController {
     }
 
     // Force '<address>/_access' naming for the database
-    this._db = await this._orbitdb.keyvalue(ensureAddress(address), {
+    this._db = await this._orbitdb.keyvalue(_this.ensureAddress(address), {
       // use ipfs controller as a immutable "root controller"
       accessController: {
         type: 'ipfs',
@@ -110,6 +110,15 @@ class PayToWriteAccessController extends AccessController {
     this._db.events.on('replicated', this._onUpdate.bind(this))
 
     await this._db.load()
+  }
+
+  // Copied from OrbitDB ACL boilerplate.
+  ensureAddress(address) {
+    const suffix = address
+      .toString()
+      .split('/')
+      .pop()
+    return suffix === '_access' ? address : path.join(address, '/_access')
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
