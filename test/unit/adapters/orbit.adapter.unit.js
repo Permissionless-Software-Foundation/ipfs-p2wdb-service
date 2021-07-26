@@ -14,7 +14,13 @@ let sandbox
 
 describe('#OrbitDBAdapter', () => {
   beforeEach(() => {
-    uut = new OrbitDBAdapter({ ipfs: { id: () => { return 'ipfs id' } } })
+    uut = new OrbitDBAdapter({
+      ipfs: {
+        id: () => {
+          return 'ipfs id'
+        }
+      }
+    })
 
     // Mock database dependencies.
     uut.db = new OrbitDBMock()
@@ -36,6 +42,7 @@ describe('#OrbitDBAdapter', () => {
       }
     })
   })
+
   describe('#start', () => {
     it('should start', async () => {
       // mock function for keyvalue instance in orbitdb
@@ -56,9 +63,7 @@ describe('#OrbitDBAdapter', () => {
     it('should catch and throw errors', async () => {
       try {
         // Force Error
-        sandbox
-          .stub(uut, 'createDb')
-          .throws(new Error('test error'))
+        sandbox.stub(uut, 'createDb').throws(new Error('test error'))
 
         await uut.start()
 
@@ -68,11 +73,16 @@ describe('#OrbitDBAdapter', () => {
       }
     })
   })
+
   describe('#createDb', () => {
     it('should use default db name in config file if name is not provided', async () => {
       // mock function for keyvalue instance in orbitdb
-      const keyValueKakeFn = (dbName) => {
-        assert.equal(dbName, config.orbitDbName, 'expected to use default db name')
+      const keyValueKakeFn = dbName => {
+        assert.equal(
+          dbName,
+          config.orbitDbName,
+          'expected to use default db name'
+        )
         return new OrbitDBMock()
       }
 
@@ -89,7 +99,7 @@ describe('#OrbitDBAdapter', () => {
       const myDbName = 'myDbName'
 
       // mock function for keyvalue instance in orbitdb
-      const keyValueFakeFn = (dbName) => {
+      const keyValueFakeFn = dbName => {
         assert.equal(dbName, myDbName, 'expected to use db name provided')
         return new OrbitDBMock()
       }
@@ -102,6 +112,7 @@ describe('#OrbitDBAdapter', () => {
       await uut.createDb(myDbName)
       assert.isTrue(uut.isReady)
     })
+
     it('should catch and throw errors', async () => {
       try {
         // Force Error
