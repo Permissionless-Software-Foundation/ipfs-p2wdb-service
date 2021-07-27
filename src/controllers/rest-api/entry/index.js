@@ -10,6 +10,8 @@ const Router = require('koa-router')
 const EntryRESTControllerLib = require('./controller')
 // const Validators = require('../middleware/validators')
 
+let _this
+
 class EntryController {
   constructor (localConfig = {}) {
     // Dependency Injection.
@@ -37,6 +39,8 @@ class EntryController {
     // Instantiate the router.
     const baseUrl = '/entry'
     this.router = new Router({ prefix: baseUrl })
+
+    _this = this
   }
 
   attach (app) {

@@ -121,7 +121,7 @@ class EntryRESTControllerLib {
    * @apiGroup REST P2WDB
    *
    * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/p2wdb/hash/:hash
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/hash/zdpuAnP9PHrfYTsRw2S75PPfTVeZCbS9mevg54Q128kJdDECo
    *
    * @apiDescription
    * Read all the entries from the database.
@@ -138,7 +138,7 @@ class EntryRESTControllerLib {
   async getByHash (ctx) {
     try {
       const hash = ctx.params.hash
-      console.log(hash)
+      // console.log('hash: ', hash)
 
       // Get all the contents of the P2WDB.
       const allData = await this.useCases.entry.readEntry.readByHash(hash)
@@ -161,7 +161,7 @@ class EntryRESTControllerLib {
    * @apiGroup REST P2WDB
    *
    * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/p2wdb/txid/:txid
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/txid/:txid
    *
    * @apiDescription
    * Read an entry from the P2WDB if it matches the TXID.
@@ -201,7 +201,7 @@ class EntryRESTControllerLib {
    * @apiGroup REST P2WDB
    *
    * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/p2wdb/appid/test
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/appid/test
    *
    * @apiDescription
    * Read all the entries from the database.
