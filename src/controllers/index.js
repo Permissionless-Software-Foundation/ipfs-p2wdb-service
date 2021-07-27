@@ -59,6 +59,7 @@ class Controllers {
       this.attachRPCControllers()
     } catch (err) {
       console.error('Error in controllers/index.js/attachControllers()')
+      throw err
     }
   }
 
@@ -105,42 +106,6 @@ class Controllers {
       // Do not throw an error. This is a top-level function.
     }
   }
-
-  // Start the P2WDB and its downstream depenencies (IPFS, ipfs-coord, OrbitDB).
-  // Also attach the post-validation, peer-replication event handler (controller)
-  // to the Add-Entry Use Case.
-  // async attachValidationController () {
-  //   try {
-  //     console.log(
-  //       'attachValidationController() this.adapters.p2wdb.orbit: ',
-  //       this.adapters.p2wdb.orbit
-  //     )
-  //
-  //     // Trigger the addPeerEntry() use-case after a replication-validation event.
-  //     this.adapters.p2wdb.orbit.validationEvent.on(
-  //       'ValidationSucceeded',
-  //       async function (data) {
-  //         try {
-  //           console.log(
-  //             'ValidationSucceeded event triggering addPeerEntry() with this data: ',
-  //             data
-  //           )
-  //
-  //           await _this.useCases.entry.addEntry.addPeerEntry(data)
-  //         } catch (err) {
-  //           console.error(
-  //             'Error trying to process peer data with addPeerEntry(): ',
-  //             err
-  //           )
-  //           // Do not throw an error. This is a top-level function.
-  //         }
-  //       }
-  //     )
-  //   } catch (err) {
-  //     console.error('Error in controllers/index.js/startP2wdb()')
-  //     throw err
-  //   }
-  // }
 }
 
 module.exports = Controllers

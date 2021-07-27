@@ -10,10 +10,10 @@
 const AccessController = require('orbit-db-access-controllers/src/access-controller-interface')
 const pMapSeries = require('p-map-series')
 const BCHJS = require('@psf/bch-js')
+const path = require('path')
 
 // Local libraries
 const config = require('../../../config')
-const ensureAddress = require('./ensure-ac-address')
 const KeyValue = require('../localdb/models/key-value')
 const RetryQueue = require('./retry-queue')
 const validationEvent = require('./validation-event')
@@ -96,7 +96,7 @@ class PayToWriteAccessController extends AccessController {
     }
 
     // Force '<address>/_access' naming for the database
-    this._db = await this._orbitdb.keyvalue(ensureAddress(address), {
+    this._db = await this._orbitdb.keyvalue(_this.ensureAddress(address), {
       // use ipfs controller as a immutable "root controller"
       accessController: {
         type: 'ipfs',
@@ -110,6 +110,15 @@ class PayToWriteAccessController extends AccessController {
     this._db.events.on('replicated', this._onUpdate.bind(this))
 
     await this._db.load()
+  }
+
+  // Copied from OrbitDB ACL boilerplate.
+  ensureAddress(address) {
+    const suffix = address
+      .toString()
+      .split('/')
+      .pop()
+    return suffix === '_access' ? address : path.join(address, '/_access')
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
@@ -233,39 +242,6 @@ class PayToWriteAccessController extends AccessController {
     }
   }
 
-  // Add a valid TXID to the database. This is used to add entries that were
-  // passed to this node by a peer, replicating the OrbitDB. This is in
-  // contrast to a user submitting a new entry via REST or RPC.
-  // async markValid(inputObj) {
-  //   try {
-  //     console.log(
-  //       `markValid called with this data: ${JSON.stringify(inputObj, null, 2)}`
-  //     )
-  //     const { txid, signature, message, data, hash } = inputObj
-  //
-  //     // Exit quietly if this entry has already been created in the MongoDB.
-  //     const mongoRes = await this.KeyValue.find({ key: txid })
-  //     if (mongoRes.length > 0) return
-  //
-  //     // Add the entry to the MongoDB if it passed the OrbitDB checks.
-  //     const kvObj = {
-  //       hash,
-  //       key: txid,
-  //       value: {
-  //         signature,
-  //         message,
-  //         data
-  //       },
-  //       isValid: true
-  //     }
-  //     const keyValue = new this.KeyValue(kvObj)
-  //     await keyValue.save()
-  //   } catch (err) {
-  //     console.error('Error in markValid()')
-  //     throw err
-  //   }
-  // }
-
   // This is an async wrapper function. It wraps all other logic for validating
   // a new entry and it's proof-of-burn against the blockchain.
   async validateAgainstBlockchain(inputObj) {
@@ -324,16 +300,11 @@ class PayToWriteAccessController extends AccessController {
   // Try to match the error message to one of several known error messages.
   // Returns true if there is a match. False if no match.
   matchErrorMsg(msg) {
-    try {
-      if (!msg || typeof msg !== 'string') return false
-      // Returned on forged TXID or manipulated ACL rules.
-      if (msg.includes('No such mempool or blockchain transaction')) return true
+    if (!msg || typeof msg !== 'string') return false
+    // Returned on forged TXID or manipulated ACL rules.
+    if (msg.includes('No such mempool or blockchain transaction')) return true
 
-      return false
-    } catch (err) {
-      console.error('Error in matchErrorMsg()')
-      throw err
-    }
+    return false
   }
 
   // Add the TXID to the database, and mark it as invalid. This will prevent

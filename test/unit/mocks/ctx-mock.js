@@ -36,6 +36,8 @@ const context = (req, res, app) => {
 
   const retApp = app.createContext(req, res)
 
+  retApp.params = {}
+
   return retApp
 }
 

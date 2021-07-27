@@ -6,7 +6,7 @@ const sinon = require('sinon')
 const assert = require('chai').assert
 const BCHJS = require('@psf/bch-js')
 
-const RetryQueue = require('../../../src/adapters/orbit/retry-queue')
+const RetryQueue = require('../../../../src/adapters/orbit/retry-queue')
 
 const bchjs = new BCHJS()
 let uut
@@ -65,9 +65,7 @@ describe('#retry-queue.js', () => {
     it('should call handleValidationError() when p-retry error is thrown', async () => {
       try {
         // Mock for ignore sleep time
-        sandbox
-          .stub(uut.bchjs.Util, 'sleep')
-          .resolves({})
+        sandbox.stub(uut.bchjs.Util, 'sleep').resolves({})
 
         const inputTest = 'test'
         const funcHandle = () => {
@@ -83,9 +81,7 @@ describe('#retry-queue.js', () => {
 
     it('should retry the specific number of times before giving up', async () => {
       // Mock for ignore sleep time
-      sandbox
-        .stub(uut.bchjs.Util, 'sleep')
-        .resolves({})
+      sandbox.stub(uut.bchjs.Util, 'sleep').resolves({})
 
       const inputTest = 'test'
       const funcHandle = () => {
@@ -138,9 +134,7 @@ describe('#retry-queue.js', () => {
     it('should catch and throw an error', async () => {
       try {
         // Mock for ignore sleep time
-        sandbox
-          .stub(uut.bchjs.Util, 'sleep')
-          .resolves({})
+        sandbox.stub(uut.bchjs.Util, 'sleep').resolves({})
 
         const inputTest = 'test'
 

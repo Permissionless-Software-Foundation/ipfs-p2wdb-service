@@ -12,6 +12,27 @@ class ReadEntry {
 
     return data
   }
+
+  async readByHash () {
+    return {
+      data: 'data',
+      success: true
+    }
+  }
+
+  async readByTxid () {
+    return {
+      data: 'data',
+      success: true
+    }
+  }
+
+  async readByAppId () {
+    return {
+      data: 'data',
+      success: true
+    }
+  }
 }
 
 module.exports = ReadEntry

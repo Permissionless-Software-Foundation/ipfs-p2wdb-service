@@ -7,11 +7,10 @@
 const Router = require('koa-router')
 
 // Load the REST API Controllers.
-const PostEntry = require('./post-entry')
-const GetAll = require('./get-all')
-const GetByHash = require('./get-by-hash')
-const GetByTxid = require('./get-by-txid')
-const GetByAppId = require('./get-by-appid')
+const EntryRESTControllerLib = require('./controller')
+// const Validators = require('../middleware/validators')
+
+let _this
 
 class EntryController {
   constructor (localConfig = {}) {
@@ -19,13 +18,13 @@ class EntryController {
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error(
-        'Instance of Adapters library required when instantiating PostEntry REST Controller.'
+        'Instance of Adapters library required when instantiating Entry REST Controller.'
       )
     }
     this.useCases = localConfig.useCases
     if (!this.useCases) {
       throw new Error(
-        'Instance of Use Cases library required when instantiating PostEntry REST Controller.'
+        'Instance of Use Cases library required when instantiating Entry REST Controller.'
       )
     }
 
@@ -34,16 +33,14 @@ class EntryController {
       useCases: this.useCases
     }
 
-    // Instantiate the REST API controllers
-    this.postEntry = new PostEntry(dependencies)
-    this.readAllEntries = new GetAll(dependencies)
-    this.getByHash = new GetByHash(dependencies)
-    this.getByTxid = new GetByTxid(dependencies)
-    this.getByAppId = new GetByAppId(dependencies)
+    // Encapsulate dependencies.
+    this.entryRESTController = new EntryRESTControllerLib(dependencies)
 
     // Instantiate the router.
     const baseUrl = '/entry'
     this.router = new Router({ prefix: baseUrl })
+
+    _this = this
   }
 
   attach (app) {
@@ -53,24 +50,41 @@ class EntryController {
       )
     }
 
-    // curl -H "Content-Type: application/json" -X POST -d '{ "user": "test" }' localhost:5001/p2wdb/write
-    this.router.post('/write', this.postEntry.routeHandler)
-
-    // curl -H "Content-Type: application/json" -X GET localhost:5001/p2wdb/all
-    this.router.get('/all', this.readAllEntries.routeHandler)
-
-    // curl -H "Content-Type: application/json" -X GET localhost:5001/p2wdb/hash/:hash
-    this.router.get('/hash/:hash', this.getByHash.routeHandler)
-
-    // curl -H "Content-Type: application/json" -X GET localhost:5001/p2wdb/txid/:txid
-    this.router.get('/txid/:txid', this.getByTxid.routeHandler)
-
-    // curl -H "Content-Type: application/json" -X GET localhost:5001/p2wdb/appid/:appid
-    this.router.get('/appid/:appid', this.getByAppId.routeHandler)
+    // Define the routes and attach the controller.
+    this.router.post('/write', this.postEntry)
+    this.router.get('/all', this.readAllEntries)
+    this.router.get('/hash/:hash', this.getByHash)
+    this.router.get('/txid/:txid', this.getByTxid)
+    this.router.get('/appid/:appid', this.getByAppId)
 
     // Attach the Controller routes to the Koa app.
     app.use(this.router.routes())
     app.use(this.router.allowedMethods())
+  }
+
+  async postEntry (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.postEntry(ctx, next)
+  }
+
+  async readAllEntries (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.getAll(ctx, next)
+  }
+
+  async getByHash (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.getByHash(ctx, next)
+  }
+
+  async getByTxid (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.getByTxid(ctx, next)
+  }
+
+  async getByAppId (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.getByAppId(ctx, next)
   }
 }
 

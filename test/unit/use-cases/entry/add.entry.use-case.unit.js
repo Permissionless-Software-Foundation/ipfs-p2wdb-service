@@ -115,4 +115,36 @@ describe('#AddEntry', () => {
       assert.equal(result, true)
     })
   })
+
+  describe('#_extractAppId', () => {
+    it('should extract appId from data', () => {
+      // Create test data for input.
+      const peerData = {
+        data: {
+          appId: 'test'
+        }
+      }
+      peerData.data = JSON.stringify(peerData.data)
+
+      const result = uut._extractAppId(peerData)
+      // console.log('result: ', result)
+
+      assert.equal(result.appId, 'test')
+    })
+
+    it('should exit quietly when there is an error, and returns input data.', () => {
+      // Create test data for input.
+      let peerData = {
+        data: {
+          appId: 'test'
+        }
+      }
+      peerData = JSON.stringify(peerData)
+
+      const result = uut._extractAppId(peerData)
+      // console.log('result: ', result)
+
+      assert.include(result, 'test')
+    })
+  })
 })
