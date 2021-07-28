@@ -5,6 +5,7 @@
 ## What Is P2WDB?
 
 - [YouTube Video Overview of the P2WDB Project](https://youtu.be/korI-8W240s)
+- [JSON RPC and REST API Documentation](https://p2wdb-docs.fullstack.cash/)
 
 P2WDB is an acronym for pay-to-write database. It's a peer-to-peer (p2p) databse that operates similarly to a blockchain. It solves two growing problems in the blockchain space:
 
