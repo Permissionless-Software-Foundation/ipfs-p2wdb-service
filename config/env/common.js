@@ -54,10 +54,12 @@ module.exports = {
   announceJsonLd: {
     '@context': 'https://schema.org/',
     '@type': 'WebAPI',
-    name: 'ipfs-service-provider',
+    name: process.env.COORD_NAME
+      ? process.env.COORD_NAME
+      : 'ipfs-p2wdb-service',
     description:
-      'This is a generic IPFS Serivice Provider that uses JSON RPC over IPFS to communicate with it. This instance has not been customized. Source code: https://github.com/Permissionless-Software-Foundation/ipfs-service-provider',
-    documentation: 'https://ipfs-service-provider.fullstack.cash/',
+      'This is a PROTOTYPE access point to the PSF pay-to-write database. DB content may be wiped at any moment. Do not depend on this DB for production use! Cost to write to the DB is 0.01 PSF tokens.',
+    documentation: 'https://p2wdb.fullstack.cash/',
     provider: {
       '@type': 'Organization',
       name: 'Permissionless Software Foundation',
