@@ -1,0 +1,27 @@
+# Start the testnet server with the command 'docker-compose up -d'
+
+p2wdb-mongodb:
+  image: mongo:4.4.2-bionic
+  container_name: p2wdb-mongo
+  ports:
+    - '172.17.0.1:5666:27017' # <host port>:<container port>
+  volumes:
+    - ./mongodb:/data/db
+  command: mongod --logpath=/dev/null # -- quiet
+  restart: always
+
+p2wdb:
+  build: .
+  dockerfile: Dockerfile
+  container_name: p2wdb
+  links:
+    - p2wdb-mongodb
+  ports:
+    # <host port>:<container port>
+    - 5667:5001 # REST API
+    - 5668:5668 # IPFS TCP port
+    - 5669:5669 # IPFS WS Port
+  volumes:
+    - ../ipfsdata:/home/safeuser/ipfs-p2wdb-service/ipfsdata
+    - ../orbitdb:/home/safeuser/ipfs-p2wdb-service/orbitdb
+  restart: always
