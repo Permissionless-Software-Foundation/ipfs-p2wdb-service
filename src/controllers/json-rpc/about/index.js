@@ -6,7 +6,7 @@
 const jsonrpc = require('jsonrpc-lite')
 
 // Local libraries
-const aboutStr = require('../../../../config/about')
+const config = require('../../../../config')
 
 class AboutRPC {
   constructor (localConfig) {
@@ -36,7 +36,7 @@ class AboutRPC {
     return {
       success: true,
       status: 200,
-      message: aboutStr,
+      message: config.announceJsonLd,
       endpoint: 'about'
     }
   }
