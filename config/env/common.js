@@ -68,8 +68,8 @@ module.exports = {
   },
 
   // IPFS Ports
-  ipfsTcpPort: 5668,
-  ipfsWsPort: 5669,
+  ipfsTcpPort: process.env.IPFS_TCP_PORT ? process.env.IPFS_TCP_PORT : 5668,
+  ipfsWsPort: process.env.IPFS_WS_PORT ? process.env.IPFS_WS_PORT : 5669,
 
   // IPNS hash to get the latest config info.
   // Not currently implemented.

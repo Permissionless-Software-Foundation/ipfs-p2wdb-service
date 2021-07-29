@@ -7,9 +7,11 @@
   so as not to conflict with the default host port of 27017 for MongoDB.
 */
 
+const mongoPort = process.env.MONGO_PORT ? process.env.MONGO_PORT : 5666
+
 module.exports = {
   session: 'secret-boilerplate-token',
   token: 'secret-jwt-token',
-  database: 'mongodb://172.17.0.1:5666/p2wdb-service-prod',
+  database: `mongodb://172.17.0.1:${mongoPort}/p2wdb-service-prod`,
   env: 'prod'
 }
