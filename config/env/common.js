@@ -59,7 +59,7 @@ module.exports = {
       : 'ipfs-p2wdb-service',
     description:
       'This is a PROTOTYPE access point to the PSF pay-to-write database. DB content may be wiped at any moment. Do not depend on this DB for production use! Cost to write to the DB is 0.01 PSF tokens.',
-    documentation: 'https://p2wdb.fullstack.cash/',
+    documentation: 'https://p2wdb-docs.fullstack.cash/',
     provider: {
       '@type': 'Organization',
       name: 'Permissionless Software Foundation',
