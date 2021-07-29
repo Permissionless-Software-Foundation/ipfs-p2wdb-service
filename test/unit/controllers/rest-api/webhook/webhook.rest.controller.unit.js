@@ -13,10 +13,10 @@ const UseCasesMock = require('../../../mocks/use-cases')
 const WebhookController = require('../../../../../src/controllers/rest-api/webhook/controller')
 let uut
 let sandbox
-let ctx
+// let ctx
 let webhookData = {}
 
-const mockContext = require('../../../../unit/mocks/ctx-mock').context
+// const mockContext = require('../../../../unit/mocks/ctx-mock').context
 
 describe('#Webhook-REST-Controller', () => {
   // const testUser = {}
@@ -33,7 +33,7 @@ describe('#Webhook-REST-Controller', () => {
     }
 
     // Mock the context object.
-    ctx = mockContext()
+    // ctx = mockContext()
   })
 
   afterEach(() => sandbox.restore())

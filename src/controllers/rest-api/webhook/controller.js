@@ -4,7 +4,7 @@
 
 const { wlogger } = require('../../../adapters/wlogger')
 
-let _this
+// let _this
 
 class WebhookRESTControllerLib {
   constructor (localConfig = {}) {
@@ -26,7 +26,7 @@ class WebhookRESTControllerLib {
     // this.UserModel = this.adapters.localdb.Users
     // this.userUseCases = this.useCases.user
 
-    _this = this
+    // _this = this
   }
 
   /**
@@ -108,6 +108,7 @@ class WebhookRESTControllerLib {
         success
       }
     } catch (err) {
+      wlogger.error(err)
       console.log('Error in delete-webhook.js/restController()')
       throw err
     }

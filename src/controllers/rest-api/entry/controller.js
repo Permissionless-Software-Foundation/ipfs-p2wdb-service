@@ -244,6 +244,7 @@ class EntryRESTControllerLib {
         ctx.throw(err.status)
       }
     } else {
+      wlogger.error(err)
       // By default use a 422 error if the HTTP status is not specified.
       ctx.throw(422, err.message)
     }

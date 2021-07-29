@@ -92,14 +92,14 @@ describe('#P2WDB-integration', () => {
 
   describe('#revoke', () => {
     it('should revoke access', async () => {
-      const result = await db.access.revoke('write', '*')
+      await db.access.revoke('write', '*')
       // console.log('result: ', result)
 
       assert.isOk('Not throwing an error is a pass')
     })
 
     it('should leave unrevoked properties', async () => {
-      const result = await db.access.revoke('admin', 'test')
+      await db.access.revoke('admin', 'test')
       // console.log('result: ', result)
 
       assert.isOk('Not throwing an error is a pass')
