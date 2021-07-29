@@ -10,6 +10,6 @@
 module.exports = {
   session: 'secret-boilerplate-token',
   token: 'secret-jwt-token',
-  database: 'mongodb://172.17.0.1:5555/p2wdb-service-prod',
+  database: 'mongodb://172.17.0.1:5666/p2wdb-service-prod',
   env: 'prod'
 }

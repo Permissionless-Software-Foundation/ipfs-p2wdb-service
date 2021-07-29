@@ -29,16 +29,9 @@ RUN echo 'abcd8765' | sudo -S pwd
 
 # Clone the rest.bitcoin.com repository
 WORKDIR /home/safeuser
-RUN git clone https://github.com/christroutner/koa-api-boilerplate
-RUN mv koa-api-boilerplate koa
-RUN mkdir keys
-
-# Switch to the desired branch. `master` is usually stable,
-# and `stage` has the most up-to-date changes.
-WORKDIR /home/safeuser/koa
-
-# For development: switch to unstable branch
-# RUN git checkout unstable
+RUN git clone https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service
+WORKDIR /home/safeuser/ipfs-p2wdb-service
+RUN git checkout ct-unstable
 
 # Install dependencies
 RUN npm install
@@ -46,13 +39,11 @@ RUN npm install
 # Generate the API docs
 RUN npm run docs
 
-VOLUME /home/safeuser/keys
-
 # Expose the port the API will be served on.
 EXPOSE 5001
 
 # Start the application.
-COPY start-production start-production
-CMD ["./start-production"]
+COPY start-production.sh start-production.sh
+CMD ["./start-production.sh"]
 
 #CMD ["npm", "start"]
