@@ -1,5 +1,6 @@
 #!/bin/bash
 export SVC_ENV=production
+export ORBITDB_NAME=/orbitdb/zdpuAwAxsMjxUTP58Tbd4vps2bTJNBoKkjs72SDLxuWjVy1Bx/psf-bch-p2wdb-keyvalue-v1.0.0-0003
 
 export COORD_NAME=generic-p2wdb-production
 
