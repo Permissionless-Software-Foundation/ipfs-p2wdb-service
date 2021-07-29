@@ -19,9 +19,9 @@ const MESSAGE = 'test'
 const SIGNATURE =
   'H7Io3txwhjqOYFrAE/xBUzYGow510HL0U+G0LqelbHcDfqH/vQig/xcGfvTTBZpVoZtCoqOdvpPrsAFuL8VHWws='
 
-const SERVER = 'http://localhost:5001/p2wdb/write'
-// const SERVER = 'http://192.168.0.76:5001/p2wdb'
-// const SERVER = 'https://p2wdb.fullstackcash.nl/p2wdb'
+const SERVER = 'http://localhost:5001/entry/write'
+// const SERVER = 'http://192.168.0.76:5001/entry/write'
+// const SERVER = 'https://p2wdb.fullstackcash.nl/entry/write'
 
 const now = new Date()
 
