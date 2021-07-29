@@ -1,6 +1,8 @@
 #!/bin/bash
 export SVC_ENV=production
 
+export COORD_NAME=generic-p2wdb-production
+
 # Customize these for your own system. Defaults are used.
 #export ENABLE_CIRCUIT_RELAY=1
 export PORT=5001 # REST API port
