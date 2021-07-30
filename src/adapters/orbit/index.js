@@ -45,7 +45,10 @@ class OrbitDBAdapter {
   // A wrapper to start OrbitDB.
   async start () {
     try {
-      await this.createDb()
+      if (process.env.TEST_TYPE !== 'e2e') {
+        await this.createDb()
+      }
+
       console.log('OrbitDB is ready.')
     } catch (err) {
       console.error('Error in orbitdb/index.js/start()')
@@ -102,7 +105,7 @@ class OrbitDBAdapter {
 
       return this.db
     } catch (err) {
-      console.error('Error in createDb()')
+      console.error('Error in createDb(): ', err)
       throw err
     }
   }

@@ -56,7 +56,7 @@ async function startServer () {
   // This also loads the Clean Architecture Entities, Use Cases, and Adapters.
   const Controllers = require('../src/controllers')
   const controllers = new Controllers()
-  controllers.attachControllers(app)
+  await controllers.attachControllers(app)
 
   // Enable CORS for testing
   // THIS IS A SECURITY RISK. COMMENT OUT FOR PRODUCTION
