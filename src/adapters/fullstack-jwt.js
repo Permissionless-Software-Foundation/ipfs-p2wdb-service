@@ -53,7 +53,7 @@ class FullStackJWT {
   async getJWT () {
     try {
       // Skip connecting FullStack.cash auth server to the network if this is an E2E test.
-      if (process.env.E2ETEST) {
+      if (process.env.TEST_TYPE === 'e2e') {
         this.apiToken = 'faketoken'
         return this.apiToken
       }

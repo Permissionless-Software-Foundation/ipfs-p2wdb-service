@@ -38,7 +38,7 @@ class Controllers {
 
   async attachControllers (app) {
     try {
-      console.log(`process.env.TEST_TYPE: ${process.env.TEST_TYPE}`)
+      // console.log(`process.env.TEST_TYPE: ${process.env.TEST_TYPE}`)
 
       // Get a JWT token and instantiate bch-js with it. Then pass that instance
       // to all the rest of the apps controllers and adapters.

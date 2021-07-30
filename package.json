@@ -8,7 +8,7 @@
     "test": "npm run test:all",
     "test:all": "export SVC_ENV=test && nyc --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/integration test/e2e/automated",
     "test:unit": "export SVC_ENV=test && mocha --exit --timeout 15000 --recursive test/unit/",
-    "test:e2e:auto": "export SVC_ENV=test && export TEST_TYPE=e2e && mocha --exit --timeout 15000 test/e2e/automated/",
+    "test:e2e:auto": "export SVC_ENV=test && mocha --exit --timeout 15000 test/e2e/automated/",
     "test:integration": "mocha --exit --timeout 15000 --recursive test/integration/",
     "test:temp": "export SVC_ENV=test && mocha --exit --timeout 15000 -g '#rate-limit' test/unit/json-rpc/",
     "lint": "standard --env mocha --fix",
