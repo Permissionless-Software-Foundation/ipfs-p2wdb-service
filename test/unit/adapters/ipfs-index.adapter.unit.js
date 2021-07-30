@@ -22,12 +22,26 @@ describe('#IPFS-adapter-index', () => {
   afterEach(() => sandbox.restore())
 
   describe('#start', () => {
+    it('should throw error if bch-js is not passed', async () => {
+      try {
+        await uut.start()
+
+        assert.fail('Unexpected code path.')
+      } catch (err) {
+        // console.log(err)
+        assert.include(
+          err.message,
+          'Instance of bch-js must be passed when instantiating IPFS adapter.'
+        )
+      }
+    })
+
     it('should return a promise that resolves into an instance of IPFS.', async () => {
       // Mock dependencies.
       uut.ipfsAdapter = new IPFSMock()
       uut.IpfsCoordAdapter = IPFSCoordMock
 
-      const result = await uut.start()
+      const result = await uut.start({ bchjs: {} })
 
       assert.equal(result, true)
     })
@@ -37,7 +51,7 @@ describe('#IPFS-adapter-index', () => {
         // Force an error
         sandbox.stub(uut.ipfsAdapter, 'start').rejects(new Error('test error'))
 
-        await uut.start()
+        await uut.start({ bchjs: {} })
 
         assert.fail('Unexpected code path.')
       } catch (err) {

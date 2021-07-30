@@ -38,11 +38,19 @@ class Controllers {
 
   async attachControllers (app) {
     try {
+      console.log(`process.env.TEST_TYPE: ${process.env.TEST_TYPE}`)
+
+      // Get a JWT token and instantiate bch-js with it. Then pass that instance
+      // to all the rest of the apps controllers and adapters.
+      await adapters.fullStackJwt.getJWT()
+      // Instantiate bch-js with the JWT token, and overwrite the placeholder for bch-js.
+      adapters.bchjs = await adapters.fullStackJwt.instanceBchjs()
+
       // Attach the REST controllers to the Koa app.
       this.attachRESTControllers(app)
 
       // Start IPFS.
-      await this.adapters.ipfs.start()
+      await this.adapters.ipfs.start({ bchjs: adapters.bchjs })
 
       // Get a handle on the IPFS node.
       const ipfs = this.adapters.ipfs.ipfs

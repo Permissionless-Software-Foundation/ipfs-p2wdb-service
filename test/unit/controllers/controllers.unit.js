@@ -24,7 +24,9 @@ describe('#Controllers', () => {
 
   describe('#attachControllers', () => {
     it('should attach the controllers', async () => {
-      // mock IPFS
+      // mock dependencies
+      sandbox.stub(uut.adapters.fullStackJwt, 'getJWT').resolves({})
+      sandbox.stub(uut.adapters.fullStackJwt, 'instanceBchjs').resolves({})
       sandbox.stub(uut.adapters.ipfs, 'start').resolves({})
       sandbox.stub(uut.adapters.p2wdb, 'start').resolves({})
       // sandbox.stub(uut, 'attachValidationController').resolves({})
@@ -41,6 +43,10 @@ describe('#Controllers', () => {
 
     it('should catch and throw an error', async () => {
       try {
+        // Skip getting a JWT token.
+        sandbox.stub(uut.adapters.fullStackJwt, 'getJWT').resolves({})
+        sandbox.stub(uut.adapters.fullStackJwt, 'instanceBchjs').resolves({})
+
         // Force an error
         sandbox
           .stub(uut, 'attachRESTControllers')
