@@ -1,5 +1,5 @@
 /*
-  Unit tests for the rpc/index.js library.
+  Unit tests for the json-rpc/index.js library.
 */
 
 // Public npm libraries
