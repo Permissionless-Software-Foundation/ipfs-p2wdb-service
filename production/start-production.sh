@@ -11,4 +11,8 @@ export IPFS_TCP_PORT=5668
 export IPFS_WS_PORT=5669
 export MONGO_PORT=5666
 
+# (optional) Log-in information for retrieving a JWT token from FullStack.cash.
+export FULLSTACKLOGIN=demo@demo.com
+export FULLSTACKPASS=demo
+
 npm start

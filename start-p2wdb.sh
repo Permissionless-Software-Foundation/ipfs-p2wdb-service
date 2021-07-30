@@ -11,7 +11,7 @@ export PORT=5001 # REST API port
 export IPFS_TCP_PORT=5668
 export IPFS_WS_PORT=5669
 
-# (options) Log-in information for retrieving a JWT token from FullStack.cash.
+# (optional) Log-in information for retrieving a JWT token from FullStack.cash.
 export FULLSTACKLOGIN=demo@demo.com
 export FULLSTACKPASS=demo
 
