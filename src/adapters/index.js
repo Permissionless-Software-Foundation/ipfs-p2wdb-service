@@ -37,7 +37,7 @@ const fullStackJwt = new FullStackJWT({
   login: config.FULLSTACKLOGIN,
   password: config.FULLSTACKPASS
 })
-const bchjs = {} // Placeholder.
+// const bchjs = {} // Placeholder.
 
 module.exports = {
   ipfs,

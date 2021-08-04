@@ -38,7 +38,7 @@ class WebhookAdapter {
       )
 
       // const { txid, signature, message, data, hash } = eventData
-      const { data, hash } = eventData
+      const { data } = eventData
       console.log('data: ', data)
 
       // Attempt to parse the raw data as JSON
