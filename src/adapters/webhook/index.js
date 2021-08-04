@@ -62,7 +62,7 @@ class WebhookAdapter {
       console.log('matches: ', matches)
 
       if (matches.length > 0) {
-        await _this.triggerWebhook(matches, hash)
+        await _this.triggerWebhook(matches, jsonData.data)
       }
     } catch (err) {
       console.error('Error in validationSucceededEventHandler(): ', err)
@@ -72,18 +72,18 @@ class WebhookAdapter {
 
   // This function expects an array of Webhook MongoDB model instances as input.
   // It loops through each match and executes that webhook.
-  async triggerWebhook (matches, hash) {
+  async triggerWebhook (matches, data) {
     console.log('triggerWebhook() triggered with these matches: ', matches)
 
     for (let i = 0; i < matches.length; i++) {
       const thisMatch = matches[i]
 
       console.log(
-        `Webhook triggered by ${hash}. appId: ${thisMatch.appId}, Calling: ${thisMatch.url}`
+        `Webhook triggered. appId: ${thisMatch.appId}, Calling: ${thisMatch.url}`
       )
       try {
         // Call the webhook.
-        await this.axios.post(thisMatch.url, { hash })
+        await this.axios.post(thisMatch.url, data)
       } catch (err) {
         /* exit quietly */
       }
