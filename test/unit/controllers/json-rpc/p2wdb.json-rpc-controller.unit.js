@@ -3,10 +3,10 @@
 */
 
 // Public npm libraries
-const jsonrpc = require('jsonrpc-lite')
+// const jsonrpc = require('jsonrpc-lite')
 const sinon = require('sinon')
 const assert = require('chai').assert
-const { v4: uid } = require('uuid')
+// const { v4: uid } = require('uuid')
 
 // Set the environment variable to signal this is a test.
 process.env.SVC_ENV = 'test'
@@ -19,7 +19,7 @@ const UseCasesMock = require('../../mocks/use-cases')
 describe('#P2WDBRPC', () => {
   let uut
   let sandbox
-  let testUser
+  // let testUser
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
@@ -48,7 +48,7 @@ describe('#P2WDBRPC', () => {
     it('should throw an error if useCases are not passed in', () => {
       try {
         uut = new P2WDBRPC({ adapters })
-
+        console.log(uut)
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(
