@@ -36,7 +36,8 @@ class AboutRPC {
     return {
       success: true,
       status: 200,
-      message: config.announceJsonLd,
+      // message: config.announceJsonLd,
+      message: JSON.stringify(config.announceJsonLd),
       endpoint: 'about'
     }
   }
