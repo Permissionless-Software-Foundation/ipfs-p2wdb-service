@@ -68,9 +68,13 @@ describe('Entry', () => {
       } catch (err) {
         // console.log('err', err)
         assert.equal(err.response.status, 422)
-        assert.include(err.response.data, 'TXID must be a string containing a transaction ID of proof-of-burn.')
+        assert.include(
+          err.response.data,
+          'TXID must be a string containing a transaction ID of proof-of-burn.'
+        )
       }
     })
+
     it('should reject if no data property is provided', async () => {
       try {
         const options = {
@@ -95,7 +99,7 @@ describe('Entry', () => {
         // Mock to ignore orbit db
         // add this entry directly to the mongodb
 
-        const fkFn = async (entryObj) => {
+        const fkFn = async entryObj => {
           const entry = new adapters.entry.KeyValue(entryObj)
           entry.hash = context.hash
           await entry.save()

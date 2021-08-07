@@ -41,6 +41,7 @@ class ReadEntry {
         err.status = 404
         throw err
       }
+
       return data
     } catch (err) {
       console.error('Error in readByHash()')
@@ -58,6 +59,7 @@ class ReadEntry {
         err.status = 404
         throw err
       }
+
       return data
     } catch (err) {
       console.error('Error in readByTxid()')
