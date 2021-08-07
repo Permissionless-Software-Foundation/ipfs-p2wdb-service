@@ -52,7 +52,7 @@ class EntryController {
 
     // Define the routes and attach the controller.
     this.router.post('/write', this.postEntry)
-    this.router.get('/all', this.readAllEntries)
+    this.router.get('/all/:page', this.readAllEntries)
     this.router.get('/hash/:hash', this.getByHash)
     this.router.get('/txid/:txid', this.getByTxid)
     this.router.get('/appid/:appid', this.getByAppId)

@@ -82,10 +82,11 @@ class EntryRESTControllerLib {
    * @apiGroup REST P2WDB
    *
    * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/all
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/all/0
    *
    * @apiDescription
-   * Read all the entries from the database.
+   * Read all the entries from the database. Results are paginated, with 50
+   * entries per page.
    *
    * @apiError UnprocessableEntity Missing required parameters
    *
@@ -98,10 +99,11 @@ class EntryRESTControllerLib {
    */
   async getAll (ctx) {
     try {
-      // console.log('this.useCases.entry: ', this.useCases.entry)
+      const page = ctx.params.page
+      // console.log('hash: ', hash)
 
       // Get all the contents of the P2WDB.
-      const allData = await this.useCases.entry.readEntry.readAllEntries()
+      const allData = await this.useCases.entry.readEntry.readAllEntries(page)
 
       ctx.body = {
         success: true,
