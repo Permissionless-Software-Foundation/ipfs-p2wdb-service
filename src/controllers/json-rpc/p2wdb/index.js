@@ -65,21 +65,22 @@ class P2WDBRPC {
    * @apiGroup JSON P2WDB
    *
    * @apiExample Example usage:
-   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "readAll"}}
+   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "readAll", "page": 0}}
    *
    * @apiDescription
    * Read all entries in the database.
    */
   // Read all entries from the P2WDB.
-  // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "readAll"}}
+  // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "readAll", "page": 0}}
   async readAll (rpcData) {
     try {
       console.log('P2WDB readAll() RPC endpoint called.')
       // console.log('this.useCases: ', this.useCases)
 
+      const page = rpcData.payload.params.page
+
       // Get all the contents of the P2WDB.
-      const allData = await this.useCases.entry.readEntry.readAllEntries()
-      // const allData = p2wdb.readAll()
+      const allData = await this.useCases.entry.readEntry.readAllEntries(page)
 
       const response = {
         endpoint: 'readAll',
