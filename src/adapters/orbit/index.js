@@ -43,10 +43,10 @@ class OrbitDBAdapter {
   }
 
   // A wrapper to start OrbitDB.
-  async start () {
+  async start (bchjs) {
     try {
       if (process.env.TEST_TYPE !== 'e2e') {
-        await this.createDb()
+        await this.createDb({ bchjs })
       }
 
       console.log('OrbitDB is ready.')
@@ -57,8 +57,14 @@ class OrbitDBAdapter {
   }
 
   // Create or load an Orbit database.
-  async createDb (dbName) {
+  async createDb (localConfig = {}) {
     try {
+      let { dbName, bchjs } = localConfig
+
+      if (!bchjs) {
+        throw new Error('Instance of bchjs required when called createDb()')
+      }
+
       // By default, use the DB name in the config file.
       if (!dbName) {
         dbName = this.config.orbitDbName
@@ -83,6 +89,15 @@ class OrbitDBAdapter {
 
       // Create the key-value store.
       this.db = await orbitdb.keyvalue(dbName, options)
+
+      // Overwrite the default bchjs instance used by the pay-to-write access
+      // controller.
+      this.db.options.accessController.bchjs = bchjs
+      this.db.access.bchjs = bchjs
+      // console.log('this.db: ', this.db)
+
+      // console.log(' ')
+      // console.log('this.db.access: ', this.db.access)
 
       console.log('OrbitDB ID: ', this.db.id)
 

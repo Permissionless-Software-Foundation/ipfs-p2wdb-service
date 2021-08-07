@@ -45,6 +45,7 @@ class Controllers {
       await adapters.fullStackJwt.getJWT()
       // Instantiate bch-js with the JWT token, and overwrite the placeholder for bch-js.
       adapters.bchjs = await adapters.fullStackJwt.instanceBchjs()
+      const bchjs = adapters.bchjs
 
       // Attach the REST controllers to the Koa app.
       this.attachRESTControllers(app)
@@ -62,7 +63,7 @@ class Controllers {
       // console.log('...validation controller attached.')
 
       // Start the P2WDB.
-      await this.adapters.p2wdb.start(ipfs)
+      await this.adapters.p2wdb.start({ ipfs, bchjs })
 
       this.attachRPCControllers()
     } catch (err) {
