@@ -34,12 +34,16 @@ class DBEntry {
       data
     }
 
+    const now = new Date()
+    const createdAt = now.getTime()
+
     const entry = {
       hash,
       key,
       value,
       appId,
-      isValid
+      isValid,
+      createdAt
     }
 
     return entry
@@ -61,12 +65,16 @@ class DBEntry {
     // triggered by the 'ValidationSucceeded' event.
     const isValid = true
 
+    const now = new Date()
+    const createdAt = now.getTime()
+
     const entry = {
       hash,
       key,
       value,
       appId,
-      isValid
+      isValid,
+      createdAt
     }
 
     return entry
