@@ -36,6 +36,7 @@ describe('#p2wdb', () => {
     })
     await entry.save()
   })
+
   beforeEach(() => {
     uut = new P2WDB()
     uut.orbit = new OrbitDBAdapterMock()
@@ -44,9 +45,11 @@ describe('#p2wdb', () => {
   })
 
   afterEach(() => sandbox.restore())
+
   after(() => {
     mongoose.connection.close()
   })
+
   describe('#start', () => {
     it('should throw an error if IPFS instance is not passed.', async () => {
       try {
@@ -112,18 +115,23 @@ describe('#p2wdb', () => {
   describe('#readAll', () => {
     it('should get all entries in the P2WDB', async () => {
       const data = await uut.readAll()
-      assert.isObject(data)
+      // console.log('data: ', data)
+
+      assert.isArray(data)
     })
 
     it('should catch and throw an error', async () => {
       try {
-        sandbox.stub(uut.orbit, 'readAll').throws(new Error('test error'))
+        // sandbox.stub(uut.orbit, 'readAll').throws(new Error('test error'))
+
+        // Force and error.
+        sandbox.stub(uut.KeyValue, 'find').rejects(new Error('test error'))
 
         await uut.readAll()
 
         assert.fail('unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'test error')
+        assert.include(err.message, 'is not a function')
       }
     })
   })

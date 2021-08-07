@@ -75,9 +75,22 @@ class P2WDB {
   }
 
   // Read all entries in the P2WDB.
-  async readAll () {
+  async readAll (page) {
     try {
-      const data = await _this.orbit.readAll()
+      const ENTRIES_PER_PAGE = 20
+
+      if (!page) page = 0
+
+      // Pull data from MongoDB.
+      // Get all entries in the database.
+      const data = await this.KeyValue.find({})
+        // Sort entries so newest entries show first.
+        .sort('-createdAt')
+        // Skip to the start of the selected page.
+        .skip(page * ENTRIES_PER_PAGE)
+        // Only return 20 results.
+        .limit(ENTRIES_PER_PAGE)
+
       // console.log('data: ', data)
 
       return data

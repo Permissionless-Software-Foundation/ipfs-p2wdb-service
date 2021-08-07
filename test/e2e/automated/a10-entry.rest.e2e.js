@@ -137,11 +137,15 @@ describe('Entry', () => {
     it('should fetch all', async () => {
       const options = {
         method: 'GET',
-        url: `${LOCALHOST}/entry/all`
+        url: `${LOCALHOST}/entry/all/0`
       }
       const result = await axios(options)
+      // console.log('result.data: ', result.data)
 
-      assert.isTrue(result.data.success)
+      assert.property(result.data, 'success')
+      assert.equal(result.data.success, true)
+
+      assert.isArray(result.data.data)
     })
 
     it('should return a 422 http status if biz-logic throws an error', async () => {
@@ -153,7 +157,7 @@ describe('Entry', () => {
 
         const options = {
           method: 'GET',
-          url: `${LOCALHOST}/entry/all`
+          url: `${LOCALHOST}/entry/all/0`
         }
         await axios(options)
 
@@ -161,6 +165,20 @@ describe('Entry', () => {
       } catch (err) {
         assert.equal(err.response.status, 422)
         assert.equal(err.response.data, 'test error')
+      }
+    })
+
+    it('should return a 404 if page is not specified', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          url: `${LOCALHOST}/entry/all`
+        }
+        await axios(options)
+
+        assert.fail('Unexpected code path!')
+      } catch (err) {
+        assert.equal(err.response.status, 404)
       }
     })
   })

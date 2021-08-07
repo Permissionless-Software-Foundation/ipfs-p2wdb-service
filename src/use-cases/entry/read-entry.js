@@ -20,9 +20,9 @@ class ReadEntry {
   }
 
   // Read all entries in the P2WDB.
-  async readAllEntries () {
+  async readAllEntries (page) {
     try {
-      const data = await this.p2wdbAdapter.readAll()
+      const data = await this.p2wdbAdapter.readAll(page)
 
       return data
     } catch (err) {
