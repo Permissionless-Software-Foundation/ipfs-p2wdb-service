@@ -35,6 +35,13 @@ class ReadEntry {
     try {
       const data = await this.p2wdbAdapter.readByHash(hash)
 
+      // Throw a 404 error if the data isn't found.
+      if (!data) {
+        const err = new Error('Hash not found')
+        err.status = 404
+        throw err
+      }
+
       return data
     } catch (err) {
       console.error('Error in readByHash()')
@@ -45,6 +52,13 @@ class ReadEntry {
   async readByTxid (txid) {
     try {
       const data = await this.p2wdbAdapter.readByTxid(txid)
+
+      // Throw a 404 error if the data isn't found.
+      if (!data) {
+        const err = new Error('txid not found')
+        err.status = 404
+        throw err
+      }
 
       return data
     } catch (err) {
