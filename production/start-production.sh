@@ -16,9 +16,11 @@ export PORT=5001 # REST API port
 export IPFS_TCP_PORT=5668
 export IPFS_WS_PORT=5669
 export MONGO_PORT=5666
+echo "Mongo port: $MONGO_PORT"
 
 # (optional) Log-in information for retrieving a JWT token from FullStack.cash.
 export FULLSTACKLOGIN=demo@demo.com
 export FULLSTACKPASS=demo
 
-sudo npm start
+# sudo npm start
+node index.js
