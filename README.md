@@ -73,6 +73,7 @@ This project is under heavy development and is only appropriate for use by JavaS
 The development environment is assumed to be Ubuntu Linux.
 
 - Clone this repository.
+- Make sure you have node-pre-gyp installed: `sudo npm install -g node-pre-gyp`
 - Install dependencies with `npm install`
 - If MongoDB is not installed, install it by running the `./install-mongo.sh` script
 - Run tests with `npm test`
