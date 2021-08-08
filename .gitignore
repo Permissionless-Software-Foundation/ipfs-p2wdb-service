@@ -67,5 +67,6 @@ ipfsdata
 .ipfsdata
 ipfs-service-provider.sh
 mongodb/
+run-dev.sh
 
 !README.md
