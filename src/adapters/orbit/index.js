@@ -99,7 +99,8 @@ class OrbitDBAdapter {
       console.log('OrbitDB ID: ', this.db.id)
 
       // Load data persisted to the hard drive.
-      await this.db.load()
+      // await this.db.load()
+      this.db.load()
 
       // Signal that the OrbitDB is ready to use.
       this.isReady = true

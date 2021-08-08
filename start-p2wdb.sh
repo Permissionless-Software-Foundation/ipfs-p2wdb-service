@@ -5,7 +5,7 @@ export ORBITDB_NAME=/orbitdb/zdpuAwAxsMjxUTP58Tbd4vps2bTJNBoKkjs72SDLxuWjVy1Bx/p
 #export ORBITDB_NAME=test0423
 
 # The name this app uses when connecting to ipfs-coord subnet.
-export COORD_NAME=trout-p2wdb-dev
+export COORD_NAME=ipfs-p2wdb-dev
 
 # Customize these for your own system. Defaults are used.
 export PORT=5001 # REST API port
