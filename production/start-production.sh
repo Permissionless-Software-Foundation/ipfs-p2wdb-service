@@ -2,7 +2,7 @@
 
 # Become root.
 echo 'abcd8765' | sudo -S pwd
-sudo -i
+sudo chown -R safeuser .ipfsdata
 
 export P2W_ENV=production
 echo "Env: $P2W_ENV"
@@ -22,5 +22,4 @@ echo "Mongo port: $MONGO_PORT"
 export FULLSTACKLOGIN=demo@demo.com
 export FULLSTACKPASS=demo
 
-# sudo npm start
 node index.js
