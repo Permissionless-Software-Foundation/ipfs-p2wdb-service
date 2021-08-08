@@ -1,5 +1,6 @@
 #!/bin/bash
-export SVC_ENV=production
+export P2W_ENV=production
+echo "Env: $P2W_ENV"
 export ORBITDB_NAME=/orbitdb/zdpuAwAxsMjxUTP58Tbd4vps2bTJNBoKkjs72SDLxuWjVy1Bx/psf-bch-p2wdb-keyvalue-v1.0.0-0003
 
 export COORD_NAME=generic-p2wdb-production
@@ -15,4 +16,5 @@ export MONGO_PORT=5666
 export FULLSTACKLOGIN=demo@demo.com
 export FULLSTACKPASS=demo
 
-npm start
+echo 'abcd8765' | sudo -S pwd
+sudo npm start
