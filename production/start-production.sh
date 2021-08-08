@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# Become root.
+echo 'abcd8765' | sudo -S pwd
+sudo -i
+
 export P2W_ENV=production
 echo "Env: $P2W_ENV"
 export ORBITDB_NAME=/orbitdb/zdpuAwAxsMjxUTP58Tbd4vps2bTJNBoKkjs72SDLxuWjVy1Bx/psf-bch-p2wdb-keyvalue-v1.0.0-0003
@@ -16,5 +21,4 @@ export MONGO_PORT=5666
 export FULLSTACKLOGIN=demo@demo.com
 export FULLSTACKPASS=demo
 
-echo 'abcd8765' | sudo -S pwd
 sudo npm start
