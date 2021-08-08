@@ -9,7 +9,7 @@ const sinon = require('sinon')
 const { v4: uid } = require('uuid')
 
 // Set the environment variable to signal this is a test.
-process.env.SVC_ENV = 'test'
+process.env.P2W_ENV = 'test'
 
 // Local libraries.
 const JSONRPC = require('../../../../src/controllers/json-rpc')
