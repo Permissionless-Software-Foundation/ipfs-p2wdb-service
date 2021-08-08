@@ -283,7 +283,10 @@ class PayToWriteAccessController extends AccessController {
 
       return validTx
     } catch (err) {
-      console.error('Error in validateAgainstBlockchain(): ', err.message)
+      console.error(
+        'Error in adapters/orbit/pay-to-write-access-controller.js/validateAgainstBlockchain(): ',
+        err.message
+      )
 
       // Add the invalid entry to the MongoDB if the error message matches
       // a known pattern.
@@ -344,10 +347,16 @@ class PayToWriteAccessController extends AccessController {
       // console.log(`txInfo: ${JSON.stringify(txInfo, null, 2)}`)
 
       // Return false if txid is not a valid SLP tx.
-      if (!txInfo.isValidSLPTx) return false
+      if (!txInfo.isValidSLPTx) {
+        console.log(`TX ${txid} is not a valid SLP transaction.`)
+        return false
+      }
 
       // Return false if tokenId does not match.
-      if (txInfo.tokenId !== this.config.tokenId) return false
+      if (txInfo.tokenId !== this.config.tokenId) {
+        console.log(`TX ${txid} does not consume a valid token.`)
+        return false
+      }
 
       let diff = await this.getTokenQtyDiff(txInfo)
       diff = this.bchjs.Util.floor8(diff)
@@ -358,6 +367,9 @@ class PayToWriteAccessController extends AccessController {
       const tokenQtyWithGrade = this.bchjs.Util.floor8(
         this.config.reqTokenQty * 0.98
       )
+
+      console.log(`Token diff: ${diff}, threshold: ${tokenQtyWithGrade}`)
+
       if (diff >= tokenQtyWithGrade) {
         console.log(
           `TX ${txid} proved burn of tokens. Will be allowed to write to DB.`
@@ -369,6 +381,8 @@ class PayToWriteAccessController extends AccessController {
     } catch (err) {
       console.error('Error in _validateTx: ', err.message)
       // return false
+
+      console.log('_this.bchjs.apiToken: ', _this.bchjs.apiToken)
 
       // Throw an error rather than return false. This will pass rate-limit
       // errors to the retry logic.
@@ -443,6 +457,7 @@ class PayToWriteAccessController extends AccessController {
         throw new Error('message must be a string')
       }
 
+      // console.log('bchjs.apiToken: ', _this.bchjs.apiToken)
       const tx = await _this.bchjs.RawTransactions.getRawTransaction(txid, true)
 
       // Get the address for the second output of the TX.
@@ -463,6 +478,9 @@ class PayToWriteAccessController extends AccessController {
       return isValid
     } catch (err) {
       console.error('Error in _validateSignature ')
+
+      console.log('_this.bchjs.apiToken: ', _this.bchjs.apiToken)
+
       if (err.error) throw new Error(err.error)
       throw err
     }

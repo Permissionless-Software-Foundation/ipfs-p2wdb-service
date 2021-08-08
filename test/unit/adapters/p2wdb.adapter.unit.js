@@ -69,7 +69,7 @@ describe('#p2wdb', () => {
       // mocking orbit db adapter
       uut.OribitAdapter = OrbitDBAdapterMock
 
-      const result = await uut.start({})
+      const result = await uut.start({ ipfs: {}, bchjs: {} })
       assert.isTrue(result)
       assert.isTrue(uut.isReady)
     })
@@ -83,7 +83,7 @@ describe('#p2wdb', () => {
           }
         }
 
-        await uut.start({})
+        await uut.start({ ipfs: {}, bchjs: {} })
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')

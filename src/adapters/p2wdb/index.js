@@ -31,11 +31,19 @@ class P2WDB {
   }
 
   // Start OrbitDB.
-  async start (ipfs) {
+  async start (localConfig = {}) {
     try {
+      const { ipfs, bchjs } = localConfig
+
       if (!ipfs) {
         throw new Error(
           'Must past instance of IPFS when instantiating P2WDB adapter.'
+        )
+      }
+
+      if (!bchjs) {
+        throw new Error(
+          'Must past instance of bchjs when instantiating P2WDB adapter.'
         )
       }
 
@@ -43,7 +51,7 @@ class P2WDB {
       _this.orbit = new this.OribitAdapter({
         ipfs
       })
-      await _this.orbit.start()
+      await _this.orbit.start(bchjs)
       console.log('OrbitDB Adapter is ready. P2WDB is ready.')
 
       _this.isReady = true

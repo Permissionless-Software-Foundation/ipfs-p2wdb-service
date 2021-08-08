@@ -43,13 +43,15 @@ class OrbitDBAdapter {
   }
 
   // A wrapper to start OrbitDB.
-  async start () {
+  async start (bchjs) {
     try {
       if (process.env.TEST_TYPE !== 'e2e') {
-        await this.createDb()
+        await this.createDb({ bchjs })
       }
 
       console.log('OrbitDB is ready.')
+
+      return true
     } catch (err) {
       console.error('Error in orbitdb/index.js/start()')
       throw err
@@ -57,15 +59,22 @@ class OrbitDBAdapter {
   }
 
   // Create or load an Orbit database.
-  async createDb (dbName) {
+  async createDb (localConfig = {}) {
     try {
+      let { dbName, bchjs } = localConfig
+
+      if (!bchjs) {
+        throw new Error('Instance of bchjs required when called createDb()')
+      }
+
       // By default, use the DB name in the config file.
       if (!dbName) {
         dbName = this.config.orbitDbName
       }
+
       const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
         // directory: "./orbitdb/examples/eventlog",
-        directory: './orbitdb/dbs/keyvalue',
+        directory: './.ipfsdata/p2wdb/dbs/keyvalue',
         AccessControllers: AccessControllers
       })
 
@@ -76,29 +85,21 @@ class OrbitDBAdapter {
         }
       }
 
-      // dbName =
-      //   '/orbitdb/zdpuAtkE6etPNfEKR7eGdgGpEFjJF2QKWNatDTk6VBxU7qJTo/testdb011'
-
       // console.log('dbName: ', dbName)
 
       // Create the key-value store.
       this.db = await orbitdb.keyvalue(dbName, options)
 
+      // Overwrite the default bchjs instance used by the pay-to-write access
+      // controller.
+      this.db.options.accessController.bchjs = bchjs
+      this.db.access.bchjs = bchjs
+      // console.log('this.db: ', this.db)
+
       console.log('OrbitDB ID: ', this.db.id)
 
       // Load data persisted to the hard drive.
       await this.db.load()
-
-      // The replication event is triggered when one peer-db on the network
-      // adds a record. This is the signal that new data has arrived and
-      // the node needs to replicate it. This event is also triggered repeatedly
-      // when a new node enters the network and synces their local database
-      // to their peers.
-      // this.db.events.on('replicate', this.handleReplicateEvent)
-
-      // validationEvent.on('ValidationSucceeded', function (data) {
-      //   console.log('ValidationSucceeded event triggered. Data: ', data)
-      // })
 
       // Signal that the OrbitDB is ready to use.
       this.isReady = true
