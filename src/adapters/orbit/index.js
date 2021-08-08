@@ -50,6 +50,8 @@ class OrbitDBAdapter {
       }
 
       console.log('OrbitDB is ready.')
+
+      return true
     } catch (err) {
       console.error('Error in orbitdb/index.js/start()')
       throw err
@@ -69,6 +71,7 @@ class OrbitDBAdapter {
       if (!dbName) {
         dbName = this.config.orbitDbName
       }
+
       const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
         // directory: "./orbitdb/examples/eventlog",
         directory: './.ipfsdata/p2wdb/dbs/keyvalue',
@@ -82,9 +85,6 @@ class OrbitDBAdapter {
         }
       }
 
-      // dbName =
-      //   '/orbitdb/zdpuAtkE6etPNfEKR7eGdgGpEFjJF2QKWNatDTk6VBxU7qJTo/testdb011'
-
       // console.log('dbName: ', dbName)
 
       // Create the key-value store.
@@ -96,24 +96,10 @@ class OrbitDBAdapter {
       this.db.access.bchjs = bchjs
       // console.log('this.db: ', this.db)
 
-      // console.log(' ')
-      // console.log('this.db.access: ', this.db.access)
-
       console.log('OrbitDB ID: ', this.db.id)
 
       // Load data persisted to the hard drive.
       await this.db.load()
-
-      // The replication event is triggered when one peer-db on the network
-      // adds a record. This is the signal that new data has arrived and
-      // the node needs to replicate it. This event is also triggered repeatedly
-      // when a new node enters the network and synces their local database
-      // to their peers.
-      // this.db.events.on('replicate', this.handleReplicateEvent)
-
-      // validationEvent.on('ValidationSucceeded', function (data) {
-      //   console.log('ValidationSucceeded event triggered. Data: ', data)
-      // })
 
       // Signal that the OrbitDB is ready to use.
       this.isReady = true

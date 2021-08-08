@@ -6,8 +6,8 @@
   the OrbitDB repository.
 */
 
-// const BCHJS = require('@psf/bch-js')
-// const bchjs = new BCHJS()
+const BCHJS = require('@psf/bch-js')
+const bchjs = new BCHJS()
 // const IpfsCoord = require('ipfs-coord')
 const IPFS = require('ipfs')
 const assert = require('chai').assert
@@ -27,7 +27,7 @@ describe('#P2WDB-integration', () => {
 
       // Create a P2WDB
       uut = new OrbitDBAdapter({ ipfs })
-      db = await uut.createDb('test001')
+      db = await uut.createDb({ dbName: 'test001', bchjs })
     } catch (err) {
       console.error('Error in before().')
       throw err

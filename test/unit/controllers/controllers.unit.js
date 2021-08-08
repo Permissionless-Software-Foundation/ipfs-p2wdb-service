@@ -22,19 +22,9 @@ describe('#Controllers', () => {
 
   describe('#attachControllers', () => {
     it('should attach the controllers', async () => {
-<<<<<<< HEAD
-      // mock dependencies
-      sandbox.stub(uut.adapters.fullStackJwt, 'getJWT').resolves({})
-      sandbox.stub(uut.adapters.fullStackJwt, 'instanceBchjs').resolves({})
-      sandbox.stub(uut.adapters.ipfs, 'start').resolves({})
-      sandbox.stub(uut.adapters.p2wdb, 'start').resolves({})
-      // sandbox.stub(uut, 'attachValidationController').resolves({})
-      adapters.ipfs.ipfsCoordAdapter = {
-=======
       // mock IPFS
       sandbox.stub(uut.adapters, 'start').resolves({})
       uut.adapters.ipfs.ipfsCoordAdapter = {
->>>>>>> 60e6a8b24f7fc264cbb4a5e2dd60d85b6e1c2dd5
         attachRPCRouter: () => {}
       }
 
@@ -47,14 +37,8 @@ describe('#Controllers', () => {
 
     it('should catch and throw an error', async () => {
       try {
-        // Skip getting a JWT token.
-        sandbox.stub(uut.adapters.fullStackJwt, 'getJWT').resolves({})
-        sandbox.stub(uut.adapters.fullStackJwt, 'instanceBchjs').resolves({})
-
         // Force an error
-        sandbox
-          .stub(uut, 'attachRESTControllers')
-          .throws(new Error('test error'))
+        sandbox.stub(uut.adapters, 'start').rejects(new Error('test error'))
 
         const app = {
           use: () => {}

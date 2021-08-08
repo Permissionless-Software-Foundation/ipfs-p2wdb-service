@@ -45,21 +45,13 @@ describe('#OrbitDBAdapter', () => {
 
   describe('#start', () => {
     it('should start', async () => {
-      // mock function for keyvalue instance in orbitdb
-      const keyValueKakeFn = () => {
-        return new OrbitDBMock()
-      }
+      // mock dependencies
+      sandbox.stub(uut, 'createDb').resolves({})
 
-      // mock for orbitdb instance
-      sandbox
-        .stub(uut.OrbitDB, 'createInstance')
-        .resolves({ keyvalue: keyValueKakeFn })
-
-      await uut.start()
-      assert.isTrue(uut.isReady)
+      const result = await uut.start({ bchjs: {} })
+      assert.isTrue(result)
     })
 
-    // TODO
     it('should catch and throw errors', async () => {
       try {
         // Force Error
@@ -77,7 +69,7 @@ describe('#OrbitDBAdapter', () => {
   describe('#createDb', () => {
     it('should use default db name in config file if name is not provided', async () => {
       // mock function for keyvalue instance in orbitdb
-      const keyValueKakeFn = dbName => {
+      const keyValueKakeFn = (dbName) => {
         assert.equal(
           dbName,
           config.orbitDbName,
@@ -91,7 +83,7 @@ describe('#OrbitDBAdapter', () => {
         .stub(uut.OrbitDB, 'createInstance')
         .resolves({ keyvalue: keyValueKakeFn })
 
-      await uut.createDb()
+      await uut.createDb({ bchjs: {} })
       assert.isTrue(uut.isReady)
     })
 
@@ -99,7 +91,7 @@ describe('#OrbitDBAdapter', () => {
       const myDbName = 'myDbName'
 
       // mock function for keyvalue instance in orbitdb
-      const keyValueFakeFn = dbName => {
+      const keyValueFakeFn = (dbName) => {
         assert.equal(dbName, myDbName, 'expected to use db name provided')
         return new OrbitDBMock()
       }
@@ -109,7 +101,7 @@ describe('#OrbitDBAdapter', () => {
         .stub(uut.OrbitDB, 'createInstance')
         .resolves({ keyvalue: keyValueFakeFn })
 
-      await uut.createDb(myDbName)
+      await uut.createDb({ dbName: myDbName, bchjs: {} })
       assert.isTrue(uut.isReady)
     })
 
@@ -120,7 +112,7 @@ describe('#OrbitDBAdapter', () => {
           .stub(uut.OrbitDB, 'createInstance')
           .throws(new Error('test error'))
 
-        await uut.createDb()
+        await uut.createDb({ bchjs: {} })
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')
