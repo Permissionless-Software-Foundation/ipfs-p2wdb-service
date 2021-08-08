@@ -1,6 +1,6 @@
 {
   "name": "ipfs-p2wdb-service",
-  "version": "1.1.0",
+  "version": "1.4.1",
   "description": "A Koa-based combination of a REST API and IPFS JSON RPC. Boilerplate for starting new projects.",
   "main": "index.js",
   "scripts": {
