@@ -23,13 +23,13 @@ class FullStackJWT {
         'Must pass a url for the API server when instantiating FullStackJWT class.'
       )
     }
-    this.login = localConfig.login
+    this.login = localConfig.fullstackLogin
     if (!this.login || typeof this.login !== 'string') {
       throw new Error(
         'Must pass a FullStack.cash login (email) instantiating FullStackJWT class.'
       )
     }
-    this.password = localConfig.password
+    this.password = localConfig.fullstackPassword
     if (!this.password || typeof this.password !== 'string') {
       throw new Error(
         'Must pass a FullStack.cash account password when instantiating FullStackJWT class.'
@@ -39,7 +39,7 @@ class FullStackJWT {
     // Encapsulate dependencies
     this.jwtLib = new JwtLib({
       // Overwrite default values with the values in the config file.
-      server: this.server,
+      server: this.authServer,
       login: this.login,
       password: this.password
     })

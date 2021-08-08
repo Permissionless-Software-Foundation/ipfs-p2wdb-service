@@ -6,8 +6,6 @@
 const assert = require('chai').assert
 const sinon = require('sinon')
 
-const adapters = require('../../../src/adapters')
-// const { attachControllers } = require('../../../src/controllers')
 const Controllers = require('../../../src/controllers')
 
 describe('#Controllers', () => {
@@ -24,6 +22,7 @@ describe('#Controllers', () => {
 
   describe('#attachControllers', () => {
     it('should attach the controllers', async () => {
+<<<<<<< HEAD
       // mock dependencies
       sandbox.stub(uut.adapters.fullStackJwt, 'getJWT').resolves({})
       sandbox.stub(uut.adapters.fullStackJwt, 'instanceBchjs').resolves({})
@@ -31,6 +30,11 @@ describe('#Controllers', () => {
       sandbox.stub(uut.adapters.p2wdb, 'start').resolves({})
       // sandbox.stub(uut, 'attachValidationController').resolves({})
       adapters.ipfs.ipfsCoordAdapter = {
+=======
+      // mock IPFS
+      sandbox.stub(uut.adapters, 'start').resolves({})
+      uut.adapters.ipfs.ipfsCoordAdapter = {
+>>>>>>> 60e6a8b24f7fc264cbb4a5e2dd60d85b6e1c2dd5
         attachRPCRouter: () => {}
       }
 

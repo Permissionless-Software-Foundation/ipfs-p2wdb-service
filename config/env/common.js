@@ -32,16 +32,19 @@ module.exports = {
     : 'emailpassword',
 
   // FullStack.cash account information, used for automatic JWT handling.
-  AUTHSERVER: process.env.AUTHSERVER
+  getJwtAtStartup: false,
+  authServer: process.env.AUTHSERVER
     ? process.env.AUTHSERVER
     : 'https://auth.fullstack.cash',
-  APISERVER: process.env.APISERVER
+  apiServer: process.env.APISERVER
     ? process.env.APISERVER
     : 'https://api.fullstack.cash/v5/',
-  FULLSTACKLOGIN: process.env.FULLSTACKLOGIN
+  fullstackLogin: process.env.FULLSTACKLOGIN
     ? process.env.FULLSTACKLOGIN
     : 'demo@demo.com',
-  FULLSTACKPASS: process.env.FULLSTACKPASS ? process.env.FULLSTACKPASS : 'demo',
+  fullstackPassword: process.env.FULLSTACKPASS
+    ? process.env.FULLSTACKPASS
+    : 'demo',
 
   // IPFS settings.
   isCircuitRelay: process.env.ENABLE_CIRCUIT_RELAY ? true : false,
