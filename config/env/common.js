@@ -32,7 +32,7 @@ module.exports = {
     : 'emailpassword',
 
   // FullStack.cash account information, used for automatic JWT handling.
-  getJwtAtStartup: false,
+  getJwtAtStartup: true,
   authServer: process.env.AUTHSERVER
     ? process.env.AUTHSERVER
     : 'https://auth.fullstack.cash',

@@ -16,6 +16,9 @@ const Nodemailer = require('./nodemailer')
 // const { wlogger } = require('./wlogger')
 const JSONFiles = require('./json-files')
 const FullStackJWT = require('./fullstack-jwt')
+const P2WDB = require('./p2wdb')
+const EntryAdapter = require('./entry')
+const WebhookAdapter = require('./webhook')
 
 const config = require('../../config')
 
@@ -29,6 +32,10 @@ class Adapters {
     this.nodemailer = new Nodemailer()
     this.jsonFiles = new JSONFiles()
     this.bchjs = new BCHJS()
+    this.p2wdb = new P2WDB()
+    this.entry = new EntryAdapter()
+    this.webhook = new WebhookAdapter()
+
     this.config = config
 
     // Get a valid JWT API key and instance bch-js.
@@ -47,6 +54,9 @@ class Adapters {
 
       // Start the IPFS node.
       await this.ipfs.start({ bchjs: this.bchjs })
+
+      // Start the P2WDB
+      await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
     } catch (err) {
       console.error('Error in adapters/index.js/start()')
       throw err
