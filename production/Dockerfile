@@ -32,7 +32,7 @@ WORKDIR /home/safeuser
 RUN git clone https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service
 WORKDIR /home/safeuser/ipfs-p2wdb-service
 RUN npm install -g node-pre-gyp
-#RUN git checkout ct-unstable
+RUN git checkout ct-unstable
 
 # Install dependencies
 RUN npm install
