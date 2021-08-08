@@ -31,6 +31,7 @@ RUN echo 'abcd8765' | sudo -S pwd
 WORKDIR /home/safeuser
 RUN git clone https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service
 WORKDIR /home/safeuser/ipfs-p2wdb-service
+RUN npm install -g node-pre-gyp
 #RUN git checkout ct-unstable
 
 # Install dependencies
