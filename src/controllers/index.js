@@ -26,6 +26,15 @@ class Controllers {
   constructor (localConfig = {}) {
     this.adapters = new Adapters()
     this.useCases = new UseCases({ adapters: this.adapters })
+
+    // Attach the event handler to the event.
+    // This event is responsible for adding validated entries to MongoDB.
+    validationEvent.on(
+      'ValidationSucceeded',
+      this.validationSucceededEventHandler
+    )
+
+    _this = this
   }
 
   async attachControllers (app) {

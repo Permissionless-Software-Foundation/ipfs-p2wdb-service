@@ -22,7 +22,7 @@ const validationEvent = require('./validation-event')
 let _this
 
 class PayToWriteAccessController extends AccessController {
-  constructor (orbitdb, options) {
+  constructor(orbitdb, options) {
     super()
     this._orbitdb = orbitdb
     this._db = null
@@ -40,22 +40,22 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Returns the type of the access controller
-  static get type () {
+  static get type() {
     return 'payToWrite'
   }
 
   // Returns the address of the OrbitDB used as the AC.
   // No test coverage as this is copied directly from OrbitDB ACL.
-  get address () {
+  get address() {
     return this._db.address
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  get capabilities () {
+  get capabilities() {
     if (this._db) {
       const capabilities = this._db.index
 
-      const toSet = e => {
+      const toSet = (e) => {
         const key = e[0]
         capabilities[key] = new Set([...(capabilities[key] || []), ...e[1]])
       }
@@ -80,17 +80,17 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  get (capability) {
+  get(capability) {
     return this.capabilities[capability] || new Set([])
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async close () {
+  async close() {
     await this._db.close()
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async load (address) {
+  async load(address) {
     if (this._db) {
       await this._db.close()
     }
@@ -113,16 +113,13 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Copied from OrbitDB ACL boilerplate.
-  ensureAddress (address) {
-    const suffix = address
-      .toString()
-      .split('/')
-      .pop()
+  ensureAddress(address) {
+    const suffix = address.toString().split('/').pop()
     return suffix === '_access' ? address : path.join(address, '/_access')
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async save () {
+  async save() {
     // return the manifest data
     return {
       address: this._db.address.toString()
@@ -130,7 +127,7 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async grant (capability, key) {
+  async grant(capability, key) {
     // Merge current keys with the new key
     const capabilities = new Set([
       ...(this._db.get(capability) || []),
@@ -140,7 +137,7 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async revoke (capability, key) {
+  async revoke(capability, key) {
     const capabilities = new Set(this._db.get(capability) || [])
     capabilities.delete(key)
     if (capabilities.size > 0) {
@@ -152,13 +149,13 @@ class PayToWriteAccessController extends AccessController {
 
   /* Private methods */
   // No test coverage as this is copied directly from OrbitDB ACL.
-  _onUpdate () {
+  _onUpdate() {
     this.emit('updated')
   }
 
   /* Factory */
   // No test coverage as this is copied directly from OrbitDB ACL.
-  static async create (orbitdb, options = {}) {
+  static async create(orbitdb, options = {}) {
     const ac = new PayToWriteAccessController(orbitdb, options)
     await ac.load(
       options.address || options.name || 'default-access-controller'
@@ -166,7 +163,7 @@ class PayToWriteAccessController extends AccessController {
 
     // Add write access from options
     if (options.write && !options.address) {
-      await pMapSeries(options.write, async e => ac.grant('write', e))
+      await pMapSeries(options.write, async (e) => ac.grant('write', e))
     }
 
     return ac
@@ -177,7 +174,7 @@ class PayToWriteAccessController extends AccessController {
   // quickly exhaust the rate limits of FullStack.cash or whatever blockchain
   // service provider it's using. A retry queue allows a new node to sync
   // to the existing peer databases while respecting rate limits.
-  async canAppend (entry, identityProvider) {
+  async canAppend(entry, identityProvider) {
     try {
       // console.log('canAppend entry: ', entry)
 
@@ -244,7 +241,7 @@ class PayToWriteAccessController extends AccessController {
 
   // This is an async wrapper function. It wraps all other logic for validating
   // a new entry and it's proof-of-burn against the blockchain.
-  async validateAgainstBlockchain (inputObj) {
+  async validateAgainstBlockchain(inputObj) {
     const { txid, signature, message } = inputObj
 
     try {
@@ -302,7 +299,7 @@ class PayToWriteAccessController extends AccessController {
 
   // Try to match the error message to one of several known error messages.
   // Returns true if there is a match. False if no match.
-  matchErrorMsg (msg) {
+  matchErrorMsg(msg) {
     if (!msg || typeof msg !== 'string') return false
     // Returned on forged TXID or manipulated ACL rules.
     if (msg.includes('No such mempool or blockchain transaction')) return true
@@ -312,7 +309,7 @@ class PayToWriteAccessController extends AccessController {
 
   // Add the TXID to the database, and mark it as invalid. This will prevent
   // validation spamming.
-  async markInvalid (txid) {
+  async markInvalid(txid) {
     try {
       if (!txid || typeof txid !== 'string') {
         throw new Error('txid must be a string')
@@ -335,7 +332,7 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Returns true if the txid burned at least 0.001 tokens.
-  async _validateTx (txid) {
+  async _validateTx(txid) {
     try {
       if (!txid || typeof txid !== 'string') {
         throw new Error('txid must be a string')
@@ -343,18 +340,27 @@ class PayToWriteAccessController extends AccessController {
 
       let isValid = false
 
-      const txInfo = await _this.bchjs.Transaction.get(txid)
-      // console.log(`txInfo: ${JSON.stringify(txInfo, null, 2)}`)
+      let isValidSLPTx = await _this.bchjs.SLP.Utils.validateTxid3(txid)
+      isValidSLPTx = isValidSLPTx[0].valid
+      console.log('isValidSLPTx: ', isValidSLPTx)
 
       // Return false if txid is not a valid SLP tx.
-      if (!txInfo.isValidSLPTx) {
+      if (!isValidSLPTx) {
         console.log(`TX ${txid} is not a valid SLP transaction.`)
         return false
       }
 
+      const txInfo = await _this.bchjs.Transaction.get(txid)
+      // console.log(`txInfo: ${JSON.stringify(txInfo, null, 2)}`)
+
       // Return false if tokenId does not match.
       if (txInfo.tokenId !== this.config.tokenId) {
         console.log(`TX ${txid} does not consume a valid token.`)
+        console.log('txInfo: ', txInfo)
+
+        if (!txInfo.tokenId)
+          throw new Error('Transaction data does not include a token ID.')
+
         return false
       }
 
@@ -379,10 +385,13 @@ class PayToWriteAccessController extends AccessController {
 
       return isValid
     } catch (err) {
-      console.error('Error in _validateTx: ', err.message)
+      console.error('Error in _validateTx(): ', err.message)
       // return false
 
-      console.log('_this.bchjs.apiToken: ', _this.bchjs.apiToken)
+      // console.log('_this.bchjs.apiToken: ', _this.bchjs.apiToken)
+
+      // Handle rate-limit error.
+      if (err.error) throw new Error(err.error)
 
       // Throw an error rather than return false. This will pass rate-limit
       // errors to the retry logic.
@@ -392,7 +401,7 @@ class PayToWriteAccessController extends AccessController {
 
   // Get the differential token qty between the inputs and outputs of a tx.
   // This determins if the tx was a proper token burn.
-  async getTokenQtyDiff (txInfo) {
+  async getTokenQtyDiff(txInfo) {
     try {
       if (!txInfo) {
         throw new Error('txInfo is required')
@@ -444,7 +453,7 @@ class PayToWriteAccessController extends AccessController {
   // tokens is the same user submitting the new DB entry. It prevents
   // 'front running', or malicous users watching the network for valid burn
   // TXs then using them to submit their own data to the DB.
-  async _validateSignature (txid, signature, message) {
+  async _validateSignature(txid, signature, message) {
     try {
       // Input validation
       if (!txid || typeof txid !== 'string') {
