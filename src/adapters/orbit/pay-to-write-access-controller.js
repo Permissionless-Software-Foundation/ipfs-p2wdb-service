@@ -356,6 +356,11 @@ class PayToWriteAccessController extends AccessController {
       // Return false if tokenId does not match.
       if (txInfo.tokenId !== this.config.tokenId) {
         console.log(`TX ${txid} does not consume a valid token.`)
+        console.log('txInfo: ', txInfo)
+
+        if (!txInfo.tokenId)
+          throw new Error('Transaction data does not include a token ID.')
+
         return false
       }
 
@@ -380,10 +385,13 @@ class PayToWriteAccessController extends AccessController {
 
       return isValid
     } catch (err) {
-      console.error('Error in _validateTx: ', err.message)
+      console.error('Error in _validateTx(): ', err.message)
       // return false
 
-      console.log('_this.bchjs.apiToken: ', _this.bchjs.apiToken)
+      // console.log('_this.bchjs.apiToken: ', _this.bchjs.apiToken)
+
+      // Handle rate-limit error.
+      if (err.error) throw new Error(err.error)
 
       // Throw an error rather than return false. This will pass rate-limit
       // errors to the retry logic.

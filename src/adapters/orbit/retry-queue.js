@@ -35,6 +35,8 @@ class RetryQueue {
   // Add an async function to the queue, and execute it with the input object.
   async addToQueue (funcHandle, inputObj) {
     try {
+      console.log('addToQueue inputObj: ', inputObj)
+
       if (!funcHandle) {
         throw new Error('function handler is required')
       }
@@ -47,7 +49,7 @@ class RetryQueue {
       )
       return returnVal
     } catch (err) {
-      console.error('Error in addToQueue()')
+      console.error('Error in addToQueue(): ', err)
       throw err
     }
   }
@@ -57,6 +59,8 @@ class RetryQueue {
   // function 'funcHandle'.
   async retryWrapper (funcHandle, inputObj) {
     try {
+      console.log('retryWrapper inputObj: ', inputObj)
+
       if (!funcHandle) {
         throw new Error('function handler is required')
       }
