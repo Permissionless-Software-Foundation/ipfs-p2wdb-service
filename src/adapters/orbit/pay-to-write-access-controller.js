@@ -386,12 +386,21 @@ class PayToWriteAccessController extends AccessController {
       return isValid
     } catch (err) {
       console.error('Error in _validateTx(): ', err.message)
+
+      if (!err.message) console.log('Error: ', err)
+
       // return false
 
       console.log('this.bchjs.apiToken: ', this.bchjs.apiToken)
 
       // Handle rate-limit error.
       if (err.error) throw new Error(err.error)
+
+      // Handle nginx 429 errors.
+      try {
+        if (err.indexOf('429 Too Many Requests') > -1)
+          throw new Error('nginx: 420 Too Many Requests')
+      } catch {}
 
       // Throw an error rather than return false. This will pass rate-limit
       // errors to the retry logic.
