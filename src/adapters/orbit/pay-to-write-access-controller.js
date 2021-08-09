@@ -342,7 +342,7 @@ class PayToWriteAccessController extends AccessController {
 
       let isValidSLPTx = await _this.bchjs.SLP.Utils.validateTxid3(txid)
       isValidSLPTx = isValidSLPTx[0].valid
-      console.log('isValidSLPTx: ', isValidSLPTx)
+      // console.log('isValidSLPTx: ', isValidSLPTx)
 
       // Return false if txid is not a valid SLP tx.
       if (!isValidSLPTx) {
