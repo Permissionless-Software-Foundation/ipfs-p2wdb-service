@@ -162,8 +162,8 @@ describe('#PayToWriteAccessController', () => {
       try {
         // Force an error
         sandbox
-          .stub(uut.bchjs.Transaction, 'get')
-          .throws(new Error('some error message'))
+          .stub(uut.bchjs.SLP.Utils, 'validateTxid3')
+          .rejects(new Error('some error message'))
 
         const txId = mock.tx.txid
         await uut._validateTx(txId)
@@ -177,8 +177,8 @@ describe('#PayToWriteAccessController', () => {
     it('should return false if txid is not a valid SLP tx', async () => {
       try {
         sandbox
-          .stub(uut.bchjs.Transaction, 'get')
-          .resolves({ isValidSLPTx: false })
+          .stub(uut.bchjs.SLP.Utils, 'validateTxid3')
+          .resolves([{ valid: false }])
 
         const txId = mock.tx.txid
         const result = await uut._validateTx(txId)
@@ -205,6 +205,9 @@ describe('#PayToWriteAccessController', () => {
     it('should return false if token burn is less than the threshold', async () => {
       try {
         const spy = sinon.spy(uut, 'getTokenQtyDiff')
+        sandbox
+          .stub(uut.bchjs.SLP.Utils, 'validateTxid3')
+          .resolves([{ valid: true }])
         sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
 
         const txId = mock.tx.txid
@@ -225,6 +228,9 @@ describe('#PayToWriteAccessController', () => {
 
     it('should return true if required tokens are burned', async () => {
       uut.config.reqTokenQty = 0
+      sandbox
+        .stub(uut.bchjs.SLP.Utils, 'validateTxid3')
+        .resolves([{ valid: true }])
       sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
 
       const txId = mock.tx.txid
@@ -351,8 +357,7 @@ describe('#PayToWriteAccessController', () => {
     it('should throw error if "signature" property is not provided', async () => {
       try {
         const obj = {
-          txid:
-            'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
+          txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
         }
         await uut.validateAgainstBlockchain(obj)
         assert.fail('unexpected code path')
@@ -363,8 +368,7 @@ describe('#PayToWriteAccessController', () => {
     it('should throw error if "message" property is not provided', async () => {
       try {
         const obj = {
-          txid:
-            'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
+          txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
           signature:
             'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI'
         }
@@ -379,8 +383,7 @@ describe('#PayToWriteAccessController', () => {
       sandbox.stub(uut, '_validateSignature').resolves(false)
 
       const obj = {
-        txid:
-          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
+        txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
         signature:
           'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
         message: 'message'
@@ -395,8 +398,7 @@ describe('#PayToWriteAccessController', () => {
         .throws(new Error('No such mempool or blockchain transaction'))
 
       const obj = {
-        txid:
-          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
+        txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
         signature:
           'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
         message: 'message'
@@ -411,8 +413,7 @@ describe('#PayToWriteAccessController', () => {
       sandbox.stub(uut, '_validateTx').resolves(true)
 
       const obj = {
-        txid:
-          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
+        txid: 'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0',
         signature:
           'S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI',
         message: 'message'
