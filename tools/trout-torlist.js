@@ -25,9 +25,9 @@ const TOKENID =
   '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0'
 const TOKENQTY = 0.01
 
-const SERVER = 'http://localhost:5001/entry/write'
+// const SERVER = 'http://localhost:5001/entry/write'
 // const SERVER = 'http://192.168.0.76:5001/entry/write'
-// const SERVER = 'https://p2wdb.fullstackcash.nl/entry/write'
+const SERVER = 'https://p2wdb.fullstack.cash/entry/write'
 
 const dataObj = {
   appId: 'torlist', // Webhook appId

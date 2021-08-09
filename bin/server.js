@@ -66,6 +66,7 @@ class Server {
       const Controllers = require('../src/controllers')
       const controllers = new Controllers()
       await controllers.attachControllers(app)
+      console.log('Controllers and Clean Architecture components loaded.')
 
       app.controllers = controllers
 
