@@ -94,6 +94,7 @@ class OrbitDBAdapter {
       // controller.
       this.db.options.accessController.bchjs = bchjs
       this.db.access.bchjs = bchjs
+      this.db.access._this = this.db.access
       // console.log('this.db: ', this.db)
 
       console.log('OrbitDB ID: ', this.db.id)

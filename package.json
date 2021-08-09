@@ -24,7 +24,7 @@
   },
   "repository": "Permissionless-Software-Foundation/ipfs-p2wdb-service",
   "dependencies": {
-    "@psf/bch-js": "^4.20.5",
+    "@psf/bch-js": "^4.20.6",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "glob": "^7.1.6",

@@ -96,7 +96,7 @@ class PayToWriteAccessController extends AccessController {
     }
 
     // Force '<address>/_access' naming for the database
-    this._db = await this._orbitdb.keyvalue(_this.ensureAddress(address), {
+    this._db = await this._orbitdb.keyvalue(this.ensureAddress(address), {
       // use ipfs controller as a immutable "root controller"
       accessController: {
         type: 'ipfs',
@@ -212,8 +212,8 @@ class PayToWriteAccessController extends AccessController {
       // A promise-based queue allows this to happen while respecting rate-limits
       // of the blockchain service provider.
       const inputObj = { txid, signature, message }
-      validTx = await _this.retryQueue.addToQueue(
-        _this.validateAgainstBlockchain,
+      validTx = await this.retryQueue.addToQueue(
+        this.validateAgainstBlockchain,
         inputObj
       )
       console.log(`Validation for TXID ${txid} completed. Result: ${validTx}`)
@@ -288,7 +288,7 @@ class PayToWriteAccessController extends AccessController {
       // Add the invalid entry to the MongoDB if the error message matches
       // a known pattern.
       if (_this.matchErrorMsg(err.message)) {
-        await _this.markInvalid(txid)
+        await this.markInvalid(txid)
         return false
       }
 
@@ -340,7 +340,7 @@ class PayToWriteAccessController extends AccessController {
 
       let isValid = false
 
-      let isValidSLPTx = await _this.bchjs.SLP.Utils.validateTxid3(txid)
+      let isValidSLPTx = await this.bchjs.SLP.Utils.validateTxid3(txid)
       isValidSLPTx = isValidSLPTx[0].valid
       console.log('isValidSLPTx: ', isValidSLPTx)
 
@@ -350,7 +350,7 @@ class PayToWriteAccessController extends AccessController {
         return false
       }
 
-      const txInfo = await _this.bchjs.Transaction.get(txid)
+      const txInfo = await this.bchjs.Transaction.get(txid)
       // console.log(`txInfo: ${JSON.stringify(txInfo, null, 2)}`)
 
       // Return false if tokenId does not match.
@@ -388,7 +388,7 @@ class PayToWriteAccessController extends AccessController {
       console.error('Error in _validateTx(): ', err.message)
       // return false
 
-      // console.log('_this.bchjs.apiToken: ', _this.bchjs.apiToken)
+      console.log('this.bchjs.apiToken: ', this.bchjs.apiToken)
 
       // Handle rate-limit error.
       if (err.error) throw new Error(err.error)
@@ -466,8 +466,8 @@ class PayToWriteAccessController extends AccessController {
         throw new Error('message must be a string')
       }
 
-      // console.log('bchjs.apiToken: ', _this.bchjs.apiToken)
-      const tx = await _this.bchjs.RawTransactions.getRawTransaction(txid, true)
+      // console.log('bchjs.apiToken: ', this.bchjs.apiToken)
+      const tx = await this.bchjs.RawTransactions.getRawTransaction(txid, true)
 
       // Get the address for the second output of the TX.
       const addresses = tx.vout[1].scriptPubKey.addresses
@@ -488,7 +488,7 @@ class PayToWriteAccessController extends AccessController {
     } catch (err) {
       console.error('Error in _validateSignature ')
 
-      console.log('_this.bchjs.apiToken: ', _this.bchjs.apiToken)
+      console.log('this.bchjs.apiToken: ', this.bchjs.apiToken)
 
       if (err.error) throw new Error(err.error)
       throw err
