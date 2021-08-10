@@ -19,7 +19,7 @@ const UseCasesMock = require('../../mocks/use-cases')
 describe('#P2WDBRPC', () => {
   let uut
   let sandbox
-  // let testUser
+  const rpcData = { payload: {} }
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
@@ -61,20 +61,101 @@ describe('#P2WDBRPC', () => {
 
   // TODO
   describe('#readAll', () => {
-    it('should implement tests', () => {
-      assert.equal(1, 1)
+    it('should return status 200 on successful read', async () => {
+      rpcData.payload.params = {
+        page: 0
+      }
+      const result = await uut.readAll(rpcData)
+
+      assert.property(result, 'success')
+      assert.property(result, 'status')
+      assert.property(result, 'endpoint')
+      assert.property(result, 'message')
+      assert.property(result, 'data')
+
+      assert.isTrue(result.success)
+      assert.equal(result.status, 200)
+      assert.equal(result.endpoint, 'readAll')
+    })
+
+    it('should catch error and return an error object', async () => {
+      rpcData.payload = {}
+      const result = await uut.readAll(rpcData)
+
+      assert.property(result, 'success')
+      assert.property(result, 'status')
+      assert.property(result, 'endpoint')
+      assert.property(result, 'message')
+
+      assert.isFalse(result.success)
+      assert.equal(result.status, 422)
+      assert.equal(result.endpoint, 'readAll')
+      assert.include(result.message, 'Cannot read property')
+    })
+
+    it('should throw an error if input is empty', async () => {
+      const result = await uut.readAll({})
+
+      assert.property(result, 'success')
+      assert.property(result, 'status')
+      assert.property(result, 'endpoint')
+      assert.property(result, 'message')
+
+      assert.isFalse(result.success)
+      assert.equal(result.status, 422)
+      assert.equal(result.endpoint, 'readAll')
+      assert.include(result.message, 'Cannot read property')
     })
   })
 
   describe('#write', () => {
     it('should return status 200 on successful add', async () => {
-      // TODO
-      assert.equal(1, 1)
+      rpcData.payload.params = {
+        txid: 'txid',
+        signature: 'signature',
+        message: 'message',
+        data: 'data'
+      }
+      const result = await uut.write(rpcData)
+
+      assert.property(result, 'success')
+      assert.property(result, 'status')
+      assert.property(result, 'endpoint')
+      assert.property(result, 'message')
+      assert.property(result, 'data')
+
+      assert.isTrue(result.success)
+      assert.equal(result.status, 200)
+      assert.equal(result.endpoint, 'write')
     })
 
     it('should catch error and return an error object', async () => {
-      // TODO
-      assert.equal(1, 1)
+      rpcData.payload = {}
+      const result = await uut.write(rpcData)
+
+      assert.property(result, 'success')
+      assert.property(result, 'status')
+      assert.property(result, 'endpoint')
+      assert.property(result, 'message')
+
+      assert.isFalse(result.success)
+      assert.equal(result.status, 422)
+      assert.equal(result.endpoint, 'write')
+      assert.include(result.message, 'Cannot read property')
+    })
+
+    it('should throw an error if input is empty', async () => {
+      const result = await uut.write({})
+
+      assert.property(result, 'success')
+      assert.property(result, 'status')
+      assert.property(result, 'endpoint')
+      assert.property(result, 'message')
+
+      assert.isFalse(result.success)
+      assert.equal(result.status, 422)
+      assert.equal(result.endpoint, 'write')
+      assert.include(result.message, 'Cannot read property')
     })
   })
 })

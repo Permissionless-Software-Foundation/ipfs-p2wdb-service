@@ -62,7 +62,9 @@ class UseCasesMock {
   entry = {
     readEntry: new ReadEntryMock(),
     addEntry: {
-      addUserEntry: () => {}
+      addUserEntry: () => {
+        return 'hash'
+      }
     }
   }
 }
