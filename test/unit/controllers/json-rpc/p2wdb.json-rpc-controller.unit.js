@@ -77,6 +77,7 @@ describe('#P2WDBRPC', () => {
       assert.equal(result.status, 200)
       assert.equal(result.endpoint, 'readAll')
     })
+
     it('should catch error and return an error object', async () => {
       rpcData.payload = {}
       const result = await uut.readAll(rpcData)
@@ -91,6 +92,7 @@ describe('#P2WDBRPC', () => {
       assert.equal(result.endpoint, 'readAll')
       assert.include(result.message, 'Cannot read property')
     })
+
     it('should throw an error if input is empty', async () => {
       const result = await uut.readAll({})
 
@@ -141,6 +143,7 @@ describe('#P2WDBRPC', () => {
       assert.equal(result.endpoint, 'write')
       assert.include(result.message, 'Cannot read property')
     })
+
     it('should throw an error if input is empty', async () => {
       const result = await uut.write({})
 

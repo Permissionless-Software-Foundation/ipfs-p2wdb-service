@@ -358,7 +358,9 @@ class PayToWriteAccessController extends AccessController {
         console.log(`TX ${txid} does not consume a valid token.`)
         console.log('txInfo: ', txInfo)
 
-        if (!txInfo.tokenId) { throw new Error('Transaction data does not include a token ID.') }
+        if (!txInfo.tokenId) {
+          throw new Error('Transaction data does not include a token ID.')
+        }
 
         return false
       }
@@ -397,7 +399,9 @@ class PayToWriteAccessController extends AccessController {
 
       // Handle nginx 429 errors.
       try {
-        if (err.indexOf('429 Too Many Requests') > -1) { throw new Error('nginx: 420 Too Many Requests') }
+        if (err.indexOf('429 Too Many Requests') > -1) {
+          throw new Error('nginx: 420 Too Many Requests')
+        }
       } catch {}
 
       // Throw an error rather than return false. This will pass rate-limit
