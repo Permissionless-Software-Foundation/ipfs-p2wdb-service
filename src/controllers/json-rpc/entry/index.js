@@ -11,7 +11,7 @@
 // Local libraries
 const { wlogger } = require('../../../adapters/wlogger')
 
-class P2WDBRPC {
+class EntryRPC {
   constructor (localConfig = {}) {
     // Dependency Injection.
     this.adapters = localConfig.adapters
@@ -28,7 +28,7 @@ class P2WDBRPC {
     }
   }
 
-  async p2wdbRouter (rpcData) {
+  async entryRouter (rpcData) {
     let endpoint = 'unknown' // Default value.
 
     try {
@@ -44,9 +44,18 @@ class P2WDBRPC {
 
         case 'write':
           return await this.write(rpcData)
+
+        case 'getByHash':
+          return await this.getByHash(rpcData)
+
+        case 'getByTxid':
+          return await this.getByTxid(rpcData)
+
+        case 'getByAppId':
+          return await this.getByAppId(rpcData)
       }
     } catch (err) {
-      console.error('Error in P2wdbRPC/p2wdbRouter()')
+      console.error('Error in EntryRPC/entryRouter()')
       // throw err
 
       return {
@@ -95,7 +104,7 @@ class P2WDBRPC {
       return response
     } catch (err) {
       // console.error('Error in authUser()')
-      wlogger.error('Error in p2wdb/readAll(): ', err)
+      wlogger.error('Error in EntryRPC/readAll(): ', err)
       // throw err
 
       // Return an error response
@@ -151,7 +160,7 @@ class P2WDBRPC {
       return response
     } catch (err) {
       // console.error('Error in authUser()')
-      wlogger.error('Error in p2wdb/write(): ', err)
+      wlogger.error('Error in EntryRPC/write(): ', err)
       // throw err
 
       // Return an error response
@@ -163,6 +172,135 @@ class P2WDBRPC {
       }
     }
   }
+  /**
+   * @api {JSON} /p2wdb Get by Hash
+   * @apiPermission public
+   * @apiName P2WDB Get by Hash
+   * @apiGroup JSON P2WDB
+   *
+   * @apiExample Example usage:
+   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByHash", "hash": "hash"}}
+   *
+   * @apiDescription
+   * Read entries by hash in the database.
+   */
+  // Read entries by hash from P2WDB.
+  // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByHash", "hash": "hash"}}
+
+  async getByHash (rpcData) {
+    try {
+      const hash = rpcData.payload.params.hash
+      // console.log('hash: ', hash)
+
+      // Get all the contents of the P2WDB.
+      const allData = await this.useCases.entry.readEntry.readByHash(hash)
+
+      const response = {
+        endpoint: 'getByHash',
+        status: 200,
+        success: true,
+        message: '',
+        data: allData
+      }
+
+      return response
+    } catch (err) {
+      // console.error('Error in authUser()')
+      wlogger.error('Error in EntryRPC/getByHash(): ', err)
+      // Return an error response
+      return {
+        success: false,
+        status: 422,
+        message: err.message,
+        endpoint: 'getByHash'
+      }
+    }
+  }
+  /**
+   * @api {JSON} /p2wdb Get by Txid
+   * @apiPermission public
+   * @apiName P2WDB Get by Txid
+   * @apiGroup JSON P2WDB
+   *
+   * @apiExample Example usage:
+   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByTxid", "txid": "txid"}}
+   *
+   * @apiDescription
+   * Read entries by hash in the database.
+   */
+  // Read entries by hash from P2WDB.
+  // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByTxid", "txid": "txid"}}
+
+  async getByTxid (rpcData) {
+    try {
+      const txid = rpcData.payload.params.txid
+      // console.log(ctx.params)
+
+      // Get all the contents of the P2WDB.
+      const allData = await this.useCases.entry.readEntry.readByTxid(txid)
+
+      const response = {
+        endpoint: 'getByTxid',
+        status: 200,
+        success: true,
+        message: '',
+        data: allData
+      }
+      return response
+    } catch (err) {
+      // console.error('Error in authUser()')
+      wlogger.error('Error in EntryRPC/getByTxid(): ', err)
+      // Return an error response
+      return {
+        success: false,
+        status: 422,
+        message: err.message,
+        endpoint: 'getByTxid'
+      }
+    }
+  }
+  /**
+   * @api {JSON} /p2wdb Get by Appid
+   * @apiPermission public
+   * @apiName P2WDB Get by Appid
+   * @apiGroup JSON P2WDB
+   *
+   * @apiExample Example usage:
+   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByAppId", "appid": "appid"}}
+   *
+   * @apiDescription
+   * Read entries by hash in the database.
+   */
+  // Read entries by hash from P2WDB.
+  // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByAppId", "appid": "appid"}}
+
+  async getByAppId (rpcData) {
+    try {
+      const appId = rpcData.payload.params.appid
+      // console.log(ctx.params)
+
+      // Get all the contents of the P2WDB.
+      const allData = await this.useCases.entry.readEntry.readByAppId(appId)
+
+      const response = {
+        endpoint: 'getByAppId',
+        status: 200,
+        success: true,
+        message: '',
+        data: allData
+      }
+      return response
+    } catch (err) {
+      wlogger.error('Error in EntryRPC/getByAppId(): ', err)
+      // Return an error response
+      return {
+        success: false,
+        status: 422,
+        message: err.message,
+        endpoint: 'getByAppId'
+      }
+    }
+  }
 }
 
-module.exports = P2WDBRPC
+module.exports = EntryRPC

@@ -10,7 +10,7 @@ const { wlogger } = require('../../adapters/wlogger')
 const UserController = require('./users')
 const AuthController = require('./auth')
 const AboutController = require('./about')
-const P2WDBRPC = require('./p2wdb')
+const EntryRPC = require('./entry')
 
 let _this
 
@@ -36,7 +36,7 @@ class JSONRPC {
     this.userController = new UserController(localConfig)
     this.authController = new AuthController(localConfig)
     this.aboutController = new AboutController()
-    this.p2wdbController = new P2WDBRPC(localConfig)
+    this.entryController = new EntryRPC(localConfig)
 
     _this = this
   }
@@ -84,7 +84,7 @@ class JSONRPC {
           retObj = await _this.aboutController.aboutRouter(parsedData)
           break
         case 'p2wdb':
-          retObj = await _this.p2wdbController.p2wdbRouter(parsedData)
+          retObj = await _this.entryController.entryRouter(parsedData)
           break
       }
 
