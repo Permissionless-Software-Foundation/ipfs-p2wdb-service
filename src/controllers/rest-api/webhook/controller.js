@@ -68,7 +68,7 @@ class WebhookRESTControllerLib {
       }
     } catch (err) {
       console.log('Error in post-webhook.js/restController()')
-      throw err
+      this.handleError(ctx, err)
     }
   }
 
@@ -110,7 +110,22 @@ class WebhookRESTControllerLib {
     } catch (err) {
       wlogger.error(err)
       console.log('Error in delete-webhook.js/restController()')
-      throw err
+      this.handleError(ctx, err)
+    }
+  }
+
+  // DRY error handler
+  handleError (ctx, err) {
+    // If an HTTP status is specified by the buisiness logic, use that.
+    if (err.status) {
+      if (err.message) {
+        ctx.throw(err.status, err.message)
+      } else {
+        ctx.throw(err.status)
+      }
+    } else {
+      // By default use a 422 error if the HTTP status is not specified.
+      ctx.throw(422, err.message)
     }
   }
 }
