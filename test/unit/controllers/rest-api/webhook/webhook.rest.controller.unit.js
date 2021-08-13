@@ -13,10 +13,10 @@ const UseCasesMock = require('../../../mocks/use-cases')
 const WebhookController = require('../../../../../src/controllers/rest-api/webhook/controller')
 let uut
 let sandbox
-// let ctx
+let ctx
 let webhookData = {}
 
-// const mockContext = require('../../../../unit/mocks/ctx-mock').context
+const mockContext = require('../../../../unit/mocks/ctx-mock').context
 
 describe('#Webhook-REST-Controller', () => {
   // const testUser = {}
@@ -33,7 +33,7 @@ describe('#Webhook-REST-Controller', () => {
     }
 
     // Mock the context object.
-    // ctx = mockContext()
+    ctx = mockContext()
   })
 
   afterEach(() => sandbox.restore())
@@ -73,11 +73,10 @@ describe('#Webhook-REST-Controller', () => {
         .stub(uut.useCases.webhook.addWebhook, 'addNewWebhook')
         .resolves('123')
 
-      const ctx = {
-        request: {
-          body: webhookData
-        }
+      ctx.request = {
+        body: webhookData
       }
+
       await uut.postWebhook(ctx)
       // console.log('ctx: ', ctx)
 
@@ -95,11 +94,10 @@ describe('#Webhook-REST-Controller', () => {
           .stub(uut.useCases.webhook.addWebhook, 'addNewWebhook')
           .rejects(new Error('test error'))
 
-        const ctx = {
-          request: {
-            body: webhookData
-          }
+        ctx.request = {
+          body: webhookData
         }
+
         await uut.postWebhook(ctx)
 
         assert.fail('Unexpected code path')
@@ -114,11 +112,10 @@ describe('#Webhook-REST-Controller', () => {
       // Mock dependencies
       sandbox.stub(uut.useCases.webhook, 'remove').resolves('123')
 
-      const ctx = {
-        request: {
-          body: webhookData
-        }
+      ctx.request = {
+        body: webhookData
       }
+
       await uut.deleteWebhook(ctx)
       // console.log('ctx: ', ctx)
 
@@ -134,16 +131,41 @@ describe('#Webhook-REST-Controller', () => {
           .stub(uut.useCases.webhook, 'remove')
           .rejects(new Error('test error'))
 
-        const ctx = {
-          request: {
-            body: webhookData
-          }
+        ctx.request = {
+          body: webhookData
         }
+
         await uut.deleteWebhook(ctx)
 
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')
+      }
+    })
+  })
+  describe('#handleError', () => {
+    it('should include error message', () => {
+      try {
+        const err = {
+          status: 404,
+          message: 'test message'
+        }
+
+        uut.handleError(ctx, err)
+      } catch (err) {
+        assert.include(err.message, 'test message')
+      }
+    })
+
+    it('should still throw error if there is no message', () => {
+      try {
+        const err = {
+          status: 404
+        }
+
+        uut.handleError(ctx, err)
+      } catch (err) {
+        assert.include(err.message, 'Not Found')
       }
     })
   })
