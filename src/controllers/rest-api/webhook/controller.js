@@ -35,12 +35,25 @@ class WebhookRESTControllerLib {
    * @apiName Webhook New
    * @apiGroup Webhook
    *
-   * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X POST -d '{ "url": "https://test.com/my-webhook", "appId": "test" }' localhost:5001/webhook/
-   *
    * @apiDescription
    * Add a new webhook. When a new database entry is added that matches the appID,
    * a webhook will call the given URL.
+   *
+   *  Given the 'url' and 'appId' properties returns the following properties
+   *
+   *  - success : - Petition status
+   *  - id : "" - Local data base id.
+   *
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST -d '{ "url": "https://test.com/my-webhook", "appId": "test" }' localhost:5001/webhook/
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *        "success":true,
+   *        "id": "611de561ad093c20042d2385"
+   *     }
    *
    * @apiError UnprocessableEntity Missing required parameters
    *
@@ -78,11 +91,20 @@ class WebhookRESTControllerLib {
    * @apiName Webhook Delete
    * @apiGroup Webhook
    *
+   * @apiDescription
+   * Delete and existing webhook.
+   *
    * @apiExample Example usage:
    * curl -H "Content-Type: application/json" -X DELETE -d '{ "url": "https://test.com/my-webhook", "appId": "test" }' localhost:5001/webhook/
    *
-   * @apiDescription
-   * Delete and existing webhook.
+   * @apiSuccess {StatusCode} 200
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "success": true
+   *     }
+   *
    *
    * @apiError UnprocessableEntity Missing required parameters
    *

@@ -73,11 +73,82 @@ class EntryRPC {
    * @apiName P2WDB Read All
    * @apiGroup JSON P2WDB
    *
-   * @apiExample Example usage:
-   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "readAll", "page": 0}}
-   *
    * @apiDescription
-   * Read all entries in the database.
+   * Read all the entries from the database. Results are paginated, with 50
+   * entries per page.
+   *
+   *  The request returns the following properties
+   *
+   *  - jsonrpc: "" - jsonrpc version
+   *  - id: "" - jsonrpc id
+   *  - result: {} - Result of the petition with the RPC information
+   *    - method: "" - Method used in the petition
+   *    - receiver: "" - Receiver id
+   *    - value: {} - value of the petition
+   *      - endpoint":"" - Called endpoint,
+   *      - status:  - Petition status,
+   *      - success": "" - Petition status,
+   *      - message":"", - Response message
+   *      - data: [] - Final result data of the petition
+   *        - isValid: "" - Entry validation
+   *        - appId: "" - App id associated
+   *        - createdAt : - Creation time
+   *        - _id : "" - Entry ID
+   *        - hash : "" - Orbit DB hash
+   *        - key: "" - Transaction ID
+   *        - value : "" - Entry Data
+   *
+   * @apiExample Example usage:
+   *   {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "readAll", "page": 0}}
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *  {
+   *   "jsonrpc":"2.0",
+   *   "id":"14933058-658b-4eb1-9969-819add8981f6",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"readAll",
+   *         "status":200,
+   *         "success":true,
+   *         "message":"",
+   *         "data":[
+   *            {
+   *               "isValid":true,
+   *               "appId":"",
+   *               "createdAt":1629350514655,
+   *               "_id":"611dea72ad093c20042d238c",
+   *               "hash":"zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb",
+   *               "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *               "value":{
+   *                  "message":"test",
+   *                  "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *                  "data":"This is the data that will go into the database."
+   *               },
+   *               "__v":0
+   *            }
+   *         ]
+   *      }
+   *   }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response:
+   *  {
+   *   "jsonrpc":"2.0",
+   *   "id":"14933058-658b-4eb1-9969-819add8981f6",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"readAll",
+   *         "status":422,
+   *         "success":false,
+   *         "message":"Unprocessable Entity",
+   *      }
+   *   }
+   * }
    */
   // Read all entries from the P2WDB.
   // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "readAll", "page": 0}}
@@ -123,11 +194,59 @@ class EntryRPC {
    * @apiName P2WDB Write
    * @apiGroup JSON P2WDB
    *
+   * @apiDescription
+   * Write a new entry to the database.
+   *
+   *  The request returns the following properties
+   *
+   *  - jsonrpc: "" - jsonrpc version
+   *  - id: "" - jsonrpc id
+   *  - result: {} - Result of the petition with the RPC information
+   *    - method: "" - Method used in the petition
+   *    - receiver: "" - Receiver id
+   *    - value: {} - value of the petition
+   *      - endpoint":"" - Called endpoint,
+   *      - status:  - Petition status,
+   *      - success": "" - Petition status,
+   *      - message":"", - Response message
+   *      - data: "" - Orbit DB hash
+   *
    * @apiExample Example usage:
    * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "write", "txid": "9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967", "message": "test", "signature": "H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=", "data": "This is the data that will go into the database."}}
    *
-   * @apiDescription
-   * Write a new entry to the database.
+   * @apiSuccessExample {json} Success-Response:
+   * HTTP/1.1 200 OK
+   *
+   * {
+   *   jsonrpc: '2.0',
+   *   id: 'd8bf2e14-906b-4d88-956a-299a6914181f',
+   *   result: {
+   *     method: 'p2wdb',
+   *     reciever: 'QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP',
+   *     value: {
+   *       endpoint: 'write',
+   *       status: 200,
+   *       success: true,
+   *       message: '',
+   *       data: 'zdpuAvfwctFriJ7nq1Ebh5ZEzrCe7PweDfzgr1cV6eaiJsrST'
+   *     }
+   *  }
+   *
+   * @apiErrorExample {json} Error-Response:
+   * {
+   *   "jsonrpc":"2.0",
+   *   "id":"14933058-658b-4eb1-9969-819add8981f6",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"write",
+   *         "status":422,
+   *         "success":false,
+   *         "message":"Unprocessable Entity",
+   *      }
+   *   }
+   * }
    */
   // (attempt to) write an entry to the P2WDB.
   // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "write", "txid": "23a104c012c912c351e61a451c387e511f65d115fa79bb5038f4e6bac811754a", "message": "test", "signature": "ID1G37GgWc2MugZHzNss53mMQPT0Mebix6erYC/Qlc+PaJqZaMfjK59KXPDF5wJWlHjcK8hpVbly/5SBAspR54o="}}
@@ -178,11 +297,81 @@ class EntryRPC {
    * @apiName P2WDB Get by Hash
    * @apiGroup JSON P2WDB
    *
-   * @apiExample Example usage:
-   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByHash", "hash": "hash"}}
-   *
    * @apiDescription
    * Read entries by hash in the database.
+   *
+   *  The request returns the following properties
+   *
+   *  - jsonrpc: "" - jsonrpc version
+   *  - id: "" - jsonrpc id
+   *  - result: {} - Result of the petition with the RPC information
+   *    - method: "" - Method used in the petition
+   *    - receiver: "" - Receiver id
+   *    - value: {} - value of the petition
+   *      - endpoint":"" - Called endpoint,
+   *      - status:  - Petition status,
+   *      - success": "" - Petition status,
+   *      - message":"", - Response message
+   *      - data: {} - Final result data of the petition
+   *        - isValid: "" - Entry validation
+   *        - appId: "" - App id associated
+   *        - createdAt : - Creation time
+   *        - _id : "" - Entry ID
+   *        - hash : "" - Orbit DB hash
+   *        - key: "" - Transaction ID
+   *        - value : "" - Entry Data
+   *
+   * @apiExample Example usage:
+   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByHash", "hash": "zdpuAvfwctFriJ7nq1Ebh5ZEzrCe7PweDfzgr1cV6eaiJsrST"}}
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * HTTP/1.1 200 OK
+   *
+   * {
+   *   "jsonrpc":"2.0",
+   *   "id":"ed13f044-3abc-4aa6-b854-90b9f3bb5fad",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"getByHash",
+   *         "status":200,
+   *         "success":true,
+   *         "message":"",
+   *         "data":{
+   *            "isValid":true,
+   *            "appId":"",
+   *            "createdAt":1629365876427,
+   *            "_id":"611e2674f5391768ba519c68",
+   *            "hash":"zdpuAvfwctFriJ7nq1Ebh5ZEzrCe7PweDfzgr1cV6eaiJsrST",
+   *            "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *            "value":{
+   *               "message":"test",
+   *               "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *               "data":"This is the data that will go into the database."
+   *            },
+   *            "__v":0
+   *         }
+   *      }
+   *   }
+   * }
+   *
+   *
+   * @apiErrorExample {json} Error-Response:
+   * {
+   *   "jsonrpc":"2.0",
+   *   "id":"14933058-658b-4eb1-9969-819add8981f6",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"getByHash",
+   *         "status":422,
+   *         "success":false,
+   *         "message":"Unprocessable Entity",
+   *      }
+   *   }
+   * }
    */
   // Read entries by hash from P2WDB.
   // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByHash", "hash": "hash"}}
@@ -222,11 +411,80 @@ class EntryRPC {
    * @apiName P2WDB Get by Txid
    * @apiGroup JSON P2WDB
    *
-   * @apiExample Example usage:
-   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByTxid", "txid": "txid"}}
-   *
    * @apiDescription
-   * Read entries by hash in the database.
+   * Read entries by txid in the database.
+   *
+   * The request returns the following properties
+   *
+   *  - jsonrpc: "" - jsonrpc version
+   *  - id: "" - jsonrpc id
+   *  - result: {} - Result of the petition with the RPC information
+   *    - method: "" - Method used in the petition
+   *    - receiver: "" - Receiver id
+   *    - value: {} - value of the petition
+   *      - endpoint":"" - Called endpoint,
+   *      - status:  - Petition status,
+   *      - success": "" - Petition status,
+   *      - message":"", - Response message
+   *      - data: {} - Final result data of the petition
+   *        - isValid: "" - Entry validation
+   *        - appId: "" - App id associated
+   *        - createdAt : - Creation time
+   *        - _id : "" - Entry ID
+   *        - hash : "" - Orbit DB hash
+   *        - key: "" - Transaction ID
+   *        - value : "" - Entry Data
+   *
+   * @apiExample Example usage:
+   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByTxid", "txid": "9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967"}}
+   *
+   * @apiSuccessExample {json} Success-Response:
+   * HTTP/1.1 200 OK
+   *
+   * {
+   *   "jsonrpc":"2.0",
+   *   "id":"40ec6f2e-efb7-476b-8035-e733ec8c8893",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"getByTxid",
+   *         "status":200,
+   *         "success":true,
+   *         "message":"",
+   *         "data":{
+   *            "isValid":true,
+   *            "appId":"",
+   *            "createdAt":1629365876427,
+   *            "_id":"611e2674f5391768ba519c68",
+   *            "hash":"zdpuAvfwctFriJ7nq1Ebh5ZEzrCe7PweDfzgr1cV6eaiJsrST",
+   *            "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *            "value":{
+   *               "message":"test",
+   *               "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *               "data":"This is the data that will go into the database."
+   *            },
+   *            "__v":0
+   *         }
+   *      }
+   *   }
+   * }
+   *
+   * @apiErrorExample {json} Error-Response:
+   * {
+   *   "jsonrpc":"2.0",
+   *   "id":"14933058-658b-4eb1-9969-819add8981f6",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"getByTxid",
+   *         "status":422,
+   *         "success":false,
+   *         "message":"Unprocessable Entity",
+   *      }
+   *   }
+   * }
    */
   // Read entries by hash from P2WDB.
   // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByTxid", "txid": "txid"}}
@@ -265,11 +523,81 @@ class EntryRPC {
    * @apiName P2WDB Get by Appid
    * @apiGroup JSON P2WDB
    *
-   * @apiExample Example usage:
-   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByAppId", "appid": "appid"}}
-   *
    * @apiDescription
-   * Read entries by hash in the database.
+   *  Read entries by hash in the database.
+   *
+   *  The request returns the following properties
+   *
+   *  - jsonrpc: "" - jsonrpc version
+   *  - id: "" - jsonrpc id
+   *  - result: {} - Result of the petition with the RPC information
+   *    - method: "" - Method used in the petition
+   *    - receiver: "" - Receiver id
+   *    - value: {} - value of the petition
+   *      - endpoint":"" - Called endpoint,
+   *      - status:  - Petition status,
+   *      - success": "" - Petition status,
+   *      - message":"", - Response message
+   *      - data: [] - Final result data of the petition
+   *        - isValid: "" - Entry validation
+   *        - appId: "test" - App id associated
+   *        - createdAt : - Creation time
+   *        - _id : "" - Entry ID
+   *        - hash : "" - Orbit DB hash
+   *        - key: "" - Transaction ID
+   *        - value : "" - Entry Data
+   *
+   * @apiExample Example usage:
+   * {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByAppId", "appid": "test"}}
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *  {
+   *   "jsonrpc":"2.0",
+   *   "id":"14933058-658b-4eb1-9969-819add8981f6",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"getByAppId",
+   *         "status":200,
+   *         "success":true,
+   *         "message":"",
+   *         "data":[
+   *            {
+   *               "isValid":true,
+   *               "appId":"test",
+   *               "createdAt":1629350514655,
+   *               "_id":"611dea72ad093c20042d238c",
+   *               "hash":"zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb",
+   *               "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *               "value":{
+   *                  "message":"test",
+   *                  "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *                  "data":"This is the data that will go into the database."
+   *               },
+   *               "__v":0
+   *            }
+   *         ]
+   *      }
+   *   }
+   * }
+   * @apiErrorExample {json} Error-Response:
+   * {
+   *   "jsonrpc":"2.0",
+   *   "id":"14933058-658b-4eb1-9969-819add8981f6",
+   *   "result":{
+   *      "method":"p2wdb",
+   *      "reciever":"QmeB5hxNTyc3bUucShNVhDCywbqjgHUmjkNSTQ1EzQMTKP",
+   *      "value":{
+   *         "endpoint":"getByAppId",
+   *         "status":422,
+   *         "success":false,
+   *         "message":"Unprocessable Entity",
+   *      }
+   *   }
+   * }
+   *
    */
   // Read entries by hash from P2WDB.
   // {"jsonrpc":"2.0","id":"555","method":"p2wdb","params":{"endpoint": "getByAppId", "appid": "appid"}}

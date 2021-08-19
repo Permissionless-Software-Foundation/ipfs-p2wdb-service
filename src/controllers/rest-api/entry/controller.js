@@ -30,16 +30,29 @@ class EntryRESTControllerLib {
   }
 
   /**
-   * @api {post} /p2wdb Write
+   * @api {post} /entry/write Write
    * @apiPermission public
    * @apiName P2WDB Write
    * @apiGroup REST P2WDB
    *
-   * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X POST -d '{ "txid": "9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967", "message": "test", "signature": "H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=", "data": "This is the data that will go into the database." }' localhost:5001/p2wdb
-   *
    * @apiDescription
    * Write a new entry to the database.
+   *
+   * Given the body data properties returns the following properties
+   *
+   *  - success : - Petition status
+   *  - id : "" - Orbitdb hash.
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST -d '{ "txid": "9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967", "message": "test", "signature": "H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=", "data": "This is the data that will go into the database." }' localhost:5001/entry/write
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *        "success":true,
+   *        "hash": "zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb"
+   *     }
+   *
    *
    * @apiError UnprocessableEntity Missing required parameters
    *
@@ -76,17 +89,54 @@ class EntryRESTControllerLib {
   }
 
   /**
-   * @api {get} /p2wdb Read All
+   * @api {get} /entry/all/:page Read All
    * @apiPermission public
    * @apiName P2WDB Read All
    * @apiGroup REST P2WDB
    *
-   * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/all/0
-   *
    * @apiDescription
    * Read all the entries from the database. Results are paginated, with 50
    * entries per page.
+   *
+   *  This endpoint returns the following properties
+   *
+   *  - success : - Petition status
+   *  - data : [] - Array of entries.
+   *    - isValid: "" - Entry validation
+   *    - appId: "" - App id associated
+   *    - createdAt : - Creation time
+   *    - _id : "" - Entry ID
+   *    - hash : "" - Orbit DB hash
+   *    - key: "" - Transaction ID
+   *    - value : "" - Entry Data
+   *
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/all/0
+   *
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *  {
+   *     "success":true,
+   *     "data":[
+   *        {
+   *           "isValid":true,
+   *           "appId":"",
+   *           "createdAt":1629350514655,
+   *           "_id":"611dea72ad093c20042d238c",
+   *           "hash":"zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb",
+   *           "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *           "value":{
+   *              "message":"test",
+   *              "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *              "data":"This is the data that will go into the database."
+   *           },
+   *           "__v":0
+   *        }
+   *     ]
+   *  }
+   *
    *
    * @apiError UnprocessableEntity Missing required parameters
    *
@@ -117,16 +167,48 @@ class EntryRESTControllerLib {
   }
 
   /**
-   * @api {get} /p2wdb Read By Hash
+   * @api {get} /entry/hash/:hash Read By Hash
    * @apiPermission public
    * @apiName P2WDB Read By Hash
    * @apiGroup REST P2WDB
    *
-   * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/hash/zdpuAnP9PHrfYTsRw2S75PPfTVeZCbS9mevg54Q128kJdDECo
-   *
    * @apiDescription
-   * Read all the entries from the database.
+   * Read an entry from the P2WDB if it matches the hash.
+   *
+   * This endpoint returns the following properties
+   *
+   *  - success : - Petition status
+   *  - data : {} - Entry.
+   *    - isValid: "" - Entry validation
+   *    - appId: "" - App id associated
+   *    - createdAt : - Creation time
+   *    - _id : "" - Entry ID
+   *    - hash : "" - Orbit DB hash
+   *    - key: "" - Transaction ID
+   *    - value : "" - Entry Data
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/hash/zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *  {
+   *     "success":true,
+   *     "data":{
+   *           "isValid":true,
+   *           "appId":"",
+   *           "createdAt":1629350514655,
+   *           "_id":"611dea72ad093c20042d238c",
+   *           "hash":"zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb",
+   *           "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *           "value":{
+   *              "message":"test",
+   *              "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *              "data":"This is the data that will go into the database."
+   *           },
+   *           "__v":0
+   *        }
+   *  }
    *
    * @apiError UnprocessableEntity Missing required parameters
    *
@@ -136,6 +218,7 @@ class EntryRESTControllerLib {
    *       "status": 422,
    *       "error": "Unprocessable Entity"
    *     }
+   *
    */
   async getByHash (ctx) {
     try {
@@ -157,17 +240,48 @@ class EntryRESTControllerLib {
   }
 
   /**
-   * @api {get} /p2wdb Read By TXID
+   * @api {get} /entry/txid/:txid Read By TXID
    * @apiPermission public
    * @apiName P2WDB Read By TXID
    * @apiGroup REST P2WDB
    *
-   * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/txid/:txid
-   *
    * @apiDescription
    * Read an entry from the P2WDB if it matches the TXID.
    *
+   *  This endpoint returns the following properties
+   *
+   *  - success : - Petition status
+   *  - data : {} - Entry.
+   *    - isValid: "" - Entry validation
+   *    - appId: "" - App id associated
+   *    - createdAt : - Creation time
+   *    - _id : "" - Entry ID
+   *    - hash : "" - Orbit DB hash
+   *    - key: "" - Transaction ID
+   *    - value : "" - Entry Data
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/txid/9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *  HTTP/1.1 200 OK
+   *  {
+   *     "success":true,
+   *     "data":{
+   *           "isValid":true,
+   *           "appId":"",
+   *           "createdAt":1629350514655,
+   *           "_id":"611dea72ad093c20042d238c",
+   *           "hash":"zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb",
+   *           "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *           "value":{
+   *              "message":"test",
+   *              "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *              "data":"This is the data that will go into the database."
+   *           },
+   *           "__v":0
+   *        }
+   *  }
    * @apiError UnprocessableEntity Missing required parameters
    *
    * @apiErrorExample {json} Error-Response:
@@ -197,16 +311,50 @@ class EntryRESTControllerLib {
   }
 
   /**
-   * @api {get} /p2wdb Read By App ID
+   * @api {get} /entry/appid/:appid Read By App ID
    * @apiPermission public
    * @apiName P2WDB Read By App ID
    * @apiGroup REST P2WDB
    *
+   * @apiDescription
+   * Read all entries from the P2WDB if it matches the appId.
+   *
+   * This endpoint returns the following properties
+   *
+   *  - success : - Petition status
+   *  - data : [] - Array of entries.
+   *    - isValid: "" - Entry validation
+   *    - appId: "" - App id associated
+   *    - createdAt : - Creation time
+   *    - _id : "" - Entry ID
+   *    - hash : "" - Orbit DB hash
+   *    - key: "" - Transaction ID
+   *    - value : "" - Entry Data
+   *
    * @apiExample Example usage:
    * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/appid/test
    *
-   * @apiDescription
-   * Read all the entries from the database.
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *  {
+   *     "success":true,
+   *     "data":[
+   *        {
+   *           "isValid":true,
+   *           "appId":"test",
+   *           "createdAt":1629350514655,
+   *           "_id":"611dea72ad093c20042d238c",
+   *           "hash":"zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb",
+   *           "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *           "value":{
+   *              "message":"test",
+   *              "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *              "data":"This is the data that will go into the database."
+   *           },
+   *           "__v":0
+   *        }
+   *     ]
+   *  }
    *
    * @apiError UnprocessableEntity Missing required parameters
    *
