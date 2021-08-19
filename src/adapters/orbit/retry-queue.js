@@ -69,6 +69,9 @@ class RetryQueue {
       }
       console.log('Entering retryWrapper()')
 
+      // Add artificial delay to prevent 429 errors.
+      await this.bchjs.Util.sleep(2000)
+
       return this.pRetry(
         async () => {
           return await funcHandle(inputObj)
