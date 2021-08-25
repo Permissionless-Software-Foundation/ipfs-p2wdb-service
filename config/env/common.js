@@ -96,5 +96,8 @@ module.exports = {
 
   // IPNS hash to get the latest config info.
   // Not currently implemented.
-  ipnsConfig: 'QmTtXA18C6sg3ji9zem4wpNyoz9m4UZT85mA2D2jx2gzEk'
+  ipnsConfig: 'QmTtXA18C6sg3ji9zem4wpNyoz9m4UZT85mA2D2jx2gzEk',
+
+  // BCH Mnemonic for generating encryption keys and payment address
+  mnemonic: process.env.MNEMONIC ? process.env.MNEMONIC : ''
 }
