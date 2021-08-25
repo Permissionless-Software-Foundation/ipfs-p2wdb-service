@@ -52,7 +52,8 @@ class IpfsCoordAdapter {
       privateLog: console.log, // Default to console.log
       isCircuitRelay: this.config.isCircuitRelay,
       apiInfo: this.config.apiInfo,
-      announceJsonLd: this.config.announceJsonLd
+      announceJsonLd: this.config.announceJsonLd,
+      mnemonic: this.config.mnemonic
     })
 
     // Wait for the ipfs-coord library to signal that it is ready.
@@ -69,7 +70,7 @@ class IpfsCoordAdapter {
   attachRPCRouter (router) {
     try {
       _this.ipfsCoord.privateLog = router
-      _this.ipfsCoord.ipfs.orbitdb.privateLog = router
+      _this.ipfsCoord.adapters.orbit.privateLog = router
     } catch (err) {
       console.error('Error in attachRPCRouter()')
       throw err

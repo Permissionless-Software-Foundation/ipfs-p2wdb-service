@@ -199,8 +199,8 @@ class PayToWriteAccessController extends AccessController {
       // Fast validation: validate the TXID if it already exists in MongoDB.
       const mongoRes = await this.KeyValue.find({ key: txid })
       if (mongoRes.length > 0) {
-        console.log('mongoRes: ', mongoRes)
-        // const mongoKey = mongoRes[0].key
+        // console.log('mongoRes: ', mongoRes)
+        console.log('Result retrieved from Mongo database.')
 
         // Return the previously saved validation result.
         const isValid = mongoRes[0].isValid

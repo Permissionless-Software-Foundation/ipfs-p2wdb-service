@@ -5,6 +5,7 @@
 
 // Public npm libraries.
 const Router = require('koa-router')
+const cors = require('kcors')
 
 // Load the REST API Controllers.
 const EntryRESTControllerLib = require('./controller')
@@ -58,6 +59,7 @@ class EntryController {
     this.router.get('/appid/:appid', this.getByAppId)
 
     // Attach the Controller routes to the Koa app.
+    app.use(cors({ origin: '*' }))
     app.use(this.router.routes())
     app.use(this.router.allowedMethods())
   }
