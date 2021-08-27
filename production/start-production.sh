@@ -10,6 +10,16 @@ export ORBITDB_NAME=/orbitdb/zdpuAwAxsMjxUTP58Tbd4vps2bTJNBoKkjs72SDLxuWjVy1Bx/p
 
 export COORD_NAME=generic-p2wdb-production
 
+# Debug level. 0 = minimal info. 2 = max info.
+export DEBUG_LEVEL=2
+
+# This mnemonic is used to set up persistent public key for e2ee
+# Replace this with your own 12-word mnemonic.
+export MNEMONIC="olive two muscle bottom coral ancient wait legend bronze useful process session"
+
+# Production database connection string.
+#export DBURL=mongodb://172.17.0.1:5555/ipfs-service-prod
+
 # Customize these for your own system. Defaults are used.
 #export ENABLE_CIRCUIT_RELAY=1
 export PORT=5001 # REST API port

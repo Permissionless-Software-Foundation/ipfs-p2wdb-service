@@ -22,6 +22,5 @@ p2wdb:
     - 5668:5668 # IPFS TCP port
     - 5669:5669 # IPFS WS Port
   volumes:
-    - ./ipfsdata/ipfs:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/ipfs
-    - ./ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+    - ../.ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
   restart: always
