@@ -99,5 +99,7 @@ module.exports = {
   ipnsConfig: 'QmTtXA18C6sg3ji9zem4wpNyoz9m4UZT85mA2D2jx2gzEk',
 
   // BCH Mnemonic for generating encryption keys and payment address
-  mnemonic: process.env.MNEMONIC ? process.env.MNEMONIC : ''
+  mnemonic: process.env.MNEMONIC ? process.env.MNEMONIC : '',
+
+  debugLevel: process.env.DEBUG_LEVEL ? parseInt(process.env.DEBUG_LEVEL) : 2
 }

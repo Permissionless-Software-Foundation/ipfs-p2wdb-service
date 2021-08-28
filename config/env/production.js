@@ -12,6 +12,9 @@ const mongoPort = process.env.MONGO_PORT ? process.env.MONGO_PORT : 5666
 module.exports = {
   session: 'secret-boilerplate-token',
   token: 'secret-jwt-token',
-  database: `mongodb://172.17.0.1:${mongoPort}/p2wdb-service-prod`,
+  // database: 'mongodb://172.17.0.1:5555/ipfs-service-prod',
+  database: process.env.DBURL
+    ? process.env.DBURL
+    : `mongodb://172.17.0.1:${mongoPort}/ipfs-service-prod`,
   env: 'prod'
 }

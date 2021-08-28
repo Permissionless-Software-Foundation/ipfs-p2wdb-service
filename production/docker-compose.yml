@@ -6,7 +6,7 @@ p2wdb-mongodb:
   ports:
     - '172.17.0.1:5666:27017' # <host port>:<container port>
   volumes:
-    - ./mongodb:/data/db
+    - ./data/mongodb:/data/db
   command: mongod --logpath=/dev/null # -- quiet
   restart: always
 
@@ -22,6 +22,8 @@ p2wdb:
     - 5668:5668 # IPFS TCP port
     - 5669:5669 # IPFS WS Port
   volumes:
-    - ./ipfsdata/ipfs:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/ipfs
-    - ./ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+    #    - ./logs:/home/coinjoin/consolidating-coinjoin/logs
+    #- ./keys:/home/safeuser/keys
+    - ./data/.ipfsdata:/home/safeuser/ipfs-p2wdb-service/.ipfsdata
+
   restart: always
