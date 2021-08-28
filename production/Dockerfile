@@ -33,7 +33,7 @@ RUN git clone https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-s
 WORKDIR /home/safeuser/ipfs-p2wdb-service
 RUN mkdir .ipfsdata
 RUN npm install -g @mapbox/node-pre-gyp
-#RUN git checkout ct-unstable
+RUN git checkout ct-unstable
 
 # Install dependencies
 #RUN mkdir .ipfsdata
