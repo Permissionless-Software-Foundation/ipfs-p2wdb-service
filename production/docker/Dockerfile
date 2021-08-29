@@ -37,7 +37,6 @@ RUN git checkout ct-unstable
 
 # Install dependencies
 #RUN mkdir .ipfsdata
-RUN npm install -g @mapbox/node-pre-gyp
 RUN npm install
 
 # Generate the API docs
