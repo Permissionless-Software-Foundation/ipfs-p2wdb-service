@@ -23,6 +23,9 @@
     "url": "https://p2wdb.fullstack.cash"
   },
   "repository": "Permissionless-Software-Foundation/ipfs-p2wdb-service",
+  "os": [
+    "linux"
+  ],
   "dependencies": {
     "@psf/bch-js": "^4.20.6",
     "axios": "^0.21.1",
