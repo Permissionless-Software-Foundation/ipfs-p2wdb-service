@@ -9,7 +9,7 @@
 const BCHJS = require('@psf/bch-js')
 const bchjs = new BCHJS()
 // const IpfsCoord = require('ipfs-coord')
-const IPFS = require('ipfs')
+const IPFS = require('@chris.troutner/ipfs')
 const assert = require('chai').assert
 
 const OrbitDBAdapter = require('../../../src/adapters/orbit')
