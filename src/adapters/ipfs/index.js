@@ -45,7 +45,14 @@ class IPFS {
 
       return true
     } catch (err) {
-      console.error('Error in adapters/ipfs/index.js/start(): ', err)
+      console.error('Error in adapters/ipfs/index.js/start()', err)
+
+      // If error is due to a lock file issue. Kill the process, so that
+      // Docker or pm2 has a chance to restart the service.
+      if (err.message.includes('Lock already being held')) {
+        process.exit(1)
+      }
+
       throw err
     }
   }
