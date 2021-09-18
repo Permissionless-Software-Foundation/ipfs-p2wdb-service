@@ -13,6 +13,7 @@ export IPFS_TCP_PORT=5668
 export IPFS_WS_PORT=5669
 
 # (optional) Log-in information for retrieving a JWT token from FullStack.cash.
+export GET_JWT_AT_STARTUP=0
 export FULLSTACKLOGIN=demo@demo.com
 export FULLSTACKPASS=demo
 
