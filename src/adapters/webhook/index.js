@@ -62,7 +62,7 @@ class WebhookAdapter {
       console.log('matches: ', matches)
 
       if (matches.length > 0) {
-        await _this.triggerWebhook(matches, jsonData.data)
+        await _this.triggerWebhook(matches, jsonData)
       }
     } catch (err) {
       console.error('Error in validationSucceededEventHandler(): ', err)
