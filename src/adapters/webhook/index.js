@@ -61,6 +61,10 @@ class WebhookAdapter {
       const matches = await _this.WebhookModel.find({ appId })
       console.log('matches: ', matches)
 
+      // Add P2WDB entry data to the webhook data.
+      jsonData.txid = eventData.txid
+      jsonData.hash = eventData.hash
+
       if (matches.length > 0) {
         await _this.triggerWebhook(matches, jsonData)
       }
