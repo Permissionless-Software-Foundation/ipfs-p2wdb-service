@@ -10,6 +10,7 @@ class IPFS {
     // Encapsulate dependencies
     this.ipfsAdapter = new IpfsAdapter()
     this.IpfsCoordAdapter = IpfsCoordAdapter
+    this.process = process
 
     this.ipfsCoordAdapter = {} // placeholder
 
@@ -50,7 +51,7 @@ class IPFS {
       // If error is due to a lock file issue. Kill the process, so that
       // Docker or pm2 has a chance to restart the service.
       if (err.message.includes('Lock already being held')) {
-        process.exit(1)
+        this.process.exit(1)
       }
 
       throw err

@@ -29,14 +29,8 @@ export FULLSTACKPASS=demo
 export DBURL=mongodb://172.17.0.1:5666/p2wdb-service-dev
 
 # Configure IPFS ports
-<<<<<<< HEAD
 export IPFS_TCP_PORT=5668
 export IPFS_WS_PORT=5669
-=======
-export IPFS_TCP_PORT=5268
-export IPFS_WS_PORT=5269
-
->>>>>>> a9e7fc616eb8ac375c6db8794ba92e57c5d9f807
 
 # Configure REST API port
 export PORT=5001
