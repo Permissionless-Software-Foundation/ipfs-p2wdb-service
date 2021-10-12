@@ -70,7 +70,7 @@ describe('#IPFS-adapter-index', () => {
         // Prevent process from exiting
         sandbox.stub(uut.process, 'exit').returns()
 
-        await uut.start()
+        await uut.start({ bchjs: {} })
 
         assert.fail('Unexpected code path.')
       } catch (err) {

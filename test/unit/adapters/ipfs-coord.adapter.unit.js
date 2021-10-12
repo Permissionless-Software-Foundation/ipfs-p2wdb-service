@@ -7,7 +7,7 @@ const sinon = require('sinon')
 
 const IPFSCoordAdapter = require('../../../src/adapters/ipfs/ipfs-coord')
 const IPFSMock = require('../mocks/ipfs-mock')
-// const IPFSCoordMock = require('../mocks/ipfs-coord-mock')
+const IPFSCoordMock = require('../mocks/ipfs-coord-mock')
 
 describe('#ipfs-coord', () => {
   let uut
