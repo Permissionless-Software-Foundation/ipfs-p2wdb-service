@@ -50,6 +50,20 @@ describe('#ipfs-coord', () => {
         )
       }
     })
+
+    it('should get the public IP address if this node is a Circuit Relay', async () => {
+      // Mock dependencies.
+      uut.IpfsCoord = IPFSCoordMock
+      sandbox.stub(uut.publicIp, 'v4').returns('123')
+
+      // Force Circuit Relay
+      uut.config.isCircuitRelay = true
+
+      const result = await uut.start()
+      // console.log('result: ', result)
+
+      assert.equal(result, true)
+    })
   })
 
   // TODO:
@@ -91,16 +105,19 @@ describe('#ipfs-coord', () => {
       uut.attachRPCRouter(router)
     })
 
-    // it('should throw an error if ipfs-coord has not been instantiated', () => {
-    //   try {
-    //     const router = console.log
-    //
-    //     uut.attachRPCRouter(router)
-    //
-    //     assert.fail('Unexpected code path')
-    //   } catch (err) {
-    //     assert.include(err.message, 'Cannot read property')
-    //   }
-    // })
+    it('should catch and throw an error', () => {
+      try {
+        // Force an error
+        delete uut.ipfsCoord.adapters
+
+        const router = console.log
+
+        uut.attachRPCRouter(router)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Cannot read property')
+      }
+    })
   })
 })
