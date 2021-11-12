@@ -65,11 +65,11 @@ system-user-*.json
 orbitdb
 ipfsdata
 .ipfsdata
-<<<<<<< HEAD
 ipfs-service-provider.sh
 mongodb/
 run-dev.sh
-=======
->>>>>>> dd0692e91f226ea03eba23a5970d8cfb1aab2dde
 
 !README.md
+
+#Backup
+backup/
