@@ -67,9 +67,9 @@ class ReadEntry {
     }
   }
 
-  async readByAppId (appId) {
+  async readByAppId (appId, page) {
     try {
-      const data = await this.p2wdbAdapter.readByAppId(appId)
+      const data = await this.p2wdbAdapter.readByAppId(appId, page)
 
       return data
     } catch (err) {
