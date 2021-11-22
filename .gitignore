@@ -6,6 +6,7 @@
 # Logs
 #logs
 logs/*.json
+logs/koa*
 *.log
 npm-debug.log*
 
