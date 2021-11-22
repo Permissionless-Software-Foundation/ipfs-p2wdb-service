@@ -12,6 +12,9 @@
   - An isReady flag can be checked to see if any dependency is in a ready state.
 */
 
+// Customizable constants.
+const ENTRIES_PER_PAGE = 20
+
 const IpfsAdapters = require('../ipfs')
 const OribitAdapter = require('../orbit')
 const KeyValue = require('../localdb/models/key-value')
@@ -82,11 +85,9 @@ class P2WDB {
     }
   }
 
-  // Read all entries in the P2WDB.
+  // Read the latest ENTRIES_PER_PAGE entries in the database.
   async readAll (page = 0) {
     try {
-      const ENTRIES_PER_PAGE = 20
-
       // Pull data from MongoDB.
       // Get all entries in the database.
       const data = await this.KeyValue.find({})
@@ -102,6 +103,31 @@ class P2WDB {
       return data
     } catch (err) {
       console.error('Error in p2wdb.js/readAll()')
+      throw err
+    }
+  }
+
+  // Read the latest ENTRIES_PER_PAGE entries, filtered by the app ID.
+  async readByAppId (appId, page = 0) {
+    try {
+      // console.log('appId: ', appId)
+      // const data = _this.orbit.db.get(txid)
+
+      // Return empty array if appId is not defined.
+      if (!appId) return []
+
+      // Get paginated results from the database.
+      const data = await this.KeyValue.find({ appId })
+        // Sort entries so newest entries show first.
+        .sort('-createdAt')
+        // Skip to the start of the selected page.
+        .skip(page * ENTRIES_PER_PAGE)
+        // Only return 20 results.
+        .limit(ENTRIES_PER_PAGE)
+
+      return data
+    } catch (err) {
+      console.error('Error in p2wdb.js/readByAppId()')
       throw err
     }
   }
@@ -138,25 +164,6 @@ class P2WDB {
       return data
     } catch (err) {
       console.error('Error in p2wdb.js/readByTxid()')
-      throw err
-    }
-  }
-
-  async readByAppId (appId) {
-    try {
-      // console.log('appId: ', appId)
-      // const data = _this.orbit.db.get(txid)
-
-      // Return empty array if appId is not defined.
-      if (!appId) return []
-
-      // Find the data in the local database
-      const data = await _this.KeyValue.find({ appId })
-      // console.log('data: ', data)
-
-      return data
-    } catch (err) {
-      console.error('Error in p2wdb.js/readByAppId()')
       throw err
     }
   }

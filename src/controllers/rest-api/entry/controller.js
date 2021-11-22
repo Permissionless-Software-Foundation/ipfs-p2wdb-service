@@ -167,6 +167,86 @@ class EntryRESTControllerLib {
   }
 
   /**
+   * @api {get} /entry/appid/:appid/:page Read By App ID
+   * @apiPermission public
+   * @apiName P2WDB Read By App ID
+   * @apiGroup REST P2WDB
+   *
+   * @apiDescription
+   * Read paginated entries from the P2WDB, filtered by the appId. Newest
+   * entries are served first.
+   *
+   * This endpoint returns the following properties
+   *
+   *  - success : - Petition status
+   *  - data : [] - Array of entries.
+   *    - isValid: "" - Entry validation
+   *    - appId: "" - App id associated
+   *    - createdAt : - Creation time
+   *    - _id : "" - Entry ID
+   *    - hash : "" - Orbit DB hash
+   *    - key: "" - Transaction ID
+   *    - value : "" - Entry Data
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/appid/test/0
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *  {
+   *     "success":true,
+   *     "data":[
+   *        {
+   *           "isValid":true,
+   *           "appId":"test",
+   *           "createdAt":1629350514655,
+   *           "_id":"611dea72ad093c20042d238c",
+   *           "hash":"zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb",
+   *           "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
+   *           "value":{
+   *              "message":"test",
+   *              "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
+   *              "data":"This is the data that will go into the database."
+   *           },
+   *           "__v":0
+   *        }
+   *     ]
+   *  }
+   *
+   * @apiError UnprocessableEntity Missing required parameters
+   *
+   * @apiErrorExample {json} Error-Response:
+   *     HTTP/1.1 422 Unprocessable Entity
+   *     {
+   *       "status": 422,
+   *       "error": "Unprocessable Entity"
+   *     }
+   */
+  async getByAppId (ctx) {
+    try {
+      const appId = ctx.params.appid
+      const page = ctx.params.page
+      // console.log(ctx.params)
+
+      // Get all the contents of the P2WDB.
+      const allData = await this.useCases.entry.readEntry.readByAppId(
+        appId,
+        page
+      )
+
+      ctx.body = {
+        success: true,
+        data: allData,
+        page
+      }
+    } catch (err) {
+      // console.log('Error in get-by-appid.js/restController(): ', err)
+      // throw err
+      _this.handleError(ctx, err)
+    }
+  }
+
+  /**
    * @api {get} /entry/hash/:hash Read By Hash
    * @apiPermission public
    * @apiName P2WDB Read By Hash
@@ -305,80 +385,6 @@ class EntryRESTControllerLib {
       }
     } catch (err) {
       // console.log('Error in get-by-txid.js/restController(): ', err)
-      // throw err
-      _this.handleError(ctx, err)
-    }
-  }
-
-  /**
-   * @api {get} /entry/appid/:appid Read By App ID
-   * @apiPermission public
-   * @apiName P2WDB Read By App ID
-   * @apiGroup REST P2WDB
-   *
-   * @apiDescription
-   * Read all entries from the P2WDB if it matches the appId.
-   *
-   * This endpoint returns the following properties
-   *
-   *  - success : - Petition status
-   *  - data : [] - Array of entries.
-   *    - isValid: "" - Entry validation
-   *    - appId: "" - App id associated
-   *    - createdAt : - Creation time
-   *    - _id : "" - Entry ID
-   *    - hash : "" - Orbit DB hash
-   *    - key: "" - Transaction ID
-   *    - value : "" - Entry Data
-   *
-   * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X GET localhost:5001/entry/appid/test
-   *
-   * @apiSuccessExample {json} Success-Response:
-   *     HTTP/1.1 200 OK
-   *  {
-   *     "success":true,
-   *     "data":[
-   *        {
-   *           "isValid":true,
-   *           "appId":"test",
-   *           "createdAt":1629350514655,
-   *           "_id":"611dea72ad093c20042d238c",
-   *           "hash":"zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb",
-   *           "key":"9ac06c53c158430ea32a587fb4e2bc9e947b1d8c6ff1e4cc02afa40d522d7967",
-   *           "value":{
-   *              "message":"test",
-   *              "signature":"H+TgPR/6Fxlo2uDb9UyQpWENBW1xtQvM2+etWlSmc+1kIeZtyw7HCsYMnf8X+EdP0E+CUJwP37HcpVLyKly2XKg=",
-   *              "data":"This is the data that will go into the database."
-   *           },
-   *           "__v":0
-   *        }
-   *     ]
-   *  }
-   *
-   * @apiError UnprocessableEntity Missing required parameters
-   *
-   * @apiErrorExample {json} Error-Response:
-   *     HTTP/1.1 422 Unprocessable Entity
-   *     {
-   *       "status": 422,
-   *       "error": "Unprocessable Entity"
-   *     }
-   */
-  async getByAppId (ctx) {
-    try {
-      const appId = ctx.params.appid
-      // console.log(ctx.params)
-
-      // Get all the contents of the P2WDB.
-      const allData = await this.useCases.entry.readEntry.readByAppId(appId)
-
-      ctx.body = {
-        success: true,
-        data: allData
-      }
-    } catch (err) {
-      // console.log('Error in get-by-appid.js/restController(): ', err)
       // throw err
       _this.handleError(ctx, err)
     }
