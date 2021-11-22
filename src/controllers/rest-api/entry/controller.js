@@ -95,8 +95,8 @@ class EntryRESTControllerLib {
    * @apiGroup REST P2WDB
    *
    * @apiDescription
-   * Read all the entries from the database. Results are paginated, with 50
-   * entries per page.
+   * Read all the entries from the database. Results are paginated, with 20
+   * entries per page. Most recent entries are served first.
    *
    *  This endpoint returns the following properties
    *
