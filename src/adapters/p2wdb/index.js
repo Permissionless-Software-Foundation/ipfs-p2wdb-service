@@ -51,17 +51,17 @@ class P2WDB {
       }
 
       // Start the P2WDB OrbitDB.
-      _this.orbit = new this.OribitAdapter({
+      this.orbit = new this.OribitAdapter({
         ipfs
       });
-      await _this.orbit.start(bchjs);
+      await this.orbit.start(bchjs);
       console.log("OrbitDB Adapter is ready. P2WDB is ready.");
 
-      _this.isReady = true;
+      this.isReady = true;
 
       console.log("The P2WDB is ready to use.");
 
-      return _this.isReady;
+      return this.isReady;
     } catch (err) {
       console.error("Error in adapters/p2wdb/index.js/start()");
       throw err;
@@ -77,7 +77,7 @@ class P2WDB {
       console.log("_this.orbit.db: ", this.orbit.db);
 
       // Add the entry to the Oribit DB.
-      const hash = await _this.orbit.db.put(entry.key, entry.value);
+      const hash = await this.orbit.db.put(entry.key, entry.value);
       console.log("hash: ", hash);
 
       return hash;
