@@ -88,7 +88,14 @@ class OrbitDBAdapter {
       // console.log('dbName: ', dbName)
 
       // Create the key-value store.
-      this.db = await orbitdb.keyvalue(dbName, options)
+      try {
+        this.db = await orbitdb.keyvalue(dbName, options)
+      } catch (err) {
+        console.log(
+          'The IPFS can not download the manifest for the P2WDB. Exiting.'
+        )
+        process.exit(0)
+      }
 
       // Overwrite the default bchjs instance used by the pay-to-write access
       // controller.
