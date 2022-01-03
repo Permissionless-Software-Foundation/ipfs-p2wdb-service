@@ -45,6 +45,11 @@ Smaller databases make decentralization and censorship resistance better. For th
 
 Keeping the P2WDB small and nimble ensures it's easy to replicate by many service providers. The more service providers participating in the ecosystem, the more censorship resistant the data becomes.
 
+- node **^14.18.2**
+- npm **^8.3.0**
+- Docker **^20.10.8**
+- Docker Compose **^1.27.4**
+
 ## About This Repository
 
 This is a fork of [ipfs-service-provider](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). This project ports the pay-to-write (P2W) database (DB) code from [this older project](https://github.com/Permissionless-Software-Foundation/pay-to-write-orbitdb) and adds it to the ipfs-service-provider boilerplate code in order to add both a REST API over HTTP interface and JSON RPC over IPFS interface to access the P2WDB services.
@@ -68,7 +73,17 @@ Documentation:
 
 This project is under heavy development and is only appropriate for use by JavaScript developers familiar with REST API or JSON RPC development.
 
-## Setup Development Environment
+### Operation Notes
+
+- The PSF IPFS network operates as a private network. It does not connect or interact with the wider PSF network, relying instead on gateways to bridge the two networks, when they need to share content. This improves the performance and experience for everyone in the PSF network. To join the network, you'll need to add the [swarm.key](./swarm.key) file to the IPFS data folder.
+
+- [Instructions on setting up IPFS private networks.](https://github.com/ipfs/go-ipfs/blob/master/docs/experimental-features.md#private-networks)
+- For external installations, the swarm.key file will typically go in `~/.ipfs/swarm.key`
+- For production Docker containers, the key would go in `ipfs-service-provider/production/data/go-ipfs/data/swarm.key`
+
+### Setup Development Environment
+
+**Note:** These instructions are out of date and need to be updated.
 
 The development environment is assumed to be Ubuntu Linux.
 
@@ -79,15 +94,15 @@ The development environment is assumed to be Ubuntu Linux.
 - Run tests with `npm test`
 - Start with `npm start`
 
-## Docker container
+### Docker container
 
-The target production deployment of this software is as a Docker container. The [docker folder](./docker) contains the Dockerfile and `docker-compose.yml` file to generate a new Docker image. The production target is Ubuntu Linux 20.04, running Docker and Docker Compose.
+The target production deployment of this software is as a Docker container. The [docker folder](./production/docker) contains the Dockerfile and `docker-compose.yml` file to generate a new Docker image. The production target is Ubuntu Linux 20.04, running Docker and Docker Compose.
 
 - Generate a new Docker image: `docker-compose build --no-cache`
 - Start the Docker container: `docker-compose up -d`
 - Stop the Docker container: `docker-compose down`
-
-The MongoDB container creates a new directory, `mongodb`. You'll need to delete this directory if you want to re-build the Docker image for the P2WDB.
+- Copy the [swarm.key](./swarm.key) file to `ipfs-p2wdb-service/production/data/go-ipfs/data/swarm.key`.
+- Bring the containers back up with `docker-compose up -d`.
 
 ## License
 
