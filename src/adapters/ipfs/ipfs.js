@@ -10,8 +10,11 @@
 
 // Global npm libraries
 // const IPFS = require('ipfs')
-const IPFS = require('@chris.troutner/ipfs')
+// const IPFS = require('@chris.troutner/ipfs')
+const IPFSembedded = require('ipfs')
+const IPFSexternal = require('ipfs-http-client')
 const fs = require('fs')
+const http = require('http')
 
 // Local libraries
 const config = require('../../../config')
@@ -21,11 +24,17 @@ const IPFS_DIR = './.ipfsdata/ipfs'
 class IpfsAdapter {
   constructor (localConfig) {
     // Encapsulate dependencies
-    this.IPFS = IPFS
+    this.config = config
+
+    // Choose the IPFS constructor based on the config settings.
+    this.IPFS = IPFSembedded // default
+    if (this.config.isProduction) {
+      this.IPFS = IPFSexternal
+    }
 
     // Properties of this class instance.
     this.isReady = false
-    this.config = config
+
     this.fs = fs
   }
 
@@ -33,7 +42,7 @@ class IpfsAdapter {
   async start () {
     try {
       // Ipfs Options
-      const ipfsOptions = {
+      const ipfsOptionsEmbedded = {
         repo: IPFS_DIR,
         start: true,
         config: {
@@ -62,6 +71,17 @@ class IpfsAdapter {
             GCPeriod: '15m'
           }
         }
+      }
+
+      const ipfsOptionsExternal = {
+        host: this.config.ipfsHost,
+        port: this.config.ipfsApiPort,
+        agent: http.Agent({ keepAlive: true, maxSockets: 2000 })
+      }
+
+      let ipfsOptions = ipfsOptionsEmbedded
+      if (this.config.isProduction) {
+        ipfsOptions = ipfsOptionsExternal
       }
 
       // Create a new IPFS node.

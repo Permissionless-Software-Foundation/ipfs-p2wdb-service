@@ -16,7 +16,7 @@ export COORD_NAME=generic-p2wdb-production
 #export CR_DOMAIN=subdomain.yourdomain.com
 
 # Debug level. 0 = minimal info. 2 = max info.
-export DEBUG_LEVEL=1
+export DEBUG_LEVEL=2
 
 # Log-in information for retrieving a JWT token from FullStack.cash.
 export FULLSTACKLOGIN=demo@demo.com
@@ -33,9 +33,13 @@ export IPFS_TCP_PORT=5668
 export IPFS_WS_PORT=5669
 
 # Configure REST API port
-export PORT=5001
+export PORT=5010
 
 export ORBITDB_NAME=/orbitdb/zdpuAwAxsMjxUTP58Tbd4vps2bTJNBoKkjs72SDLxuWjVy1Bx/psf-bch-p2wdb-keyvalue-v1.0.0-0003
 
 export P2W_ENV=production
+export IPFS_HOST=172.17.0.1
+export IPFS_API_PORT=5001
+export IPFS_TCP_PORT=4001
+
 npm start
