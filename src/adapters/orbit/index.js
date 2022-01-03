@@ -62,6 +62,7 @@ class OrbitDBAdapter {
   async createDb (localConfig = {}) {
     try {
       let { dbName, bchjs } = localConfig
+      console.log(`dbName passed into createDb: ${dbName}`)
 
       if (!bchjs) {
         throw new Error('Instance of bchjs required when called createDb()')
