@@ -1,13 +1,13 @@
 # Start the service with the command 'docker-compose up -d'
 
-version: "3.9"
+version: '3.9'
 
 services:
   p2wdb-mongodb:
     image: mongo:4.4.2-bionic
     container_name: p2wdb-mongo
     ports:
-      - "172.17.0.1:5666:27017" # <host port>:<container port>
+      - '172.17.0.1:5666:27017' # <host port>:<container port>
     volumes:
       - ../data/mongodb:/data/db
     command: mongod --logpath=/dev/null # -- quiet
@@ -17,12 +17,12 @@ services:
     image: ipfs/go-ipfs:v0.11.0
     container_name: ipfs
     environment:
-      MY_ENV_VAR: "placeholder"
+      MY_ENV_VAR: 'placeholder'
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "10m"
-        max-file: "10"
+        max-size: '10m'
+        max-file: '10'
     mem_limit: 2000mb
     ports:
       - 4001:4001
@@ -35,10 +35,10 @@ services:
     # https://github.com/ipfs/go-ipfs/blob/91c52657166bcf86f2476926e4fe56694dc26562/Dockerfile#L115
     command:
       [
-        "daemon",
-        "--migrate=true",
-        "--agent-version-suffix=docker",
-        "--enable-pubsub-experiment",
+        'daemon',
+        '--migrate=true',
+        '--agent-version-suffix=docker',
+        '--enable-pubsub-experiment'
       ]
     restart: always
 
@@ -46,16 +46,16 @@ services:
     build: .
     container_name: p2wdb
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "10m"
-        max-file: "10"
+        max-size: '10m'
+        max-file: '10'
     mem_limit: 1gb
     links:
       - p2wdb-mongodb
     ports:
       # <host port>:<container port>
-      - 5667:5001 # REST API
+      - 5667:5667 # REST API
       #- 5668:5668 # IPFS TCP port
       #- 5669:5669 # IPFS WS Port
     #volumes:
