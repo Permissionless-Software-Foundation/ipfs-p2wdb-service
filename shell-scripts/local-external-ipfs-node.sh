@@ -27,5 +27,6 @@ export IPFS_TCP_PORT=4001
 
 # MongoDB connection string.
 export DBURL=mongodb://localhost:27017/ipfs-service-dev
+#export DBURL=mongodb://172.17.0.1:5666/ipfs-service-dev
 
 npm start

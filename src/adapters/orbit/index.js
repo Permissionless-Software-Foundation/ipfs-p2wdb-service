@@ -91,10 +91,8 @@ class OrbitDBAdapter {
       try {
         this.db = await orbitdb.keyvalue(dbName, options)
       } catch (err) {
-        console.log(
-          'The IPFS can not download the manifest for the P2WDB. Exiting.'
-        )
-        process.exit(0)
+        console.log(`Can not download manifest for OrbitDB ${dbName}.\nExiting`)
+        process.exit(-1)
       }
 
       // Overwrite the default bchjs instance used by the pay-to-write access

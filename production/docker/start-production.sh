@@ -35,11 +35,12 @@ export IPFS_WS_PORT=5669
 # Configure REST API port
 export PORT=5010
 
-export ORBITDB_NAME=/orbitdb/zdpuAwAxsMjxUTP58Tbd4vps2bTJNBoKkjs72SDLxuWjVy1Bx/psf-bch-p2wdb-keyvalue-v1.0.0-0003
-
 export P2W_ENV=production
 export IPFS_HOST=172.17.0.1
 export IPFS_API_PORT=5001
 export IPFS_TCP_PORT=4001
+
+# P2WDB specific env vars
+export ORBITDB_NAME=/orbitdb/zdpuAm4fPafpjs5mgbBUJV8Az7kd8Xj1ttD6M1JaAxF8RMRrw/psf-bch-p2wdb-keyvalue-v1.0.0-0004
 
 npm start
