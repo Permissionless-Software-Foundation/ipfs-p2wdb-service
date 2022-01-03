@@ -49,6 +49,7 @@
     "mongoose": "5.11.15",
     "node-fetch": "npm:@achingbrain/node-fetch@2.6.7",
     "nodemailer": "6.4.17",
+    "orbit-db": "0.28.0",
     "passport-local": "1.0.0",
     "public-ip": "4.0.4",
     "winston": "3.3.3",
