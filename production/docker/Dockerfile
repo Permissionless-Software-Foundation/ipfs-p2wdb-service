@@ -31,8 +31,8 @@ RUN echo "export PATH=~/.npm-global/bin:$PATH" >> /home/safeuser/.profile
 RUN runuser -l safeuser -c "npm config set prefix '~/.npm-global'"
 
 # Update to the latest version of npm.
-# Working with npm@7.21.1
-RUN npm install -g npm@7.23.0
+#RUN npm install -g npm@7.23.0
+RUN npm install -g npm
 
 # npm mirror to prevent direct dependency on npm.
 RUN npm set registry http://94.130.170.209:4873/
@@ -58,7 +58,7 @@ RUN npm install
 RUN npm run docs
 
 # Expose the port the API will be served on.
-EXPOSE 5001
+EXPOSE 5010
 
 # Start the application.
 COPY start-production.sh start-production.sh
