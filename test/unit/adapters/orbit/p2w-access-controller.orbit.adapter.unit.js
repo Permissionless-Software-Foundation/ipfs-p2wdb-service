@@ -162,7 +162,7 @@ describe('#PayToWriteAccessController', () => {
       try {
         // Force an error
         sandbox
-          .stub(uut.bchjs.SLP.Utils, 'validateTxid3')
+          .stub(uut.bchjs.PsfSlpIndexer, 'tx')
           .rejects(new Error('some error message'))
 
         const txId = mock.tx.txid
@@ -177,8 +177,8 @@ describe('#PayToWriteAccessController', () => {
     it('should return false if txid is not a valid SLP tx', async () => {
       try {
         sandbox
-          .stub(uut.bchjs.SLP.Utils, 'validateTxid3')
-          .resolves([{ valid: false }])
+          .stub(uut.bchjs.PsfSlpIndexer, 'tx')
+          .resolves({ txData: { isValidSlp: false } })
 
         const txId = mock.tx.txid
         const result = await uut._validateTx(txId)
@@ -191,34 +191,33 @@ describe('#PayToWriteAccessController', () => {
     it('should return false if tokenId does not match', async () => {
       try {
         sandbox
-          .stub(uut.bchjs.Transaction, 'get')
-          .resolves({ isValidSLPTx: true, tokenIid: 'wrong id' })
+          .stub(uut.bchjs.PsfSlpIndexer, 'tx')
+          .resolves({ txData: { isValidSlp: true, tokenId: 'wrong-id' } })
 
         const txId = mock.tx.txid
         const result = await uut._validateTx(txId)
         assert.isFalse(result)
       } catch (err) {
+        // console.log('err: ', err)
         assert.fail('Unexpected code path')
       }
     })
 
     it('should return false if token burn is less than the threshold', async () => {
       try {
-        const spy = sinon.spy(uut, 'getTokenQtyDiff')
-        sandbox
-          .stub(uut.bchjs.SLP.Utils, 'validateTxid3')
-          .resolves([{ valid: true }])
-        sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
+        // const spy = sinon.spy(uut, 'getTokenQtyDiff')
+        sandbox.stub(uut.bchjs.PsfSlpIndexer, 'tx').resolves({
+          txData: {
+            tokenId:
+              '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
+            isValidSlp: true
+          }
+        })
+        // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
+        sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.0001)
 
         const txId = mock.tx.txid
         const result = await uut._validateTx(txId)
-
-        // Makes sure that the code gets to the functionality
-        // that we want to validate
-        assert.isTrue(
-          spy.called,
-          'Expected getTokenQtyDiff function to be called'
-        )
 
         assert.isFalse(result)
       } catch (err) {
@@ -228,10 +227,16 @@ describe('#PayToWriteAccessController', () => {
 
     it('should return true if required tokens are burned', async () => {
       uut.config.reqTokenQty = 0
-      sandbox
-        .stub(uut.bchjs.SLP.Utils, 'validateTxid3')
-        .resolves([{ valid: true }])
-      sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
+      sandbox.stub(uut.bchjs.PsfSlpIndexer, 'tx').resolves({
+        txData: {
+          tokenId:
+            '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
+          isValidSlp: true,
+          vin: [],
+          vout: []
+        }
+      })
+      // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
 
       const txId = mock.tx.txid
       const result = await uut._validateTx(txId)
