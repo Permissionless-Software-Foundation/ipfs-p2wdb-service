@@ -22,7 +22,7 @@ const validationEvent = require('./validation-event')
 let _this
 
 class PayToWriteAccessController extends AccessController {
-  constructor (orbitdb, options) {
+  constructor(orbitdb, options) {
     super()
     this._orbitdb = orbitdb
     this._db = null
@@ -40,18 +40,18 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Returns the type of the access controller
-  static get type () {
+  static get type() {
     return 'payToWrite'
   }
 
   // Returns the address of the OrbitDB used as the AC.
   // No test coverage as this is copied directly from OrbitDB ACL.
-  get address () {
+  get address() {
     return this._db.address
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  get capabilities () {
+  get capabilities() {
     if (this._db) {
       const capabilities = this._db.index
 
@@ -80,17 +80,17 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  get (capability) {
+  get(capability) {
     return this.capabilities[capability] || new Set([])
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async close () {
+  async close() {
     await this._db.close()
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async load (address) {
+  async load(address) {
     if (this._db) {
       await this._db.close()
     }
@@ -113,13 +113,13 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Copied from OrbitDB ACL boilerplate.
-  ensureAddress (address) {
+  ensureAddress(address) {
     const suffix = address.toString().split('/').pop()
     return suffix === '_access' ? address : path.join(address, '/_access')
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async save () {
+  async save() {
     // return the manifest data
     return {
       address: this._db.address.toString()
@@ -127,7 +127,7 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async grant (capability, key) {
+  async grant(capability, key) {
     // Merge current keys with the new key
     const capabilities = new Set([
       ...(this._db.get(capability) || []),
@@ -137,7 +137,7 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // No test coverage as this is copied directly from OrbitDB ACL.
-  async revoke (capability, key) {
+  async revoke(capability, key) {
     const capabilities = new Set(this._db.get(capability) || [])
     capabilities.delete(key)
     if (capabilities.size > 0) {
@@ -149,13 +149,13 @@ class PayToWriteAccessController extends AccessController {
 
   /* Private methods */
   // No test coverage as this is copied directly from OrbitDB ACL.
-  _onUpdate () {
+  _onUpdate() {
     this.emit('updated')
   }
 
   /* Factory */
   // No test coverage as this is copied directly from OrbitDB ACL.
-  static async create (orbitdb, options = {}) {
+  static async create(orbitdb, options = {}) {
     const ac = new PayToWriteAccessController(orbitdb, options)
     await ac.load(
       options.address || options.name || 'default-access-controller'
@@ -174,7 +174,7 @@ class PayToWriteAccessController extends AccessController {
   // quickly exhaust the rate limits of FullStack.cash or whatever blockchain
   // service provider it's using. A retry queue allows a new node to sync
   // to the existing peer databases while respecting rate limits.
-  async canAppend (entry, identityProvider) {
+  async canAppend(entry, identityProvider) {
     try {
       // console.log('canAppend entry: ', entry)
 
@@ -241,7 +241,7 @@ class PayToWriteAccessController extends AccessController {
 
   // This is an async wrapper function. It wraps all other logic for validating
   // a new entry and it's proof-of-burn against the blockchain.
-  async validateAgainstBlockchain (inputObj) {
+  async validateAgainstBlockchain(inputObj) {
     const { txid, signature, message } = inputObj
 
     try {
@@ -299,7 +299,7 @@ class PayToWriteAccessController extends AccessController {
 
   // Try to match the error message to one of several known error messages.
   // Returns true if there is a match. False if no match.
-  matchErrorMsg (msg) {
+  matchErrorMsg(msg) {
     if (!msg || typeof msg !== 'string') return false
     // Returned on forged TXID or manipulated ACL rules.
     if (msg.includes('No such mempool or blockchain transaction')) return true
@@ -309,7 +309,7 @@ class PayToWriteAccessController extends AccessController {
 
   // Add the TXID to the database, and mark it as invalid. This will prevent
   // validation spamming.
-  async markInvalid (txid) {
+  async markInvalid(txid) {
     try {
       if (!txid || typeof txid !== 'string') {
         throw new Error('txid must be a string')
@@ -332,7 +332,7 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Returns true if the txid burned at least 0.001 tokens.
-  async _validateTx (txid) {
+  async _validateTx(txid) {
     try {
       if (!txid || typeof txid !== 'string') {
         throw new Error('txid must be a string')
@@ -340,9 +340,10 @@ class PayToWriteAccessController extends AccessController {
 
       let isValid = false
 
-      let isValidSLPTx = await this.bchjs.SLP.Utils.validateTxid3(txid)
-      isValidSLPTx = isValidSLPTx[0].valid
-      console.log('isValidSLPTx: ', isValidSLPTx)
+      const txData = await this.bchjs.PsfSlpIndexer.tx(txid)
+      let isValidSLPTx = txData.txData.isValidSlp
+      // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
+      console.log(`Reviewing TXID: ${txid}`)
 
       // Return false if txid is not a valid SLP tx.
       if (!isValidSLPTx) {
@@ -350,7 +351,8 @@ class PayToWriteAccessController extends AccessController {
         return false
       }
 
-      const txInfo = await this.bchjs.Transaction.get(txid)
+      // const txInfo = await this.bchjs.Transaction.get(txid)
+      const txInfo = txData.txData
       // console.log(`txInfo: ${JSON.stringify(txInfo, null, 2)}`)
 
       // Return false if tokenId does not match.
@@ -412,7 +414,7 @@ class PayToWriteAccessController extends AccessController {
 
   // Get the differential token qty between the inputs and outputs of a tx.
   // This determins if the tx was a proper token burn.
-  async getTokenQtyDiff (txInfo) {
+  async getTokenQtyDiff(txInfo) {
     try {
       if (!txInfo) {
         throw new Error('txInfo is required')
@@ -464,7 +466,7 @@ class PayToWriteAccessController extends AccessController {
   // tokens is the same user submitting the new DB entry. It prevents
   // 'front running', or malicous users watching the network for valid burn
   // TXs then using them to submit their own data to the DB.
-  async _validateSignature (txid, signature, message) {
+  async _validateSignature(txid, signature, message) {
     try {
       // Input validation
       if (!txid || typeof txid !== 'string') {
