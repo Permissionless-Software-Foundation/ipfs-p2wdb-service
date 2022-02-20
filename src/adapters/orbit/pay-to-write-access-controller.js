@@ -10,6 +10,7 @@
 const AccessController = require('orbit-db-access-controllers/src/access-controller-interface')
 const pMapSeries = require('p-map-series')
 const BCHJS = require('@psf/bch-js')
+const Wallet = require('minimal-slp-wallet/index')
 const path = require('path')
 
 // Local libraries
@@ -29,9 +30,17 @@ class PayToWriteAccessController extends AccessController {
     this._options = options || {}
 
     // Encapsulate dependencies
-    this.bchjs = new BCHJS()
-    this.KeyValue = KeyValue
+    // this.bchjs = new BCHJS()
     this.config = config
+
+    this.wallet = new Wallet(undefined, {
+      noUpdate: true,
+      interface: 'consumer-api',
+      restURL: config.consumerUrl
+    })
+    this.bchjs = this.wallet.bchjs
+    this.KeyValue = KeyValue
+
     this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
     this.validationEvent = validationEvent
     // this.webhook = new Webhook()
@@ -340,8 +349,12 @@ class PayToWriteAccessController extends AccessController {
 
       let isValid = false
 
-      const txData = await this.bchjs.PsfSlpIndexer.tx(txid)
-      let isValidSLPTx = txData.txData.isValidSlp
+      // const txData = await this.bchjs.PsfSlpIndexer.tx(txid)
+      let txData = await this.wallet.getTxData([txid])
+      txData = txData[0]
+      // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
+
+      let isValidSLPTx = txData.isValidSlp
       // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
       console.log(`Reviewing TXID: ${txid}`)
 
@@ -352,7 +365,7 @@ class PayToWriteAccessController extends AccessController {
       }
 
       // const txInfo = await this.bchjs.Transaction.get(txid)
-      const txInfo = txData.txData
+      const txInfo = txData
       // console.log(`txInfo: ${JSON.stringify(txInfo, null, 2)}`)
 
       // Return false if tokenId does not match.

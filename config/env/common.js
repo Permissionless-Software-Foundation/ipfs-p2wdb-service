@@ -46,6 +46,11 @@ module.exports = {
     ? process.env.FULLSTACKPASS
     : 'demo',
 
+  // ipfs-bch-wallet-consumer URL
+  consumerUrl: process.env.CONSUMER_URL
+    ? process.env.CONSUMER_URL
+    : 'https://free-bch.fullstack.cash/',
+
   // IPFS settings.
   isCircuitRelay: process.env.ENABLE_CIRCUIT_RELAY ? true : false,
   // SSL domain used for websocket connection via browsers.
