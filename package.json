@@ -83,7 +83,9 @@
     ]
   },
   "husky": {
-    "hooks": {}
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "standard": {
     "ignore": [
