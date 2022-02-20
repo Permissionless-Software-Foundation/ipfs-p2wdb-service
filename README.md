@@ -81,6 +81,8 @@ This project is under heavy development and is only appropriate for use by JavaS
 - For external installations, the swarm.key file will typically go in `~/.ipfs/swarm.key`
 - For production Docker containers, the key would go in `ipfs-service-provider/production/data/go-ipfs/data/swarm.key`
 
+- By default, the P2WDB accesses the BCH blockchain through https://free-bch.fullstack.cash, which is simply a running implementation of [ipfs-bch-wallet-consumer](https://github.com/Permissionless-Software-Foundation/ipfs-bch-wallet-consumer). If you want to connect to a different instance, set the URL in the `CONSUMER_URL` environment variable.
+
 ### Setup Development Environment
 
 **Note:** These instructions are out of date and need to be updated.

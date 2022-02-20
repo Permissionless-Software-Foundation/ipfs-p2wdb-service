@@ -56,7 +56,8 @@ function createBackupDir (path) {
   try {
     const exist = fs.existsSync(path)
     if (!exist) {
-      const created = fs.mkdirSync(path)
+      fs.mkdirSync(path)
+      // const created = fs.mkdirSync(path)
     }
     return true
   } catch (error) {

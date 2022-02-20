@@ -38,9 +38,11 @@ describe('#PayToWriteAccessController', () => {
   })
 
   afterEach(() => sandbox.restore())
+
   after(() => {
     mongoose.connection.close()
   })
+
   describe('_validateSignature()', () => {
     it('should throw error if txid input is not provided', async () => {
       try {
@@ -82,9 +84,7 @@ describe('#PayToWriteAccessController', () => {
     it('should return false for invalid signature', async () => {
       try {
         // Mock
-        sandbox
-          .stub(uut.bchjs.RawTransactions, 'getRawTransaction')
-          .resolves(mock.tx)
+        sandbox.stub(uut.wallet, 'getTxData').resolves([mock.tx])
 
         const txId =
           'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
@@ -100,32 +100,9 @@ describe('#PayToWriteAccessController', () => {
       }
     })
 
-    it('should repackage errors from bch-api as an Error object', async () => {
-      try {
-        // Force an error
-        sandbox
-          .stub(uut.bchjs.RawTransactions, 'getRawTransaction')
-          .rejects({ error: 'some error message' })
-
-        const txId =
-          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
-        const signature =
-          'H+S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI='
-        const message = 'A message'
-
-        await uut._validateSignature(txId, signature, message)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'some error message')
-      }
-    })
-
     it('should return true for valid signature', async () => {
       // Mock
-      sandbox
-        .stub(uut.bchjs.RawTransactions, 'getRawTransaction')
-        .resolves(mock.tx)
+      sandbox.stub(uut.wallet, 'getTxData').resolves([mock.tx])
 
       const txId =
         'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
@@ -162,7 +139,7 @@ describe('#PayToWriteAccessController', () => {
       try {
         // Force an error
         sandbox
-          .stub(uut.bchjs.PsfSlpIndexer, 'tx')
+          .stub(uut.wallet, 'getTxData')
           .rejects(new Error('some error message'))
 
         const txId = mock.tx.txid
@@ -176,9 +153,7 @@ describe('#PayToWriteAccessController', () => {
 
     it('should return false if txid is not a valid SLP tx', async () => {
       try {
-        sandbox
-          .stub(uut.bchjs.PsfSlpIndexer, 'tx')
-          .resolves({ txData: { isValidSlp: false } })
+        sandbox.stub(uut.wallet, 'getTxData').resolves([{ isValidSlp: false }])
 
         const txId = mock.tx.txid
         const result = await uut._validateTx(txId)
@@ -191,8 +166,8 @@ describe('#PayToWriteAccessController', () => {
     it('should return false if tokenId does not match', async () => {
       try {
         sandbox
-          .stub(uut.bchjs.PsfSlpIndexer, 'tx')
-          .resolves({ txData: { isValidSlp: true, tokenId: 'wrong-id' } })
+          .stub(uut.wallet, 'getTxData')
+          .resolves([{ isValidSlp: true, tokenId: 'wrong-id' }])
 
         const txId = mock.tx.txid
         const result = await uut._validateTx(txId)
@@ -206,13 +181,13 @@ describe('#PayToWriteAccessController', () => {
     it('should return false if token burn is less than the threshold', async () => {
       try {
         // const spy = sinon.spy(uut, 'getTokenQtyDiff')
-        sandbox.stub(uut.bchjs.PsfSlpIndexer, 'tx').resolves({
-          txData: {
+        sandbox.stub(uut.wallet, 'getTxData').resolves([
+          {
             tokenId:
               '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
             isValidSlp: true
           }
-        })
+        ])
         // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
         sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.0001)
 
@@ -227,15 +202,15 @@ describe('#PayToWriteAccessController', () => {
 
     it('should return true if required tokens are burned', async () => {
       uut.config.reqTokenQty = 0
-      sandbox.stub(uut.bchjs.PsfSlpIndexer, 'tx').resolves({
-        txData: {
+      sandbox.stub(uut.wallet, 'getTxData').resolves([
+        {
           tokenId:
             '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
           isValidSlp: true,
           vin: [],
           vout: []
         }
-      })
+      ])
       // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
 
       const txId = mock.tx.txid
