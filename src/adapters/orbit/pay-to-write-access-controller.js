@@ -405,10 +405,6 @@ class PayToWriteAccessController extends AccessController {
 
       if (!err.message) console.log('Error: ', err)
 
-      // return false
-
-      console.log('this.bchjs.apiToken: ', this.bchjs.apiToken)
-
       // Handle rate-limit error.
       if (err.error) throw new Error(err.error)
 
@@ -492,8 +488,8 @@ class PayToWriteAccessController extends AccessController {
         throw new Error('message must be a string')
       }
 
-      // console.log('bchjs.apiToken: ', this.bchjs.apiToken)
-      const tx = await this.bchjs.RawTransactions.getRawTransaction(txid, true)
+      let tx = await this.wallet.getTxData([txid])
+      tx = tx[0]
 
       // Get the address for the second output of the TX.
       const addresses = tx.vout[1].scriptPubKey.addresses
@@ -513,8 +509,6 @@ class PayToWriteAccessController extends AccessController {
       return isValid
     } catch (err) {
       console.error('Error in _validateSignature ')
-
-      console.log('this.bchjs.apiToken: ', this.bchjs.apiToken)
 
       if (err.error) throw new Error(err.error)
       throw err

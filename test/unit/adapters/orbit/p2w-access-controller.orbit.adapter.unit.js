@@ -38,9 +38,11 @@ describe('#PayToWriteAccessController', () => {
   })
 
   afterEach(() => sandbox.restore())
+
   after(() => {
     mongoose.connection.close()
   })
+
   describe('_validateSignature()', () => {
     it('should throw error if txid input is not provided', async () => {
       try {
@@ -82,9 +84,7 @@ describe('#PayToWriteAccessController', () => {
     it('should return false for invalid signature', async () => {
       try {
         // Mock
-        sandbox
-          .stub(uut.bchjs.RawTransactions, 'getRawTransaction')
-          .resolves(mock.tx)
+        sandbox.stub(uut.wallet, 'getTxData').resolves([mock.tx])
 
         const txId =
           'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
@@ -100,32 +100,9 @@ describe('#PayToWriteAccessController', () => {
       }
     })
 
-    it('should repackage errors from bch-api as an Error object', async () => {
-      try {
-        // Force an error
-        sandbox
-          .stub(uut.bchjs.RawTransactions, 'getRawTransaction')
-          .rejects({ error: 'some error message' })
-
-        const txId =
-          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
-        const signature =
-          'H+S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI='
-        const message = 'A message'
-
-        await uut._validateSignature(txId, signature, message)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'some error message')
-      }
-    })
-
     it('should return true for valid signature', async () => {
       // Mock
-      sandbox
-        .stub(uut.bchjs.RawTransactions, 'getRawTransaction')
-        .resolves(mock.tx)
+      sandbox.stub(uut.wallet, 'getTxData').resolves([mock.tx])
 
       const txId =
         'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
