@@ -489,6 +489,9 @@ class PayToWriteAccessController extends AccessController {
       }
 
       let tx = await this.wallet.getTxData([txid])
+
+      if(!tx) throw new Error('Could not get transaction details from BCH service.')
+
       tx = tx[0]
 
       // Get the address for the second output of the TX.
