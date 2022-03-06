@@ -94,8 +94,9 @@ describe('#ipfs-coord', () => {
           }
         },
         adapters: {
-          orbit: {
-            privateLog: () => {}
+          pubsub: {
+            privateLog: () => {
+            }
           }
         }
       }
@@ -116,7 +117,7 @@ describe('#ipfs-coord', () => {
 
         assert.fail('Unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Cannot read property')
+        assert.include(err.message, 'Cannot read')
       }
     })
   })

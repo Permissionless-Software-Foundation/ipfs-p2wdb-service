@@ -69,7 +69,7 @@ describe('#Entry-REST-Controller', () => {
       } catch (err) {
         // console.log(err)
         assert.equal(err.status, 422)
-        assert.include(err.message, 'Cannot read property')
+        assert.include(err.message, 'Cannot read')
       }
     })
 
