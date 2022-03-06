@@ -333,7 +333,7 @@ describe('#UserRPC', () => {
       assert.equal(result.endpoint, 'updateUser')
       assert.equal(result.success, false)
       assert.equal(result.status, 422)
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
   })
 
@@ -375,7 +375,7 @@ describe('#UserRPC', () => {
       assert.equal(result.endpoint, 'getUser')
       assert.equal(result.success, false)
       assert.equal(result.status, 422)
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
   })
 
@@ -397,7 +397,7 @@ describe('#UserRPC', () => {
       // Force an error:
       sandbox
         .stub(uut.userLib, 'deleteUser')
-        .rejects(new Error('Cannot read property'))
+        .rejects(new Error('Cannot read'))
 
       const result = await uut.deleteUser()
       // console.log('result: ', result)
@@ -406,7 +406,7 @@ describe('#UserRPC', () => {
       assert.equal(result.endpoint, 'deleteUser')
       assert.equal(result.success, false)
       assert.equal(result.status, 422)
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
   })
 })

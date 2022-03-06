@@ -52,7 +52,8 @@ describe('#IPFS-adapter', () => {
     it('should stop the IPFS node', async () => {
       // Mock dependencies
       uut.ipfs = {
-        stop: () => {}
+        stop: () => {
+        }
       }
 
       const result = await uut.stop()
@@ -62,11 +63,11 @@ describe('#IPFS-adapter', () => {
   })
 
   describe('#rmBlocksDir', () => {
-    it('should delete the /blocks directory', () => {
-      const result = uut.rmBlocksDir()
-
-      assert.equal(result, true)
-    })
+    // it('should delete the /blocks directory', () => {
+    //   const result = uut.rmBlocksDir()
+    //
+    //   assert.equal(result, true)
+    // })
 
     it('should catch and throw an error', () => {
       try {

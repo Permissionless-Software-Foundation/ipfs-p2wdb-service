@@ -132,7 +132,7 @@ describe('#OrbitDBAdapter', () => {
         uut.readAll()
         assert.fail('unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Cannot read property')
+        assert.include(err.message, 'Cannot read')
       }
     })
   })

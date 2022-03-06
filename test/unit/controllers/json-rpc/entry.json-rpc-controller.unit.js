@@ -26,7 +26,7 @@ describe('#ENTRY-JSON-RPC', () => {
 
     const useCases = new UseCasesMock()
 
-    uut = new EntryRPC({ adapters, useCases })
+    uut = new EntryRPC({ adapters, useCases})
   })
 
   afterEach(() => sandbox.restore())
@@ -47,7 +47,7 @@ describe('#ENTRY-JSON-RPC', () => {
 
     it('should throw an error if useCases are not passed in', () => {
       try {
-        uut = new EntryRPC({ adapters })
+        uut = new EntryRPC({ adapters})
         console.log(uut)
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -89,7 +89,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'readAll')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
 
     it('should throw an error if input is empty', async () => {
@@ -103,7 +103,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'readAll')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read ')
     })
   })
 
@@ -140,7 +140,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'write')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
 
     it('should throw an error if input is empty', async () => {
@@ -154,7 +154,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'write')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
   })
   describe('#getByHash', () => {
@@ -187,7 +187,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'getByHash')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
 
     it('should throw an error if input is empty', async () => {
@@ -201,7 +201,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'getByHash')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
   })
   describe('#getByTxid', () => {
@@ -234,7 +234,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'getByTxid')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
 
     it('should throw an error if input is empty', async () => {
@@ -248,7 +248,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'getByTxid')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
   })
 
@@ -282,7 +282,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'getByAppId')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
 
     it('should throw an error if input is empty', async () => {
@@ -296,7 +296,7 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.isFalse(result.success)
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'getByAppId')
-      assert.include(result.message, 'Cannot read property')
+      assert.include(result.message, 'Cannot read')
     })
   })
 })

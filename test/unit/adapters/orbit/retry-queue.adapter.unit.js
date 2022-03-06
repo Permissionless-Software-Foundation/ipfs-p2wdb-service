@@ -14,7 +14,7 @@ let sandbox
 
 describe('#retry-queue.js', () => {
   beforeEach(() => {
-    uut = new RetryQueue({ bchjs })
+    uut = new RetryQueue({ bchjs})
 
     sandbox = sinon.createSandbox()
   })
@@ -44,7 +44,8 @@ describe('#retry-queue.js', () => {
     })
     it('should throw an error if input object  is not provided', async () => {
       try {
-        const funcHandler = () => {}
+        const funcHandler = () => {
+        }
         await uut.retryWrapper(funcHandler)
         assert.fail('unexpected code path')
       } catch (err) {
@@ -114,7 +115,8 @@ describe('#retry-queue.js', () => {
     })
     it('should throw an error if input object  is not provided', async () => {
       try {
-        const funcHandler = () => {}
+        const funcHandler = () => {
+        }
         await uut.addToQueue(funcHandler)
         assert.fail('unexpected code path')
       } catch (err) {
@@ -157,7 +159,7 @@ describe('#retry-queue.js', () => {
         assert.fail('unexpected code path')
       } catch (err) {
         console.log(err)
-        assert.include(err.message, 'Cannot read property')
+        assert.include(err.message, 'Cannot read')
       }
     })
   })
