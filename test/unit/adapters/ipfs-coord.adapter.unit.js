@@ -16,7 +16,7 @@ describe('#ipfs-coord', () => {
   beforeEach(() => {
     const ipfs = IPFSMock.create()
     const bchjs = {}
-    uut = new IPFSCoordAdapter({ ipfs, bchjs})
+    uut = new IPFSCoordAdapter({ ipfs, bchjs })
 
     sandbox = sinon.createSandbox()
   })
@@ -40,7 +40,7 @@ describe('#ipfs-coord', () => {
     it('should throw an error if bchjs instance is not included', () => {
       try {
         const ipfs = IPFSMock.create()
-        uut = new IPFSCoordAdapter({ ipfs})
+        uut = new IPFSCoordAdapter({ ipfs })
 
         assert.fail('Unexpected code path')
       } catch (err) {

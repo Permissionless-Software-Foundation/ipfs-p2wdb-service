@@ -14,7 +14,7 @@ let sandbox
 
 describe('#retry-queue.js', () => {
   beforeEach(() => {
-    uut = new RetryQueue({ bchjs})
+    uut = new RetryQueue({ bchjs })
 
     sandbox = sinon.createSandbox()
   })

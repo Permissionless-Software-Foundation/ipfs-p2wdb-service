@@ -26,7 +26,7 @@ describe('#ENTRY-JSON-RPC', () => {
 
     const useCases = new UseCasesMock()
 
-    uut = new EntryRPC({ adapters, useCases})
+    uut = new EntryRPC({ adapters, useCases })
   })
 
   afterEach(() => sandbox.restore())
@@ -47,7 +47,7 @@ describe('#ENTRY-JSON-RPC', () => {
 
     it('should throw an error if useCases are not passed in', () => {
       try {
-        uut = new EntryRPC({ adapters})
+        uut = new EntryRPC({ adapters })
         console.log(uut)
         assert.fail('Unexpected code path')
       } catch (err) {
