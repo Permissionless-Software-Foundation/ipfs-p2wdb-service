@@ -94,8 +94,9 @@ describe('#ipfs-coord', () => {
           }
         },
         adapters: {
-          orbit: {
-            privateLog: () => {}
+          pubsub: {
+            privateLog: () => {
+            }
           }
         }
       }
