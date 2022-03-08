@@ -91,9 +91,9 @@ describe('#Users-REST-Controller', () => {
       assert.property(ctx.response.body, 'user')
       assert.property(ctx.response.body, 'token')
 
-      // Used by downstream tests.
-      // testUser = ctx.response.body.user
-      // console.log('testUser: ', testUser)
+    // Used by downstream tests.
+    // testUser = ctx.response.body.user
+    // console.log('testUser: ', testUser)
     })
   })
 

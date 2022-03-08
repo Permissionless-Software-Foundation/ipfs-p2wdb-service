@@ -14,7 +14,8 @@ let ctx
 const mockContext = require('../../../../unit/mocks/ctx-mock').context
 
 describe('Contact', () => {
-  before(async () => {})
+  before(async () => {
+  })
 
   beforeEach(() => {
     uut = new ContactController()
