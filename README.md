@@ -10,7 +10,7 @@ This code repository is the 'server' or 'service' side, for operating a P2WDB lo
 
 The P2WDB has the advantages of a blockchain:
 - There are multiple *nodes* on the network hosting their own copy of the database.
-- These multiple *redundant copies* make it very difficult to censor content in the database, and ensure high availability of the data.
+- These *redundant copies* make it very difficult to censor content in the database, and ensure high availability of the data.
 - The nodes sync their databases using *consensus rules*.
 - Writes are paid for by burning PSF tokens. This provides *incentive* to improve the software and services.
 
@@ -76,14 +76,12 @@ Keeping the P2WDB small and nimble ensures it's easy to replicate by many servic
 
 ipfs-p2wdb-service is a fork of [ipfs-service-provider](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). This project ports the pay-to-write (P2W) database (DB) specific code to the ipfs-service-provider boilerplate code. ipfs-service-provider provides both a *REST API over HTTP* interface (web2) and *JSON RPC over IPFS* interface (web3) to access the P2WDB services.
 
-Documentation:
+### Documentation:
 
-- [API documentation for both interfaces can be found here.](https://p2wdb.fullstackcash.nl/)
+- [API documentation for both interfaces can be found here.](https://p2wdb.fullstack.cash/)
 - [Example code for burning tokens and writing data to the DB.](./examples)
 - [Developer Documentation and Architectural Overview](./dev-docs)
 - [Next Steps for this project](./dev-docs/next-steps.md)
-
-This project is under heavy development and is only appropriate for use by JavaScript developers familiar with REST API or JSON RPC development.
 
 ### Operation Notes
 
@@ -91,32 +89,19 @@ This project is under heavy development and is only appropriate for use by JavaS
 
 - [Instructions on setting up IPFS private networks.](https://github.com/ipfs/go-ipfs/blob/master/docs/experimental-features.md#private-networks)
 - For external installations, the swarm.key file will typically go in `~/.ipfs/swarm.key`
-- For production Docker containers, the key would go in `ipfs-service-provider/production/data/go-ipfs/data/swarm.key`
-
-- By default, the P2WDB accesses the BCH blockchain through https://free-bch.fullstack.cash, which is simply a running implementation of [ipfs-bch-wallet-consumer](https://github.com/Permissionless-Software-Foundation/ipfs-bch-wallet-consumer). If you want to connect to a different instance, set the URL in the `CONSUMER_URL` environment variable.
+- For production Docker containers, the key is automatically mounted by the container.
+- By default, the P2WDB accesses the BCH blockchain through https://free-bch.fullstack.cash, which is simply a running instance of [ipfs-bch-wallet-consumer](https://github.com/Permissionless-Software-Foundation/ipfs-bch-wallet-consumer). This is part of the PSF web3 infrastructure, described at [CashStack.info](https://cashstack.info). If you want to connect to a different instance, set the URL in the `CONSUMER_URL` environment variable. A list of instances is available [in this gist](https://gist.github.com/christroutner/63c5513782181f8b8ea3eb89f7cadeb6).
 
 ### Setup Development Environment
 
-**Note:** These instructions are out of date and need to be updated.
-
-The development environment is assumed to be Ubuntu Linux.
-
-- Clone this repository.
-- Make sure you have node-pre-gyp installed: `sudo npm install -g node-pre-gyp`
-- Install dependencies with `npm install`
-- If MongoDB is not installed, install it by running the `./install-mongo.sh` script
-- Run tests with `npm test`
-- Start with `npm start`
+TODO: This section needs more information added to it.
 
 ### Docker container
 
 The target production deployment of this software is as a Docker container. The [docker folder](./production/docker) contains the Dockerfile and `docker-compose.yml` file to generate a new Docker image. The production target is Ubuntu Linux 20.04, running Docker and Docker Compose.
 
-- Generate a new Docker image: `docker-compose build --no-cache`
+- Pull down the Docker images: `docker-compose pull`
 - Start the Docker container: `docker-compose up -d`
-- Stop the Docker container: `docker-compose down`
-- Copy the [swarm.key](./swarm.key) file to `ipfs-p2wdb-service/production/data/go-ipfs/data/swarm.key`.
-- Bring the containers back up with `docker-compose up -d`.
 
 ## License
 
