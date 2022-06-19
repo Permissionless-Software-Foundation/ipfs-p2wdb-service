@@ -2,12 +2,22 @@
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
+## Overview
+
+P2WDB is an acronym for pay-to-write database. It's a peer-to-peer (p2p) database that operates similarly to a blockchain.
+
+It has the same advantages as a blockchain:
+- There are multiple *nodes* on the network hosting their own copy of the database.
+- These multiple *redundant copies* make it very difficult to censor content in the database, and ensure high availability of the data.
+- The nodes sync their databases using *consensus rules*.
+- Writes are paid for by burning PSF tokens. This provides *incentive* to improve the software.
+
 ## What Is P2WDB?
 
 - [YouTube Video Overview of the P2WDB Project](https://youtu.be/korI-8W240s)
 - [JSON RPC and REST API Documentation](https://p2wdb-docs.fullstack.cash/)
 
-P2WDB is an acronym for pay-to-write database. It's a peer-to-peer (p2p) databse that operates similarly to a blockchain. It solves two growing problems in the blockchain space:
+P2WDB is an acronym for pay-to-write database. It's a peer-to-peer (p2p) database that operates similarly to a blockchain. It solves two growing problems in the blockchain space:
 
 - **On-chain data** - Blockchains can be thought of as censorship resistant databases. They are great at censorship resistance, but they are really bad at being databases. On-chain data 'bloat' or 'state management' is one of the hardest scaling problems in the blockchain space. The P2WDB helps blockchains scale by providing a place to move data off-chain, but still be able to access that data on-chain.
 
