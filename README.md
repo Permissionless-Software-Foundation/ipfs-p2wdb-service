@@ -6,20 +6,21 @@
 
 P2WDB is an acronym for **pay-to-write database**. It's a peer-to-peer (p2p) database that operates over [IPFS](https://ipfs.io), and functions similarly to a blockchain.
 
-It has the advantages as a blockchain:
+This code repository is the 'server' or 'service' side, for operating a P2WDB locally. If you simply want to read or write data to the P2WDB, check out the 'client' JavaScript library: [p2wdb](https://www.npmjs.com/package/p2wdb).
+
+The P2WDB has the advantages of a blockchain:
 - There are multiple *nodes* on the network hosting their own copy of the database.
 - These multiple *redundant copies* make it very difficult to censor content in the database, and ensure high availability of the data.
 - The nodes sync their databases using *consensus rules*.
 - Writes are paid for by burning PSF tokens. This provides *incentive* to improve the software and services.
 
-It has the advantages of a web-app database:
-- Up to 10KB of data can be written per payment.
+The P2WDB has the advantages of a web-app database:
+- Up to 10KB of data can be included per write.
 - Reduced size, since P2WDB prunes data over a year old.
 - Easy backup of data to Filecoin for long-term storage.
 - REST API interface for CRUD (Create, Read, Update, Delete) operations over web2.
 - JSON RPC interface for CRUD operations over web3 (IPFS).
-- Webhooks for triggering events when application-specific data hits the P2WDB.
-
+- Webhooks for triggering events when application-specific data is written to the P2WDB.
 
 ## What Is P2WDB?
 
@@ -52,9 +53,9 @@ There are three primary communication interfaces for a P2WDB:
 
 ### P2WDB Architecture
 
-Each blockchain will have its own P2WDB instance that is specific to that blockchain. The local P2WDB can be written-to by providing a proof-of-burn on that blockchain. A proof-of-burn is simply a transaction ID (TXID), where a specific quantity of a specific token (e.g. 0.01 [PSF tokens](https://psfoundation.cash)) was burned in that transaction. That is the 'ticket' that lets a user write new data to the database. Anyone can read from the database.
+Each blockchain will have its own P2WDB instance that is specific to that blockchain. The local P2WDB can be written-to by providing a proof-of-burn on that blockchain. A proof-of-burn is simply a transaction ID (TXID), where a specific quantity of a specific token (e.g. $0.01 USD in [PSF tokens](https://psfoundation.cash)) was burned in that transaction. That is the 'ticket' that lets a user write new data to the database. Anyone can read from the database for free.
 
-All the local P2WDBs will feed into a global P2WDB, which will be blockchain agnostic. This does not require any effort on the users part. Any data written to a local P2WDB will be automatically added to the global P2WDB. In this way, the P2WDB can function as a cross-blockchain communication medium and data provider.
+The first P2WDB instance focuses on the BCH blockchain. When other blockchains are incorporated, the blockchain-specific P2WDBs will feed into a global P2WDB, which will be blockchain agnostic. This does not require any effort on the users part. Any data written to a blockchain-specific P2WDB will be automatically added to the global P2WDB. In this way, the P2WDB can function as a cross-blockchain communication medium and data provider.
 
 ### Backups
 
@@ -64,6 +65,8 @@ Smaller databases make decentralization and censorship resistance better. For th
 
 Keeping the P2WDB small and nimble ensures it's easy to replicate by many service providers. The more service providers participating in the ecosystem, the more censorship resistant the data becomes.
 
+## Requirements
+
 - node **^16.15.1**
 - npm **^8.11.0**
 - Docker **^20.10.8**
@@ -71,17 +74,7 @@ Keeping the P2WDB small and nimble ensures it's easy to replicate by many servic
 
 ## About This Repository
 
-This is a fork of [ipfs-service-provider](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). This project ports the pay-to-write (P2W) database (DB) code from [this older project](https://github.com/Permissionless-Software-Foundation/pay-to-write-orbitdb) and adds it to the ipfs-service-provider boilerplate code in order to add both a REST API over HTTP interface and JSON RPC over IPFS interface to access the P2WDB services.
-
-Two API endpoints are currently implemented:
-
-- Write - add an entry to the database.
-- Read all - read all entries in the database.
-
-Each endpoint is available over two interfaces:
-
-- A REST API over HTTP
-- A JSON RPC over IPFS, using [chat.fullstack.cash](https://chat.fullstack.cash)
+ipfs-p2wdb-service is a fork of [ipfs-service-provider](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). This project ports the pay-to-write (P2W) database (DB) specific code to the ipfs-service-provider boilerplate code. ipfs-service-provider provides both a *REST API over HTTP* interface (web2) and *JSON RPC over IPFS* interface (web3) to access the P2WDB services.
 
 Documentation:
 
