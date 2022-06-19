@@ -6,11 +6,20 @@
 
 P2WDB is an acronym for pay-to-write database. It's a peer-to-peer (p2p) database that operates similarly to a blockchain.
 
-It has the same advantages as a blockchain:
+It has the advantages as a blockchain:
 - There are multiple *nodes* on the network hosting their own copy of the database.
 - These multiple *redundant copies* make it very difficult to censor content in the database, and ensure high availability of the data.
 - The nodes sync their databases using *consensus rules*.
-- Writes are paid for by burning PSF tokens. This provides *incentive* to improve the software.
+- Writes are paid for by burning PSF tokens. This provides *incentive* to improve the software and services.
+
+It has the advantages of a web-app database:
+- Up to 10KB of data can be written per payment.
+- Reduced size, since P2WDB prunes data over a year old.
+- Easy backup of data to Filecoin for long-term storage.
+- REST API interface for CRUD (Create, Read, Update, Delete) operations over web2.
+- JSON RPC interface for CRUD operations over web3 (IPFS).
+- Webhooks for triggering events when application-specific data hits the P2WDB.
+
 
 ## What Is P2WDB?
 
