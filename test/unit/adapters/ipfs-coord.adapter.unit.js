@@ -8,6 +8,7 @@ const sinon = require('sinon')
 const IPFSCoordAdapter = require('../../../src/adapters/ipfs/ipfs-coord')
 const IPFSMock = require('../mocks/ipfs-mock')
 const IPFSCoordMock = require('../mocks/ipfs-coord-mock')
+const config = require('../../../config')
 
 describe('#ipfs-coord', () => {
   let uut
@@ -63,6 +64,16 @@ describe('#ipfs-coord', () => {
       // console.log('result: ', result)
 
       assert.equal(result, true)
+    })
+    it('should return a promise that resolves into an instance of IPFS in production mode', async () => {
+      uut.config.isProduction = true
+      // Mock dependencies.
+      uut.IpfsCoord = IPFSCoordMock
+
+      const result = await uut.start()
+      // console.log('result: ', result)
+      assert.equal(result, true)
+      config.isProduction = false
     })
   })
 

@@ -45,8 +45,8 @@ Smaller databases make decentralization and censorship resistance better. For th
 
 Keeping the P2WDB small and nimble ensures it's easy to replicate by many service providers. The more service providers participating in the ecosystem, the more censorship resistant the data becomes.
 
-- node **^14.18.2**
-- npm **^8.3.0**
+- node **^16.15.1**
+- npm **^8.11.0**
 - Docker **^20.10.8**
 - Docker Compose **^1.27.4**
 
