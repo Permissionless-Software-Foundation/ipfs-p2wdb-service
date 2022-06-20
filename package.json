@@ -1,7 +1,7 @@
 {
   "name": "ipfs-p2wdb-service",
   "version": "3.0.0",
-  "description": "A Koa-based combination of a REST API and IPFS JSON RPC. Boilerplate for starting new projects.",
+  "description": "P2WDB: pay-to-write database, a p2p censorship-resistent database.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

@@ -216,6 +216,10 @@ class PayToWriteAccessController extends AccessController {
         return isValid
       }
 
+      // TODO: Ensure the entry is less than a year old.
+
+      // TODO: Ensure the entry has paid the appropriate amount of PSF tokens.
+
       // Validate the TXID against the blockchain; use a queue with automatic retry.
       // New nodes connecting will attempt to rapidly validate a lot of entries.
       // A promise-based queue allows this to happen while respecting rate-limits
