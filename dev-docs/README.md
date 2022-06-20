@@ -39,7 +39,7 @@ A JavaScript library for clients is provided via npm as [p2wdb](https://www.npmj
 
 ## 'Block' Explorer
 
-An interact web app is available at [explorer.fullstack.cash](https://explorer.fullstack.cash) for debugging and interrogating entries in the P2WDB. This app functions similarly to a 'block explorer' in blockchains, like [Blockchain](https://blockchair.com).
+An interactive web app is available at [explorer.fullstack.cash](https://explorer.fullstack.cash) for debugging and interrogating entries in the P2WDB. This app functions similarly to a 'block explorer' in blockchains, like [Blockchair](https://blockchair.com).
 
 ## Dependencies
 
@@ -94,4 +94,4 @@ This idea compliments blockchains by creating a much more flexible and scalable 
 
 ## Join Us
 
-If you have technical questions, please ask them in our [community tech supoort Telegram channel](https://t.me/bch_js_toolkit). If you want to work with like-minded JavaScript developers on this software, join the [PSF Telegram channel](https://t.me/permissionless_software) and learn more about the [Permissionless Software Foundation](https://psfoundation.info).
+If you have technical questions, please ask them in our [community tech support Telegram channel](https://t.me/bch_js_toolkit). If you want to work with like-minded JavaScript developers on this software, join the [PSF Telegram channel](https://t.me/permissionless_software) and learn more about the [Permissionless Software Foundation](https://psfoundation.info).
