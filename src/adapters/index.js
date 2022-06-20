@@ -57,6 +57,8 @@ class Adapters {
 
       // Start the P2WDB
       await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
+
+      return true
     } catch (err) {
       console.error('Error in adapters/index.js/start()')
       throw err

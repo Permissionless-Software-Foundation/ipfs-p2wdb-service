@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "npm run test:unit",
+    "test": "npm run test:all",
     "test:all": "export P2W_ENV=test && nyc --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/integration test/e2e/automated",
     "test:unit": "export P2W_ENV=test && mocha --exit --timeout 15000 --recursive test/unit/",
     "test:e2e:auto": "export P2W_ENV=test && mocha --exit --timeout 15000 test/e2e/automated/",

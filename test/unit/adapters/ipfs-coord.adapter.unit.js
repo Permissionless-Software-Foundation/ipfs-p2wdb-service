@@ -132,4 +132,20 @@ describe('#ipfs-coord', () => {
       }
     })
   })
+
+  describe('#subscribeToChat', () => {
+    it('should subscribe to the chat channel', async () => {
+      // Mock dependencies
+      uut.ipfsCoord = {
+        adapters: {
+          pubsub: {
+            subscribeToPubsubChannel: async () => {
+            }
+          }
+        }
+      }
+
+      await uut.subscribeToChat()
+    })
+  })
 })
