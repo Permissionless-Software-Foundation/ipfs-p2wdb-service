@@ -194,7 +194,7 @@ class PayToWriteAccessController extends AccessController {
       const signature = entry.payload.value.signature
       const dbData = entry.payload.value.data
 
-      // console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
+      console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
 
       // Throw an error if the message is bigger than 10 KB.
       // TODO: Create a unit test for this code path.

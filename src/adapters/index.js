@@ -19,6 +19,7 @@ const FullStackJWT = require('./fullstack-jwt')
 const P2WDB = require('./p2wdb')
 const EntryAdapter = require('./entry')
 const WebhookAdapter = require('./webhook')
+const WritePrice = require('./write-price')
 
 const config = require('../../config')
 
@@ -35,6 +36,7 @@ class Adapters {
     this.p2wdb = new P2WDB()
     this.entry = new EntryAdapter()
     this.webhook = new WebhookAdapter()
+    this.writePrice = new WritePrice()
 
     this.config = config
 
@@ -51,6 +53,8 @@ class Adapters {
         // Instantiate bch-js with the JWT token, and overwrite the placeholder for bch-js.
         this.bchjs = await this.fullStackJwt.instanceBchjs()
       }
+
+      await this.writePrice.getWriteCost()
 
       // Start the IPFS node.
       await this.ipfs.start({ bchjs: this.bchjs })
