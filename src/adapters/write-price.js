@@ -27,7 +27,7 @@ class WritePrice {
 
   // Returns the value in PSF tokens that must be burned in order for a write
   // to be accepted.
-  async getWriteCost () {
+  async getWriteCostPsf () {
     try {
       const tokenData = await this.wallet.getTokenData(writeTokenId)
       // console.log('tokenData: ', tokenData)
@@ -71,7 +71,7 @@ class WritePrice {
       // Store the price in the state of this instance.
       this.currentRate = currentRate.psfPerWrite
 
-      return currentRate
+      return currentRate.psfPerWrite
     } catch (err) {
       console.error('Error in getWriteCost()')
       throw err

@@ -30,11 +30,10 @@ describe('#write-price', () => {
       sandbox.stub(uut.wallet, 'getTokenData').resolves(mockData.mockTokenData01)
       sandbox.stub(uut.axios, 'get').resolves({ data: mockData.mutableData01 })
 
-      const result = await uut.getWriteCost()
+      const result = await uut.getWriteCostPsf()
       // console.log('result: ', result)
 
-      assert.equal(result.date.toISOString(), '2022-06-24T07:00:00.000Z')
-      assert.equal(result.psfPerWrite, 0.133)
+      assert.equal(result, 0.133)
     })
 
     it('should catch and throw an error', async () => {
@@ -42,7 +41,7 @@ describe('#write-price', () => {
       sandbox.stub(uut.wallet, 'getTokenData').rejects(new Error('test error'))
 
       try {
-        await uut.getWriteCost()
+        await uut.getWriteCostPsf()
 
         assert.fail('Unexpected result')
       } catch (err) {
@@ -57,7 +56,7 @@ describe('#write-price', () => {
       sandbox.stub(uut.axios, 'get').resolves({ data: mockData.mutableData01 })
 
       try {
-        await uut.getWriteCost()
+        await uut.getWriteCostPsf()
 
         assert.fail('Unexpected result')
       } catch (err) {

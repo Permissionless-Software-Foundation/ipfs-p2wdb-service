@@ -390,6 +390,55 @@ class EntryRESTControllerLib {
     }
   }
 
+
+  /**
+   * @api {get} /entry/cost/psf Write cost in PSF tokens
+   * @apiPermission public
+   * @apiName P2WDB Cost in PSF
+   * @apiGroup REST P2WDB
+   *
+   * @apiDescription
+   * Get the cost of writing an entry to the database, denominated in PSF tokens.
+   *
+   *  This endpoint returns the following properties
+   *
+   *  - success : true/false
+   *  - psfCost: Number of PSF tokens to burn in order to write to the P2WDB
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5010/entry/cost/psf
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *  HTTP/1.1 200 OK
+   *  {
+   *     "success":true,
+   *     "psfCost": 0.133
+   *  }
+   * @apiError UnprocessableEntity Missing required parameters
+   *
+   * @apiErrorExample {json} Error-Response:
+   *     HTTP/1.1 422 Unprocessable Entity
+   *     {
+   *       "status": 422,
+   *       "error": "Unprocessable Entity"
+   *     }
+   */
+  async getPsfCost (ctx) {
+    try {
+      // Get the cost in PSF tokens to write to the DB.
+      const psfCost = await this.useCases.entry.cost.getPsfCost()
+
+      ctx.body = {
+        success: true,
+        psfCost
+      }
+    } catch (err) {
+      // console.log('Error in get-by-txid.js/restController(): ', err)
+      // throw err
+      _this.handleError(ctx, err)
+    }
+  }
+
   // DRY error handler
   handleError (ctx, err) {
     // If an HTTP status is specified by the buisiness logic, use that.

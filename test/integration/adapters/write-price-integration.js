@@ -11,9 +11,9 @@ describe('#write-price', () => {
     uut = new WritePrice()
   })
 
-  describe('#getWriteCost', () => {
+  describe('#getWriteCostPsf', () => {
     it('should get the write price from the token', async () => {
-      const result = await uut.getWriteCost()
+      const result = await uut.getWriteCostPsf()
       console.log('result: ', result)
     })
   })
