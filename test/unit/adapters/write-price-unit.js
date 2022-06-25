@@ -5,16 +5,19 @@
 // Global npm libraries
 const sinon = require('sinon')
 const assert = require('chai').assert
+const cloneDeep = require('lodash.clonedeep')
 
 // Local libraries
 const WritePrice = require('../../../src/adapters/write-price')
-const mockData = require('../mocks/adapters/write-price-mocks')
+const mockDataLib = require('../mocks/adapters/write-price-mocks')
 
 describe('#write-price', () => {
-  let uut, sandbox
+  let uut, sandbox, mockData
 
   beforeEach(() => {
     uut = new WritePrice()
+
+    mockData = cloneDeep(mockDataLib)
 
     sandbox = sinon.createSandbox()
   })
@@ -44,6 +47,21 @@ describe('#write-price', () => {
         assert.fail('Unexpected result')
       } catch (err) {
         assert.include(err.message, 'test error')
+      }
+    })
+
+    it('should throw error if rate can not be determined', async () => {
+      // Force an error
+      sandbox.stub(uut.wallet, 'getTokenData').resolves(mockData.mockTokenData01)
+      mockData.mutableData01.p2wdbPriceHistory = []
+      sandbox.stub(uut.axios, 'get').resolves({ data: mockData.mutableData01 })
+
+      try {
+        await uut.getWriteCost()
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Could not retrieve write rate in PSF tokens.')
       }
     })
   })

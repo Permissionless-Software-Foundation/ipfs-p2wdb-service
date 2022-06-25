@@ -44,7 +44,7 @@ class WritePrice {
       // console.log('rates: ', rates)
 
       let currentRate
-      let bestDateDiff = 100000000 // Init to a large number
+      let bestDateDiff = 100000000000 // Init to a large number
 
       // Loop through the array of rate data. Find the data that currently applies.
       for (let i = 0; i < rates.length; i++) {
@@ -54,15 +54,22 @@ class WritePrice {
         const rateDate = new Date(thisRate.date)
 
         const rateDateDiff = now.getTime() - rateDate.getTime()
+        // console.log(`rateDateDiff ${i}: `, rateDateDiff)
 
         if (rateDateDiff < bestDateDiff) {
           bestDateDiff = rateDateDiff
           currentRate = thisRate
         }
       }
+      // console.log('currentRate: ', currentRate)
+
+      if (!currentRate) throw new Error('Could not retrieve write rate in PSF tokens.')
 
       // Convert the date string into a Date object.
       currentRate.date = new Date(currentRate.date)
+
+      // Store the price in the state of this instance.
+      this.currentRate = currentRate.psfPerWrite
 
       return currentRate
     } catch (err) {

@@ -54,7 +54,8 @@ class Adapters {
         this.bchjs = await this.fullStackJwt.instanceBchjs()
       }
 
-      await this.writePrice.getWriteCost()
+      const currentRate = await this.writePrice.getWriteCost()
+      console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
 
       // Start the IPFS node.
       await this.ipfs.start({ bchjs: this.bchjs })
