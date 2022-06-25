@@ -49,7 +49,7 @@ class WritePrice {
       let bestDateDiff = 100000000000 // Init to a large number
 
       // Ensure targetDate is a Date object, if the user passed it in.
-      if(targetDate) targetDate = new Date(targetDate)
+      if (targetDate) targetDate = new Date(targetDate)
 
       // Loop through the array of rate data. Find the data that currently applies.
       for (let i = 0; i < rates.length; i++) {
@@ -59,13 +59,12 @@ class WritePrice {
         const rateDate = new Date(thisRate.date)
 
         let rateDateDiff = bestDateDiff
-        if(targetDate) {
+        if (targetDate) {
           rateDateDiff = Math.abs(targetDate.getTime() - rateDate.getTime())
         } else {
           rateDateDiff = Math.abs(now.getTime() - rateDate.getTime())
         }
         // console.log(`rateDateDiff ${i}: `, rateDateDiff)
-
 
         if (rateDateDiff < bestDateDiff) {
           bestDateDiff = rateDateDiff

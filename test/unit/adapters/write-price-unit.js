@@ -65,7 +65,6 @@ describe('#write-price', () => {
     })
 
     it('should get the rate for a target date', async () => {
-
       // Mock dependencies
       sandbox.stub(uut.wallet, 'getTokenData').resolves(mockData.mockTokenData01)
       sandbox.stub(uut.axios, 'get').resolves({ data: mockData.mutableData01 })
@@ -76,7 +75,6 @@ describe('#write-price', () => {
       // console.log('result: ', result)
 
       assert.equal(result, 0.126)
-
     })
   })
 })
