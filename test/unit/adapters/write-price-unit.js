@@ -24,8 +24,8 @@ describe('#write-price', () => {
   describe('#getWriteCost', () => {
     it('should get latest price for P2WDB writes', async () => {
       // Mock dependencies
-      sandbox.stub(uut.wallet,'getTokenData').resolves(mockData.mockTokenData01)
-      sandbox.stub(uut.axios,'get').resolves({data: mockData.mutableData01})
+      sandbox.stub(uut.wallet, 'getTokenData').resolves(mockData.mockTokenData01)
+      sandbox.stub(uut.axios, 'get').resolves({ data: mockData.mutableData01 })
 
       const result = await uut.getWriteCost()
       // console.log('result: ', result)
@@ -36,13 +36,13 @@ describe('#write-price', () => {
 
     it('should catch and throw an error', async () => {
       // Force an error
-      sandbox.stub(uut.wallet,'getTokenData').rejects(new Error('test error'))
+      sandbox.stub(uut.wallet, 'getTokenData').rejects(new Error('test error'))
 
       try {
         await uut.getWriteCost()
 
         assert.fail('Unexpected result')
-      } catch(err) {
+      } catch (err) {
         assert.include(err.message, 'test error')
       }
     })
