@@ -27,14 +27,16 @@ class WritePrice {
 
   // Returns the value in PSF tokens that must be burned in order for a write
   // to be accepted.
-  async getWriteCostPsf () {
+  async getWriteCostPsf (targetDate) {
     try {
       const tokenData = await this.wallet.getTokenData(writeTokenId)
       // console.log('tokenData: ', tokenData)
 
+      // Remove the ipfs:// prefix.
       const mutableCid = tokenData.mutableData.slice(7)
       // console.log('mutableCid: ', mutableCid)
 
+      // Get the data from IPFS.
       const request = await this.axios.get(`https://${mutableCid}.ipfs.dweb.link/data.json`)
       // console.log(`request.data: ${JSON.stringify(request.data, null, 2)}`)
 
@@ -46,6 +48,9 @@ class WritePrice {
       let currentRate
       let bestDateDiff = 100000000000 // Init to a large number
 
+      // Ensure targetDate is a Date object, if the user passed it in.
+      if(targetDate) targetDate = new Date(targetDate)
+
       // Loop through the array of rate data. Find the data that currently applies.
       for (let i = 0; i < rates.length; i++) {
         // The correct rate is the one closest to the current date.
@@ -53,8 +58,14 @@ class WritePrice {
         const thisRate = rates[i]
         const rateDate = new Date(thisRate.date)
 
-        const rateDateDiff = now.getTime() - rateDate.getTime()
+        let rateDateDiff = bestDateDiff
+        if(targetDate) {
+          rateDateDiff = Math.abs(targetDate.getTime() - rateDate.getTime())
+        } else {
+          rateDateDiff = Math.abs(now.getTime() - rateDate.getTime())
+        }
         // console.log(`rateDateDiff ${i}: `, rateDateDiff)
+
 
         if (rateDateDiff < bestDateDiff) {
           bestDateDiff = rateDateDiff

@@ -63,5 +63,20 @@ describe('#write-price', () => {
         assert.include(err.message, 'Could not retrieve write rate in PSF tokens.')
       }
     })
+
+    it('should get the rate for a target date', async () => {
+
+      // Mock dependencies
+      sandbox.stub(uut.wallet, 'getTokenData').resolves(mockData.mockTokenData01)
+      sandbox.stub(uut.axios, 'get').resolves({ data: mockData.mutableData01 })
+
+      const target = '06/21/2022'
+
+      const result = await uut.getWriteCostPsf(target)
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.126)
+
+    })
   })
 })
