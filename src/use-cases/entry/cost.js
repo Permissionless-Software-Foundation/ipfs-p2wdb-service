@@ -3,7 +3,7 @@
 */
 
 class Cost {
-  constructor(localConfig = {}) {
+  constructor (localConfig = {}) {
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error(
@@ -13,7 +13,7 @@ class Cost {
   }
 
   // Retrieve the current write cost in PSF tokens.
-  async getPsfCost() {
+  async getPsfCost () {
     const psfCost = await this.adapters.writePrice.currentRate
 
     return psfCost

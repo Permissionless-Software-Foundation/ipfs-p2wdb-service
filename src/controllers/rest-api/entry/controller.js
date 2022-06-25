@@ -390,7 +390,6 @@ class EntryRESTControllerLib {
     }
   }
 
-
   /**
    * @api {get} /entry/cost/psf Write cost in PSF tokens
    * @apiPermission public
