@@ -23,7 +23,7 @@ class Cost {
 
   // Get the write cost for a target date.
   async getPsfCostTarget (targetDate) {
-    const psfCost = await this.adapters.writePrice.getWriteCostPsf(targetDate)
+    const psfCost = await this.adapters.writePrice.getTargetCostPsf(targetDate)
 
     return psfCost
   }
