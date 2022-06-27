@@ -391,7 +391,7 @@ class EntryRESTControllerLib {
   }
 
   /**
-   * @api {get} /entry/cost/psf/:targetDate Write cost in PSF tokens
+   * @api {get} /entry/cost/psf Get the write cost in PSF tokens
    * @apiPermission public
    * @apiName P2WDB Cost in PSF
    * @apiGroup REST P2WDB
@@ -404,12 +404,10 @@ class EntryRESTControllerLib {
    *  - success : true/false
    *  - psfCost: Number of PSF tokens to burn in order to write to the P2WDB
    *
-   * If no argument is provided, the endpoint returns the current write cost. If
-   * a target date is passed, it returns the write cost on that date.
+   * The endpoint returns the current write cost.
    *
    * @apiExample Example usage:
    * curl -H "Content-Type: application/json" -X GET localhost:5010/entry/cost/psf
-   * curl -H "Content-Type: application/json" -X GET localhost:5010/entry/cost/psf/
    *
    * @apiSuccessExample {json} Success-Response:
    *  HTTP/1.1 200 OK
@@ -428,11 +426,65 @@ class EntryRESTControllerLib {
    */
   async getPsfCost (ctx) {
     try {
-      const targetDate = ctx.params.target
-      console.log('targetDate: ', targetDate)
-
       // Get the cost in PSF tokens to write to the DB.
       const psfCost = await this.useCases.entry.cost.getPsfCost()
+      console.log('psfCost: ', psfCost)
+
+      ctx.body = {
+        success: true,
+        psfCost
+      }
+    } catch (err) {
+      // console.log('Error in get-by-txid.js/restController(): ', err)
+      // throw err
+      _this.handleError(ctx, err)
+    }
+  }
+
+  /**
+   * @api {post} /entry/cost/psf Get the write cost in PSF tokens for a target date.
+   * @apiPermission public
+   * @apiName P2WDB Cost in PSF for a target date
+   * @apiGroup REST P2WDB
+   *
+   * @apiDescription
+   * Get the cost of writing an entry to the database, denominated in PSF tokens,
+   * for a target date in the past.
+   *
+   *  This endpoint returns the following properties
+   *
+   *  - success : true/false
+   *  - psfCost: Number of PSF tokens to burn in order to write to the P2WDB
+   *
+   * The endpoint returns the write cost for a given date.
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST localhost:5010/entry/cost/psf
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *  HTTP/1.1 200 OK
+   *  {
+   *     "success":true,
+   *     "psfCost": 0.133
+   *  }
+   * @apiError UnprocessableEntity Missing required parameters
+   *
+   * @apiErrorExample {json} Error-Response:
+   *     HTTP/1.1 422 Unprocessable Entity
+   *     {
+   *       "status": 422,
+   *       "error": "Unprocessable Entity"
+   *     }
+   */
+  async getPsfCostTarget (ctx) {
+    try {
+      const targetDate = ctx.request.body.targetDate
+      console.log('targetDate: ', targetDate)
+
+      if (!targetDate) throw new Error('targetDate must be provided')
+
+      // Get the cost in PSF tokens to write to the DB.
+      const psfCost = await this.useCases.entry.cost.getPsfCostTarget(targetDate)
 
       ctx.body = {
         success: true,

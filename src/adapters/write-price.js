@@ -23,6 +23,7 @@ class WritePrice {
     this.bchjs = this.wallet.bchjs
     this.axios = axios
     this.config = config
+    this.currenRate = 0.133
   }
 
   // Returns the value in PSF tokens that must be burned in order for a write
@@ -79,7 +80,7 @@ class WritePrice {
       currentRate.date = new Date(currentRate.date)
 
       // Store the price in the state of this instance.
-      this.currentRate = currentRate.psfPerWrite
+      if (targetDate) { this.currentRate = currentRate.psfPerWrite }
 
       return currentRate.psfPerWrite
     } catch (err) {

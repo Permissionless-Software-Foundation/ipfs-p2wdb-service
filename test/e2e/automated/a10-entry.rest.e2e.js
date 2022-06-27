@@ -255,6 +255,7 @@ describe('Entry', () => {
       assert.property(entry.data, 'value')
     })
   })
+
   describe('GET /entry/appid/:appid', () => {
     it("should return empty array if appId doesn't exist", async () => {
       const options = {
@@ -287,6 +288,22 @@ describe('Entry', () => {
       assert.property(entry, 'hash')
       assert.property(entry, 'key')
       assert.property(entry, 'value')
+    })
+  })
+
+  describe('GET /entry/cost/psf', () => {
+    it('should return the current PSF cost for a write', async () => {
+      const options = {
+        method: 'GET',
+        url: `${LOCALHOST}/entry/cost/psf`
+      }
+      const result = await axios(options)
+      console.log('result.data: ', result.data)
+
+      // const entries = result.data.data
+      // assert.isTrue(result.data.success)
+      // assert.isArray(entries)
+      // assert.equal(entries.length, 0)
     })
   })
 })
