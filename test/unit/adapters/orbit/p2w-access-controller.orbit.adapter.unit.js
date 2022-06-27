@@ -455,4 +455,36 @@ describe('#PayToWriteAccessController', () => {
       assert.equal(eventInput.data, entry.payload.value.data)
     })
   })
+
+  describe('#checkDate', () => {
+    it('should return false if date is less than a year old', () => {
+      const now = new Date()
+      const target = now.getTime() - 60000 * 60 * 24 * 2
+
+      const payload = {
+        value: {
+          timestamp: target
+        }
+      }
+
+      const result = uut.checkDate(payload)
+
+      assert.equal(result, false)
+    })
+
+    it('should return true if date is more than a year old', () => {
+      const now = new Date()
+      const target = now.getTime() - 60000 * 60 * 24 * 400
+
+      const payload = {
+        value: {
+          timestamp: target
+        }
+      }
+
+      const result = uut.checkDate(payload)
+
+      assert.equal(result, true)
+    })
+  })
 })

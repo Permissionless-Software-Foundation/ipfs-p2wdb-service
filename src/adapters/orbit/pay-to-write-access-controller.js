@@ -185,7 +185,7 @@ class PayToWriteAccessController extends AccessController {
   // to the existing peer databases while respecting rate limits.
   async canAppend (entry, identityProvider) {
     try {
-      // console.log('canAppend entry: ', entry)
+      console.log('canAppend entry: ', entry)
 
       let validTx = false
 
@@ -216,7 +216,12 @@ class PayToWriteAccessController extends AccessController {
         return isValid
       }
 
-      // TODO: Ensure the entry is less than a year old.
+      // Ensure the entry is less than a year old.
+      const isAYearOld = this.checkDate(entry.payload)
+      if (isAYearOld) {
+        console.log('Entry is older than a year, ignoring.')
+        return false
+      }
 
       // TODO: Ensure the entry has paid the appropriate amount of PSF tokens.
 
@@ -250,6 +255,20 @@ class PayToWriteAccessController extends AccessController {
       )
       return false
     }
+  }
+
+  // Checks the date of the entry. Returns true if it is older than a year,
+  // otherwise it returns false.
+  checkDate (payload) {
+    const now = new Date()
+    const oneYear = 60000 * 60 * 24 * 365
+    const oneYearAgo = now.getTime() - oneYear
+
+    const timestamp = payload.value.timestamp
+
+    if (timestamp < oneYearAgo) return true
+
+    return false
   }
 
   // This is an async wrapper function. It wraps all other logic for validating
@@ -493,6 +512,7 @@ class PayToWriteAccessController extends AccessController {
       }
 
       let tx = await this.wallet.getTxData([txid])
+      console.log(`tx data: ${JSON.stringify(tx, null, 2)}`)
 
       if (!tx) throw new Error('Could not get transaction details from BCH service.')
 
