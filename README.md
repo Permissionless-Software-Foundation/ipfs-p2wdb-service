@@ -96,6 +96,10 @@ ipfs-p2wdb-service is a fork of [ipfs-service-provider](https://github.com/Permi
 
 TODO: This section needs more information added to it.
 
+There is additional developer documentation in the [dev-docs directory](./dev-docs).
+
+## Dependencies
+
 ### Docker container
 
 The target production deployment of this software is as a Docker container. The [docker folder](./production/docker) contains the Dockerfile and `docker-compose.yml` file to generate a new Docker image. The production target is Ubuntu Linux 20.04, running Docker and Docker Compose.

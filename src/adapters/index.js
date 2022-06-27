@@ -57,11 +57,16 @@ class Adapters {
       const currentRate = await this.writePrice.getWriteCostPsf()
       console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
 
-      // Start the IPFS node.
-      await this.ipfs.start({ bchjs: this.bchjs })
+      // Do not start these adapters if this is an e2e test.
+      if (this.config.env !== 'test') {
+        // Start the IPFS node.
+        await this.ipfs.start({ bchjs: this.bchjs })
 
-      // Start the P2WDB
-      await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
+        // Start the P2WDB
+        await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
+      }
+
+      console.log('Async Adapters have been started.')
 
       return true
     } catch (err) {
