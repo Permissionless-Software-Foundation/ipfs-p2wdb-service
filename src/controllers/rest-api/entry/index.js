@@ -57,7 +57,7 @@ class EntryController {
     this.router.get('/hash/:hash', this.getByHash)
     this.router.get('/txid/:txid', this.getByTxid)
     this.router.get('/appid/:appid', this.getByAppId)
-    this.router.get('/cost/psf', this.getPsfCost)
+    this.router.get('/cost/psf/:target', this.getPsfCost)
 
     // Attach the Controller routes to the Koa app.
     app.use(cors({ origin: '*' }))
