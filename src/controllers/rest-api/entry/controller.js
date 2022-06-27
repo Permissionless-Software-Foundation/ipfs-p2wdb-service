@@ -428,7 +428,6 @@ class EntryRESTControllerLib {
     try {
       // Get the cost in PSF tokens to write to the DB.
       const psfCost = await this.useCases.entry.cost.getPsfCost()
-      console.log('psfCost: ', psfCost)
 
       ctx.body = {
         success: true,

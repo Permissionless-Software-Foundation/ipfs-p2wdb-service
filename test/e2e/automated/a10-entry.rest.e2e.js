@@ -51,7 +51,7 @@ describe('Entry', () => {
 
         assert(false, 'Unexpected result')
       } catch (err) {
-        console.log(err)
+        // console.log(err)
         assert(err.response.status === 422, 'Error code 422 expected.')
       }
     })
@@ -298,12 +298,51 @@ describe('Entry', () => {
         url: `${LOCALHOST}/entry/cost/psf`
       }
       const result = await axios(options)
-      console.log('result.data: ', result.data)
+      // console.log('result.data: ', result.data)
 
-      // const entries = result.data.data
-      // assert.isTrue(result.data.success)
-      // assert.isArray(entries)
-      // assert.equal(entries.length, 0)
+      assert.property(result.data, 'success')
+      assert.property(result.data, 'psfCost')
+
+      assert.equal(result.data.success, true)
+      assert.equal(result.data.psfCost, 0.133)
+    })
+  })
+
+  describe('POST /entry/cost/psf', () => {
+    it('should reject when data is incomplete', async () => {
+      try {
+        const options = {
+          method: 'POST',
+          url: `${LOCALHOST}/entry/cost/psf`,
+          data: {}
+        }
+
+        await axios(options)
+
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        // console.log(err)
+        assert(err.response.status === 422, 'Error code 422 expected.')
+      }
+    })
+
+    it('should get rate for a target date', async () => {
+      const options = {
+        method: 'POST',
+        url: `${LOCALHOST}/entry/cost/psf`,
+        data: {
+          targetDate: '06/21/2022'
+        }
+      }
+
+      const result = await axios(options)
+      // console.log(result.data)
+
+      assert.property(result.data, 'success')
+      assert.property(result.data, 'psfCost')
+
+      assert.equal(result.data.success, true)
+      assert.equal(result.data.psfCost, 0.126)
     })
   })
 })

@@ -16,8 +16,7 @@ class Cost {
   async getPsfCost () {
     // The getPsfCost() function is called at startup, so rather than calling
     // it again, just retrieve the stored (current) rate.
-    const psfCost = await this.adapters.writePrice.currentRate
-    console.log('cost use-case psfCost: ', psfCost)
+    const psfCost = this.adapters.writePrice.currentRate
 
     return psfCost
   }
