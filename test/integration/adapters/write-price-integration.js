@@ -11,6 +11,13 @@ describe('#write-price', () => {
     uut = new WritePrice()
   })
 
+  describe('#getCostsFromToken', () => {
+    it('should get the write price from the token', async () => {
+      const result = await uut.getCostsFromToken()
+      console.log('result: ', result)
+    })
+  })
+
   describe('#getWriteCostPsf', () => {
     it('should get the write price from the token', async () => {
       const result = await uut.getWriteCostPsf()

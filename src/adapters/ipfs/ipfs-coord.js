@@ -80,6 +80,7 @@ class IpfsCoordAdapter {
     }
 
     this.ipfsCoord = new this.IpfsCoord(ipfsCoordOptions)
+    console.log('ipfsCoord: ', this.ipfsCoord)
 
     // Wait for the ipfs-coord library to signal that it is ready.
     await this.ipfsCoord.start()

@@ -23,21 +23,33 @@ const mockTokenData01 = {
 }
 
 const mutableData01 = {
-  "tokenIcon": "https://psfoundation.cash/static/psf-logo-32a2c411985bbbf299687b06c3224384.png",
-  "about": "This token is used to set the price in PSF tokens to write to P2WDB. The goal is to target $0.01 per write. This data is updated periodically to adjust to the spot price of BCH and PSF tokens.",
-  "p2wdbPriceHistory": [
+  tokenIcon: 'https://psfoundation.cash/static/psf-logo-32a2c411985bbbf299687b06c3224384.png',
+  about: 'This token is used to set the price in PSF tokens to write to P2WDB. The goal is to target $0.01 per write. This data is updated periodically to adjust to the spot price of BCH and PSF tokens.',
+  p2wdbPriceHistory: [
     {
-      "date": "06/24/2022",
-      "psfPerWrite": 0.133
+      date: '06/24/2022',
+      psfPerWrite: 0.133
     },
     {
-      "date": "06/20/2022",
-      "psfPerWrite": 0.126
+      date: '06/20/2022',
+      psfPerWrite: 0.126
     }
   ]
 }
 
+const mockPriceHistory01 = [
+  {
+    date: '06/24/2022',
+    psfPerWrite: 0.133
+  },
+  {
+    date: '06/20/2022',
+    psfPerWrite: 0.126
+  }
+]
+
 module.exports = {
   mockTokenData01,
-  mutableData01
+  mutableData01,
+  mockPriceHistory01
 }

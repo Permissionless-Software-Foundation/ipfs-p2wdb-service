@@ -9,7 +9,7 @@ class IPFSCoord {
 
   async start () {}
 
-  async subscribeToChat() {}
+  async subscribeToChat () {}
 }
 
 module.exports = IPFSCoord

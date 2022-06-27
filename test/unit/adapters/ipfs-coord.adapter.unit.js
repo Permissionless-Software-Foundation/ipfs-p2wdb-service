@@ -65,8 +65,11 @@ describe('#ipfs-coord', () => {
 
       assert.equal(result, true)
     })
+
     it('should return a promise that resolves into an instance of IPFS in production mode', async () => {
       uut.config.isProduction = true
+      uut.config.isCircuitRelay = false
+
       // Mock dependencies.
       uut.IpfsCoord = IPFSCoordMock
 

@@ -30,6 +30,7 @@ describe('#adapters', () => {
       sandbox.stub(uut.fullStackJwt, 'instanceBchjs').resolves()
       sandbox.stub(uut.ipfs, 'start').resolves()
       sandbox.stub(uut.p2wdb, 'start').resolves()
+      sandbox.stub(uut.writePrice, 'getWriteCostPsf').resolves(0.133)
 
       const result = await uut.start()
 
@@ -41,7 +42,7 @@ describe('#adapters', () => {
         // Force an error
         uut.config.getJwtAtStartup = false
         uut.config.env = 'dev'
-        sandbox.stub(uut.ipfs, 'start').rejects(new Error('test error'))
+        sandbox.stub(uut.writePrice, 'getWriteCostPsf').rejects(new Error('test error'))
 
         await uut.start()
 
