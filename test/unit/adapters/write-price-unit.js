@@ -38,6 +38,19 @@ describe('#write-price', () => {
       assert.property(result[0], 'date')
       assert.property(result[0], 'psfPerWrite')
     })
+
+    it('should catch and throw an error', async () => {
+      try {
+        // Force and error
+        sandbox.stub(uut.wallet, 'getTokenData').rejects(new Error('test error'))
+
+        await uut.getCostsFromToken()
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
   })
 
   describe('#getCurrentCostPSF', () => {

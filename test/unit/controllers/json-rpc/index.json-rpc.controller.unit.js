@@ -232,6 +232,32 @@ describe('#JSON RPC', () => {
       assert.property(result, 'from')
       assert.property(result, 'retStr')
     })
+
+    it('should route to the p2wdb handler', async () => {
+      const id = uid()
+      const userCall = jsonrpc.request(id, 'p2wdb', { endpoint: 'getAll' })
+      const jsonStr = JSON.stringify(userCall, null, 2)
+
+      // Mock the controller.
+      sandbox.stub(uut.entryController, 'entryRouter').resolves('true')
+
+      // Force ipfs-coord communication.
+      uut.ipfsCoord.ipfs = {
+        orbitdb: {
+          sendToDb: () => {}
+        }
+      }
+
+      const result = await uut.router(jsonStr, 'peerA')
+      // console.log(result)
+
+      const obj = JSON.parse(result.retStr)
+      // console.log('obj: ', obj)
+
+      assert.equal(obj.result.value, 'true')
+      assert.equal(obj.result.method, 'p2wdb')
+      assert.equal(obj.id, id)
+    })
   })
 
   describe('#_checkIfAlreadyProcessed', () => {

@@ -26,6 +26,7 @@ describe('#adapters', () => {
     it('should start the async adapters', async () => {
       // Mock dependencies
       uut.config.getJwtAtStartup = true
+      uut.config.env = 'not-test'
       sandbox.stub(uut.fullStackJwt, 'getJWT').resolves()
       sandbox.stub(uut.fullStackJwt, 'instanceBchjs').resolves()
       sandbox.stub(uut.ipfs, 'start').resolves()

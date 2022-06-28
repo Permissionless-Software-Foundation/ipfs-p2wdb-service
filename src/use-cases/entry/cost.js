@@ -13,7 +13,7 @@ class Cost {
   }
 
   // Retrieve the current write cost in PSF tokens.
-  async getPsfCost () {
+  getPsfCost () {
     // The getPsfCost() function is called at startup, so rather than calling
     // it again, just retrieve the stored (current) rate.
     const psfCost = this.adapters.writePrice.currentRate

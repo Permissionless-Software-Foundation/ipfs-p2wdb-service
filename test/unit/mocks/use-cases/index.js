@@ -65,6 +65,9 @@ class UseCasesMock {
       addUserEntry: () => {
         return 'hash'
       }
+    },
+    cost: {
+      getPsfCost: () => {}
     }
   }
 }

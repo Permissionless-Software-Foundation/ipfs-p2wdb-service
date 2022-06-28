@@ -114,6 +114,25 @@ describe('#PayToWriteAccessController', () => {
 
       assert.isTrue(result)
     })
+
+    it('should throw error if TX can not be retrieved', async () => {
+      try {
+      // Mock
+        sandbox.stub(uut.wallet, 'getTxData').resolves()
+
+        const txId =
+        'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
+        const signature =
+        'H+S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI='
+        const message = 'A message'
+
+        await uut._validateSignature(txId, signature, message)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Could not get transaction details from BCH service.')
+      }
+    })
   })
 
   describe('#_validateTx', () => {
@@ -175,6 +194,22 @@ describe('#PayToWriteAccessController', () => {
       } catch (err) {
         // console.log('err: ', err)
         assert.fail('Unexpected code path')
+      }
+    })
+
+    it('should throw error if tokenId is not included', async () => {
+      try {
+        sandbox
+          .stub(uut.wallet, 'getTxData')
+          .resolves([{ isValidSlp: true, tokenId: '' }])
+
+        const txId = mock.tx.txid
+        await uut._validateTx(txId)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        assert.include(err.message, 'Transaction data does not include a token ID.')
       }
     })
 
@@ -240,6 +275,57 @@ describe('#PayToWriteAccessController', () => {
       const result = await uut._validateTx(txId, entry)
       assert.isTrue(result)
     })
+
+    it('should display complete error if it has no message', async () => {
+      try {
+        sandbox
+          .stub(uut.wallet, 'getTxData')
+          .rejects({ a: 'b' })
+
+        const txId = mock.tx.txid
+        await uut._validateTx(txId)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        // assert.include(err.message, 'Transaction data does not include a token ID.')
+        assert.equal(err.a, 'b')
+      }
+    })
+
+    it('should repackage errors with an error property', async () => {
+      try {
+        sandbox
+          .stub(uut.wallet, 'getTxData')
+          .rejects({ error: 'test error' })
+
+        const txId = mock.tx.txid
+        await uut._validateTx(txId)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        // assert.include(err.message, 'Transaction data does not include a token ID.')
+        assert.equal(err.message, 'test error')
+      }
+    })
+
+    // it('should handle nginx 429 errors', async () => {
+    //   try {
+    //     sandbox
+    //       .stub(uut.wallet, 'getTxData')
+    //       .rejects({ a: '429 Too Many Requests' })
+    //
+    //     const txId = mock.tx.txid
+    //     await uut._validateTx(txId)
+    //
+    //     assert.fail('Unexpected code path')
+    //   } catch (err) {
+    //     // console.log('err: ', err)
+    //     // assert.include(err.message, 'Transaction data does not include a token ID.')
+    //     assert.equal(err.message, 'nginx: 429 Too Many Requests')
+    //   }
+    // })
   })
 
   describe('#getTokenQtyDiff', () => {
@@ -459,6 +545,7 @@ describe('#PayToWriteAccessController', () => {
 
     it('should return true if blockchain validation passes', async () => {
       sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      sandbox.stub(uut.bchjs.Util, 'sleep').resolves()
 
       const result = await uut.canAppend(mock.entry)
       assert.isTrue(result)
@@ -468,6 +555,7 @@ describe('#PayToWriteAccessController', () => {
       let eventInput
 
       sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      sandbox.stub(uut.bchjs.Util, 'sleep').resolves()
 
       sandbox
         .stub(uut.validationEvent, 'emit')
@@ -484,6 +572,13 @@ describe('#PayToWriteAccessController', () => {
       assert.isObject(eventInput, 'An object is expected to be emited')
       assert.equal(eventInput.hash, entry.hash)
       assert.equal(eventInput.data, entry.payload.value.data)
+    })
+
+    it('should return false if entry is older than a year', async () => {
+      sandbox.stub(uut, 'checkDate').resolves(false)
+
+      const result = await uut.canAppend(mock.entry)
+      assert.isFalse(result)
     })
   })
 

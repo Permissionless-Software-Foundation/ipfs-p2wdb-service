@@ -54,6 +54,18 @@ describe('#p2wdb', () => {
     mongoose.connection.close()
   })
 
+  describe('#constructor', () => {
+    it('should throw an error if instance of WriteCost adapter is not provided', () => {
+      try {
+        uut = new P2WDB()
+        console.log(uut)
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Pass instance of writePrice when instantiating P2WDB adapter library.')
+      }
+    })
+  })
+
   describe('#start', () => {
     it('should throw an error if IPFS instance is not passed.', async () => {
       try {
@@ -63,6 +75,18 @@ describe('#p2wdb', () => {
         assert.include(
           err.message,
           'Must past instance of IPFS when instantiating P2WDB adapter.'
+        )
+      }
+    })
+
+    it('should throw an error if bch-js instance is not passed.', async () => {
+      try {
+        await uut.start({ ipfs: {} })
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(
+          err.message,
+          'Must past instance of bchjs when instantiating P2WDB adapter.'
         )
       }
     })
@@ -135,6 +159,7 @@ describe('#p2wdb', () => {
 
         assert.fail('unexpected code path')
       } catch (err) {
+        console.log(err)
         assert.include(err.message, 'is not a function')
       }
     })

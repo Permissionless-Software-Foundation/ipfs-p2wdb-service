@@ -28,12 +28,11 @@ class PayToWriteAccessController extends AccessController {
     this._orbitdb = orbitdb
     this._db = null
     this._options = options || {}
-    console.log('this._options: ', this._options)
+    // console.log('this._options: ', this._options)
 
     // Encapsulate dependencies
     // this.bchjs = new BCHJS()
     this.config = config
-
     this.wallet = new Wallet(undefined, {
       noUpdate: true,
       interface: 'consumer-api',
@@ -224,7 +223,15 @@ class PayToWriteAccessController extends AccessController {
         return false
       }
 
-      // TODO: Ensure the entry has paid the appropriate amount of PSF tokens.
+      // If this is recent transaction, then wait a few seconds to ensure the SLP
+      // indexer has time to process it.
+      // const entryDate = new Date(entry.payload.value.timestamp)
+      const timestamp = entry.payload.value.timestamp
+      const now = new Date()
+      const tenSeconds = 10000
+      if (timestamp > now.getTime() - tenSeconds) {
+        await this.bchjs.Util.sleep(5000)
+      }
 
       // Validate the TXID against the blockchain; use a queue with automatic retry.
       // New nodes connecting will attempt to rapidly validate a lot of entries.
@@ -449,11 +456,11 @@ class PayToWriteAccessController extends AccessController {
       if (err.error) throw new Error(err.error)
 
       // Handle nginx 429 errors.
-      try {
-        if (err.indexOf('429 Too Many Requests') > -1) {
-          throw new Error('nginx: 420 Too Many Requests')
-        }
-      } catch {}
+      // try {
+      //   if (err.indexOf('429 Too Many Requests') > -1) {
+      //     throw new Error('nginx: 429 Too Many Requests')
+      //   }
+      // } catch {}
 
       // Throw an error rather than return false. This will pass rate-limit
       // errors to the retry logic.
@@ -529,7 +536,7 @@ class PayToWriteAccessController extends AccessController {
       }
 
       let tx = await this.wallet.getTxData([txid])
-      console.log(`tx data: ${JSON.stringify(tx, null, 2)}`)
+      // console.log(`tx data: ${JSON.stringify(tx, null, 2)}`)
 
       if (!tx) throw new Error('Could not get transaction details from BCH service.')
 
@@ -554,7 +561,8 @@ class PayToWriteAccessController extends AccessController {
     } catch (err) {
       console.error('Error in _validateSignature ')
 
-      if (err.error) throw new Error(err.error)
+      // Dev note: Mock data is needed to
+      // if (err.error) throw new Error(err.error)
       throw err
     }
   }

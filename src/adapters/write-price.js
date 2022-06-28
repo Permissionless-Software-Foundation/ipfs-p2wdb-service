@@ -89,7 +89,7 @@ class WritePrice {
       }
       // console.log('currentRate: ', currentRate)
 
-      if (!currentRate) throw new Error('Could not retrieve write rate in PSF tokens.')
+      // if (!currentRate) throw new Error('Could not retrieve write rate in PSF tokens.')
 
       // Convert the date string into a Date object.
       currentRate.date = new Date(currentRate.date)
@@ -142,7 +142,7 @@ class WritePrice {
       }
       // console.log('currentRate: ', currentRate)
 
-      if (!result) throw new Error('Could not retrieve write rate in PSF tokens.')
+      // if (!result) throw new Error('Could not retrieve write rate in PSF tokens.')
 
       // Convert the date string into a Date object.
       // currentRate.date = new Date(currentRate.date)
