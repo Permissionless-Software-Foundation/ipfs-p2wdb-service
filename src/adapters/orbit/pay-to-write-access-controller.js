@@ -28,6 +28,7 @@ class PayToWriteAccessController extends AccessController {
     this._orbitdb = orbitdb
     this._db = null
     this._options = options || {}
+    console.log('this._options: ', this._options)
 
     // Encapsulate dependencies
     // this.bchjs = new BCHJS()
@@ -194,7 +195,7 @@ class PayToWriteAccessController extends AccessController {
       const signature = entry.payload.value.signature
       const dbData = entry.payload.value.data
 
-      console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
+      // console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
 
       // Throw an error if the message is bigger than 10 KB.
       // TODO: Create a unit test for this code path.
@@ -229,7 +230,7 @@ class PayToWriteAccessController extends AccessController {
       // New nodes connecting will attempt to rapidly validate a lot of entries.
       // A promise-based queue allows this to happen while respecting rate-limits
       // of the blockchain service provider.
-      const inputObj = { txid, signature, message }
+      const inputObj = { txid, signature, message, entry }
       validTx = await this.retryQueue.addToQueue(
         this.validateAgainstBlockchain,
         inputObj
@@ -274,7 +275,7 @@ class PayToWriteAccessController extends AccessController {
   // This is an async wrapper function. It wraps all other logic for validating
   // a new entry and it's proof-of-burn against the blockchain.
   async validateAgainstBlockchain (inputObj) {
-    const { txid, signature, message } = inputObj
+    const { txid, signature, message, entry } = inputObj
 
     try {
       // Input validation
@@ -308,7 +309,7 @@ class PayToWriteAccessController extends AccessController {
       }
 
       // Validate the transaction matches the burning rules.
-      validTx = await _this._validateTx(txid)
+      validTx = await _this._validateTx(txid, entry)
 
       return validTx
     } catch (err) {
@@ -364,7 +365,7 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Returns true if the txid burned at least 0.001 tokens.
-  async _validateTx (txid) {
+  async _validateTx (txid, entry) {
     try {
       if (!txid || typeof txid !== 'string') {
         throw new Error('txid must be a string')
@@ -403,19 +404,35 @@ class PayToWriteAccessController extends AccessController {
         return false
       }
 
+      // Get the difference, or the amount of PSF tokens burned.
       let diff = await this.getTokenQtyDiff(txInfo)
       diff = this.bchjs.Util.floor8(diff)
+
+      // Get the timestamp of the entry.
+      let timestamp = entry.payload.value.timestamp
+      timestamp = new Date(timestamp)
+      console.log('timestamp: ', timestamp)
+
+      // TODO: Try to determine timestamp from the TX. If that fails, fall back
+      // to the payload timestamp.
+
+      // Get the required burn price, based on the timestamp.
+      console.log('this._options: ', this._options)
+      const requiredPrice = this._options.writePrice.getTargetCostPsf(timestamp)
+      console.log(`requiredPrice: `, requiredPrice)
 
       // If the difference is above a positive threshold, then it's a burn
       // transaction.
       // Give a 2% grace for rounding errors.
-      const tokenQtyWithGrade = this.bchjs.Util.floor8(
-        this.config.reqTokenQty * 0.98
+      const tokenQtyWithGrace = this.bchjs.Util.floor8(
+        // this.config.reqTokenQty * 0.98
+        // ToDo: Replace this with write-price library
+        requiredPrice * 0.98
       )
 
-      console.log(`Token diff: ${diff}, threshold: ${tokenQtyWithGrade}`)
+      console.log(`Token diff: ${diff}, threshold: ${tokenQtyWithGrace}`)
 
-      if (diff >= tokenQtyWithGrade) {
+      if (diff >= tokenQtyWithGrace) {
         console.log(
           `TX ${txid} proved burn of tokens. Will be allowed to write to DB.`
         )

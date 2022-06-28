@@ -179,25 +179,34 @@ describe('#PayToWriteAccessController', () => {
     })
 
     it('should return false if token burn is less than the threshold', async () => {
-      try {
-        // const spy = sinon.spy(uut, 'getTokenQtyDiff')
-        sandbox.stub(uut.wallet, 'getTxData').resolves([
-          {
-            tokenId:
+      // const spy = sinon.spy(uut, 'getTokenQtyDiff')
+      sandbox.stub(uut.wallet, 'getTxData').resolves([
+        {
+          tokenId:
               '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
-            isValidSlp: true
+          isValidSlp: true
+        }
+      ])
+      // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
+      sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.0001)
+
+      // Mock data
+      const now = new Date()
+      const entry = {
+        payload: {
+          value: {
+            timestamp: now.getTime()
           }
-        ])
-        // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
-        sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.0001)
-
-        const txId = mock.tx.txid
-        const result = await uut._validateTx(txId)
-
-        assert.isFalse(result)
-      } catch (err) {
-        assert.fail('Unexpected code path')
+        }
       }
+      uut._options.writePrice = {
+        getTargetCostPsf: () => 0.133
+      }
+
+      const txId = mock.tx.txid
+      const result = await uut._validateTx(txId, entry)
+
+      assert.isFalse(result)
     })
 
     it('should return true if required tokens are burned', async () => {
@@ -212,9 +221,23 @@ describe('#PayToWriteAccessController', () => {
         }
       ])
       // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
+      sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.5)
+
+      // Mock data
+      const now = new Date()
+      const entry = {
+        payload: {
+          value: {
+            timestamp: now.getTime()
+          }
+        }
+      }
+      uut._options.writePrice = {
+        getTargetCostPsf: () => 0.133
+      }
 
       const txId = mock.tx.txid
-      const result = await uut._validateTx(txId)
+      const result = await uut._validateTx(txId, entry)
       assert.isTrue(result)
     })
   })
@@ -257,6 +280,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'txid must be a string')
       }
     })
+
     it('should throw error if txid is not a string', async () => {
       try {
         await uut.markInvalid(1)
@@ -318,6 +342,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'Cannot destructure property')
       }
     })
+
     it('should throw error if input is wrong type', async () => {
       try {
         await uut.validateAgainstBlockchain(1)
@@ -326,6 +351,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'input must be an object')
       }
     })
+
     it('should throw error if "txid" property is not provided', async () => {
       try {
         await uut.validateAgainstBlockchain({})
@@ -334,6 +360,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'txid must be a string')
       }
     })
+
     it('should throw error if "signature" property is not provided', async () => {
       try {
         const obj = {
@@ -345,6 +372,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'signature must be a string')
       }
     })
+
     it('should throw error if "message" property is not provided', async () => {
       try {
         const obj = {
@@ -358,6 +386,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'message must be a string')
       }
     })
+
     it('should return false for invalid signature', async () => {
       // Mock
       sandbox.stub(uut, '_validateSignature').resolves(false)
@@ -410,10 +439,12 @@ describe('#PayToWriteAccessController', () => {
       const result = await uut.canAppend(mock.entryMaxSize)
       assert.isFalse(result)
     })
+
     it('should return false if input missing', async () => {
       const result = await uut.canAppend()
       assert.isFalse(result)
     })
+
     it('should return false if the input data is greater than the maxDataSize', async () => {
       const result = await uut.canAppend(mock.entryMaxSize)
       assert.isFalse(result)

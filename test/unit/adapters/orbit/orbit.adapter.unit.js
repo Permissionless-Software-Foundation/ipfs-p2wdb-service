@@ -2,24 +2,31 @@
   Unit tests for the pay-to-write.js library.
 */
 
+// Global npm libraries
 const sinon = require('sinon')
 const assert = require('chai').assert
 
+// local libraries
 const OrbitDBAdapter = require('../../../../src/adapters/orbit')
 const KeyValueMock = require('../../mocks/model-mock.js')
 const OrbitDBMock = require('../../mocks/orbitdb-mock').OrbitDBMock
 const config = require('../../../../config')
-let uut
-let sandbox
+const WritePrice = require('../../../../src/adapters/write-price')
 
 describe('#OrbitDBAdapter', () => {
+  let uut
+  let sandbox
+
   beforeEach(() => {
+    const writePrice = new WritePrice()
+
     uut = new OrbitDBAdapter({
       ipfs: {
         id: () => {
           return 'ipfs id'
         }
-      }
+      },
+      writePrice
     })
 
     // Mock database dependencies.

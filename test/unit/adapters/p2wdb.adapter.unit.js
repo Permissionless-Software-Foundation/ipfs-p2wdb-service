@@ -2,6 +2,7 @@
   Unit tests for the p2wdb adapter library.
 */
 
+// Global npm librares
 const sinon = require('sinon')
 const assert = require('chai').assert
 const mongoose = require('mongoose')
@@ -11,6 +12,7 @@ const config = require('../../../config')
 const P2WDB = require('../../../src/adapters/p2wdb')
 const KeyValue = require('../../../src/adapters/localdb/models/key-value')
 const OrbitDBAdapterMock = require('../mocks/orbitdb-mock').OrbitDBAdapterMock
+const WritePrice = require('../../../src/adapters/write-price')
 
 let uut
 let sandbox
@@ -38,7 +40,9 @@ describe('#p2wdb', () => {
   })
 
   beforeEach(() => {
-    uut = new P2WDB()
+    const writePrice = new WritePrice()
+
+    uut = new P2WDB({ writePrice })
     uut.orbit = new OrbitDBAdapterMock()
 
     sandbox = sinon.createSandbox()

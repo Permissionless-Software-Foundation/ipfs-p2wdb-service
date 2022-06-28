@@ -23,6 +23,13 @@ let _this
 
 class P2WDB {
   constructor (localConfig = {}) {
+    // console.log('p2wdb localConfig: ', localConfig)
+    // Dependency injection
+    this.writePrice = localConfig.writePrice
+    if (!this.writePrice) {
+      throw new Error('Pass instance of writePrice when instantiating P2WDB adapter library.')
+    }
+
     // Encapsulate dependencies
     this.ipfsAdapters = new IpfsAdapters()
     this.KeyValue = KeyValue
@@ -52,7 +59,8 @@ class P2WDB {
 
       // Start the P2WDB OrbitDB.
       this.orbit = new this.OribitAdapter({
-        ipfs
+        ipfs,
+        writePrice: this.writePrice
       })
       await this.orbit.start(bchjs)
       console.log('OrbitDB Adapter is ready. P2WDB is ready.')

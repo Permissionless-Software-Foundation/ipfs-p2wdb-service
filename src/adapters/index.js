@@ -33,10 +33,15 @@ class Adapters {
     this.nodemailer = new Nodemailer()
     this.jsonFiles = new JSONFiles()
     this.bchjs = new BCHJS()
-    this.p2wdb = new P2WDB()
+    // this.p2wdb = new P2WDB()
     this.entry = new EntryAdapter()
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()
+
+    // Pass the instance of write-price when instantiating the P2WDB OrbitDB.
+    localConfig.writePrice = this.writePrice
+    // console.log('adapters index.js localConfig: ', localConfig)
+    this.p2wdb = new P2WDB(localConfig)
 
     this.config = config
 
