@@ -419,7 +419,7 @@ class PayToWriteAccessController extends AccessController {
       // Get the required burn price, based on the timestamp.
       console.log('this._options: ', this._options)
       const requiredPrice = this._options.writePrice.getTargetCostPsf(timestamp)
-      console.log(`requiredPrice: `, requiredPrice)
+      console.log('requiredPrice: ', requiredPrice)
 
       // If the difference is above a positive threshold, then it's a burn
       // transaction.
