@@ -62,8 +62,8 @@ module.exports = {
   // P2W DB OrbitDB name.
   orbitDbName: process.env.ORBITDB_NAME
     ? process.env.ORBITDB_NAME
-    : 'psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Start a new database
-  // : '/orbitdb/zdpuAm4fPafpjs5mgbBUJV8Az7kd8Xj1ttD6M1JaAxF8RMRrw/psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Subscribe to an existing database.
+    : '/orbitdb/zdpuAtwWeAKMZLAUSs5PsbdXpq7SYiTPG9C7bdDHTaj3FZxtT/psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Subscribe to an existing database.
+  // : 'psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Start a new database
 
   // Maximum size of a new database entry.
   maxDataSize: process.env.MAX_DATA_SIZE
