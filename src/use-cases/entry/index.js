@@ -7,6 +7,7 @@
 // Individual Use Case libraries
 const AddEntry = require('./add-entry')
 const ReadEntry = require('./read-entry')
+const Cost = require('./cost')
 
 class EntryUseCases {
   constructor (localConfig = {}) {
@@ -24,6 +25,8 @@ class EntryUseCases {
     })
 
     this.readEntry = new ReadEntry({ p2wdbAdapter: this.adapters.p2wdb })
+
+    this.cost = new Cost(localConfig)
   }
 }
 

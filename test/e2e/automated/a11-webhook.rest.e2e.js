@@ -24,7 +24,7 @@ describe('#Webhook', () => {
 
         assert(false, 'Unexpected result')
       } catch (err) {
-        console.log(err)
+        // console.log(err)
         assert(err.response.status === 422, 'Error code 422 expected.')
       }
     })

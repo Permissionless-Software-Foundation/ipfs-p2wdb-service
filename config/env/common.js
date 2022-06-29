@@ -62,8 +62,8 @@ module.exports = {
   // P2W DB OrbitDB name.
   orbitDbName: process.env.ORBITDB_NAME
     ? process.env.ORBITDB_NAME
-    : '/orbitdb/zdpuAm4fPafpjs5mgbBUJV8Az7kd8Xj1ttD6M1JaAxF8RMRrw/psf-bch-p2wdb-keyvalue-v1.0.0-0004', // Subscribe to an existing database.
-  // 'psf-bch-p2wdb-keyvalue-v1.0.0-0004', // Start a new database
+    : 'psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Start a new database
+  // : '/orbitdb/zdpuAm4fPafpjs5mgbBUJV8Az7kd8Xj1ttD6M1JaAxF8RMRrw/psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Subscribe to an existing database.
 
   // Maximum size of a new database entry.
   maxDataSize: process.env.MAX_DATA_SIZE
@@ -115,5 +115,7 @@ module.exports = {
   ipfsHost: process.env.IPFS_HOST ? process.env.IPFS_HOST : 'localhost',
   ipfsApiPort: process.env.IPFS_API_PORT
     ? parseInt(process.env.IPFS_API_PORT)
-    : 5001
+    : 5001,
+
+  chatPubSubChan: 'psf-ipfs-chat-001'
 }

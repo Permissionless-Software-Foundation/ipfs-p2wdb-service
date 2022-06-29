@@ -8,6 +8,7 @@ const sinon = require('sinon')
 const IPFSCoordAdapter = require('../../../src/adapters/ipfs/ipfs-coord')
 const IPFSMock = require('../mocks/ipfs-mock')
 const IPFSCoordMock = require('../mocks/ipfs-coord-mock')
+const config = require('../../../config')
 
 describe('#ipfs-coord', () => {
   let uut
@@ -64,6 +65,19 @@ describe('#ipfs-coord', () => {
 
       assert.equal(result, true)
     })
+
+    it('should return a promise that resolves into an instance of IPFS in production mode', async () => {
+      uut.config.isProduction = true
+      uut.config.isCircuitRelay = false
+
+      // Mock dependencies.
+      uut.IpfsCoord = IPFSCoordMock
+
+      const result = await uut.start()
+      // console.log('result: ', result)
+      assert.equal(result, true)
+      config.isProduction = false
+    })
   })
 
   // TODO:
@@ -119,6 +133,22 @@ describe('#ipfs-coord', () => {
       } catch (err) {
         assert.include(err.message, 'Cannot read')
       }
+    })
+  })
+
+  describe('#subscribeToChat', () => {
+    it('should subscribe to the chat channel', async () => {
+      // Mock dependencies
+      uut.ipfsCoord = {
+        adapters: {
+          pubsub: {
+            subscribeToPubsubChannel: async () => {
+            }
+          }
+        }
+      }
+
+      await uut.subscribeToChat()
     })
   })
 })

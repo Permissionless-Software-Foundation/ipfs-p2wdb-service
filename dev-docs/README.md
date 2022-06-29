@@ -1,5 +1,6 @@
 # Developer Documentation
 
+<<<<<<< HEAD
 This directory contains Markdown documents which describe the architecture of the pay-to-write database (P2WDB). The one-sentence description of the P2WDB is: "a peer-to-peer database that requires proof-of-burn in order to add entries to the database". The documents in this directory serve to expand on that statement, and describe all the subcomponents that go into that idea.
 
 ## OrbitDB
@@ -16,7 +17,7 @@ The 'big innovation' in this project is to combine OrbitDB with a proof-of-burn 
 
 Right now the Bitcoin Cash (BCH) blockchain is used for the proof-of-burn, but one goal of this project is to expand the proof-of-burn to other blockchains, including [Avalanche](https://www.avax.network/) and [eCash](https://e.cash). Implementing interfaces for different blockchains will allow the P2WDB to become a medium for cross-blockchain communication. For example, an event on one blockchain could trigger a smart contract or Script on another blockchain.
 
-Currently, the proof of burn requires 0.01 [PSF tokens](https://psfoundation.cash) burned in order to write (up to) 10KB of text data to the database. These numbers will probably change in the future, but these are what is currently implemented. [Example scripts](../examples) are provided to help developers interact with the database.
+Currently, the proof of burn requires $0.01 USD in [PSF tokens](https://psfoundation.cash) burned in order to write (up to) 10KB of text data to the database. These numbers will probably change in the future, but these are what is currently implemented. [Example scripts](../examples) are provided to help developers interact with the database.
 
 ## P2WDB API & RPC
 
@@ -27,11 +28,19 @@ There are two network interfaces for the P2WDB:
 
 The REST API is based on this [koa boilerplate](https://github.com/christroutner/koa-api-boilerplate). It allows the P2WDB to be interfaced with conventional Web 2.0 technology. It's expected that the P2WDB will be bundled with additional software, probably using Docker containers. The REST API provides a great way for orchestrated software to communicate, both via intranet or internet.
 
-The JSON RPC is based on the [ipfs-coord](https://github.com/Permissionless-Software-Foundation/ipfs-coord#readme) library. This library uses IPFS pubsub channels to allow new IPFS nodes to quickly find one another and establish an end-to-end encrypted (e2ee) connection. They can then exchange data by passing JSON RPC commands. The JSON RPC is immediately accessible to developers by using [chat.fullstack.cash](https://chat.fullstack.cash) and the JSON RPC commands listed in the [API documentation](https://p2wdb.fullstackcash.nl/).
+The JSON RPC is based on the [ipfs-coord](https://github.com/Permissionless-Software-Foundation/ipfs-coord#readme) library. This library uses IPFS pubsub channels to allow new IPFS nodes to quickly find one another and establish an end-to-end encrypted (e2ee) connection. They can then exchange data by passing JSON RPC commands. The JSON RPC commands are listed in the [API documentation](https://p2wdb.fullstack.cash/).
 
 Both interfaces are maintained in the [ipfs-service-provider](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider) repository, and are not directly maintained in this ipfs-p2wdb-service repository. Instead, changes around the interfaces are either pushed or pulled from the upstream ipfs-service-provider repository.
 
 Reads and writes to the P2WDB can be accomplished via REST API over HTTP or JSON RPC over IPFS. Which one is preferable depends on the use-case.
+
+## Client Library
+
+A JavaScript library for clients is provided via npm as [p2wdb](https://www.npmjs.com/package/p2wdb). This provides a convenient way for node.js apps and web browsers to read and write from the P2WDB. [Code examples](https://github.com/Permissionless-Software-Foundation/p2wdb/tree/master/examples) are provided for both node.js and browser implementations.
+
+## 'Block' Explorer
+
+An interactive web app is available at [explorer.fullstack.cash](https://explorer.fullstack.cash) for debugging and interrogating entries in the P2WDB. This app functions similarly to a 'block explorer' in blockchains, like [Blockchair](https://blockchair.com).
 
 ## Dependencies
 
@@ -83,3 +92,17 @@ Once the basic components are understood, it's possible to take a step back and 
 - Uncensorable, community-driven marketplaces. An uncensorable version of [Craigslist](https://craigslist.org) for example. Or a decentralized exchange (DEX) for trading cryptocurrencies.
 
 This idea compliments blockchains by creating a much more flexible and scalable data layer. Because it rides on the IPFS network, databases can be archived on Filecoin. Subnetworks can shard the P2WDB by creating a new database for their use, then merging any needed data to the main database. This is similar to a side-chain in Bitcoin or a subnetwork in Avalanche.
+
+## Join Us
+
+If you have technical questions, please ask them in our [community tech support Telegram channel](https://t.me/bch_js_toolkit). If you want to work with like-minded JavaScript developers on this software, join the [PSF Telegram channel](https://t.me/permissionless_software) and learn more about the [Permissionless Software Foundation](https://psfoundation.info).
+=======
+This directory needs to be fleshed out with more information. The markdown files in this directory are intended to provide additional documentation for software developers that use this boilerplate to run their own forks.
+
+## Startup
+This software requires an IPFS node in order to operate the JSON RPC and ipfs-coord features. There are two ways to incorporate an IPFS node:
+
+- js-ipfs is integrated into this repository. If you simply run `npm start`, then this app will default to the js-ipfs IPFS node. However, js-ipfs is not as full featured as go-ipfs. It has memory leaks and lags considerably behind go-ipfs in terms of features.
+
+- go-ipfs is the preferred way to run a node. It can be run externally by following the guidence on the [IPFS homepage](https://ipfs.io). Once the IPFS node is running, this app can take control of it. Use the [local-external-ipfs-node.sh](../shell-scripts/local-external-ipfs-node.sh) shell script to start this app and attach it to the go-ipfs node.
+>>>>>>> upstream/master

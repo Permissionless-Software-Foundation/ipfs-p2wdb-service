@@ -19,6 +19,7 @@ const FullStackJWT = require('./fullstack-jwt')
 const P2WDB = require('./p2wdb')
 const EntryAdapter = require('./entry')
 const WebhookAdapter = require('./webhook')
+const WritePrice = require('./write-price')
 
 const config = require('../../config')
 
@@ -32,9 +33,15 @@ class Adapters {
     this.nodemailer = new Nodemailer()
     this.jsonFiles = new JSONFiles()
     this.bchjs = new BCHJS()
-    this.p2wdb = new P2WDB()
+    // this.p2wdb = new P2WDB()
     this.entry = new EntryAdapter()
     this.webhook = new WebhookAdapter()
+    this.writePrice = new WritePrice()
+
+    // Pass the instance of write-price when instantiating the P2WDB OrbitDB.
+    localConfig.writePrice = this.writePrice
+    // console.log('adapters index.js localConfig: ', localConfig)
+    this.p2wdb = new P2WDB(localConfig)
 
     this.config = config
 
@@ -52,11 +59,22 @@ class Adapters {
         this.bchjs = await this.fullStackJwt.instanceBchjs()
       }
 
-      // Start the IPFS node.
-      await this.ipfs.start({ bchjs: this.bchjs })
+      await this.writePrice.getCostsFromToken()
+      const currentRate = this.writePrice.getCurrentCostPSF()
+      console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
 
-      // Start the P2WDB
-      await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
+      // Do not start these adapters if this is an e2e test.
+      if (this.config.env !== 'test') {
+        // Start the IPFS node.
+        await this.ipfs.start({ bchjs: this.bchjs })
+
+        // Start the P2WDB
+        await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
+      }
+
+      console.log('Async Adapters have been started.')
+
+      return true
     } catch (err) {
       console.error('Error in adapters/index.js/start()')
       throw err

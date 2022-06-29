@@ -2,6 +2,7 @@
   Unit tests for the p2wdb adapter library.
 */
 
+// Global npm librares
 const sinon = require('sinon')
 const assert = require('chai').assert
 const mongoose = require('mongoose')
@@ -11,6 +12,7 @@ const config = require('../../../config')
 const P2WDB = require('../../../src/adapters/p2wdb')
 const KeyValue = require('../../../src/adapters/localdb/models/key-value')
 const OrbitDBAdapterMock = require('../mocks/orbitdb-mock').OrbitDBAdapterMock
+const WritePrice = require('../../../src/adapters/write-price')
 
 let uut
 let sandbox
@@ -38,7 +40,9 @@ describe('#p2wdb', () => {
   })
 
   beforeEach(() => {
-    uut = new P2WDB()
+    const writePrice = new WritePrice()
+
+    uut = new P2WDB({ writePrice })
     uut.orbit = new OrbitDBAdapterMock()
 
     sandbox = sinon.createSandbox()
@@ -50,6 +54,18 @@ describe('#p2wdb', () => {
     mongoose.connection.close()
   })
 
+  describe('#constructor', () => {
+    it('should throw an error if instance of WriteCost adapter is not provided', () => {
+      try {
+        uut = new P2WDB()
+        console.log(uut)
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Pass instance of writePrice when instantiating P2WDB adapter library.')
+      }
+    })
+  })
+
   describe('#start', () => {
     it('should throw an error if IPFS instance is not passed.', async () => {
       try {
@@ -59,6 +75,18 @@ describe('#p2wdb', () => {
         assert.include(
           err.message,
           'Must past instance of IPFS when instantiating P2WDB adapter.'
+        )
+      }
+    })
+
+    it('should throw an error if bch-js instance is not passed.', async () => {
+      try {
+        await uut.start({ ipfs: {} })
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(
+          err.message,
+          'Must past instance of bchjs when instantiating P2WDB adapter.'
         )
       }
     })
@@ -131,6 +159,7 @@ describe('#p2wdb', () => {
 
         assert.fail('unexpected code path')
       } catch (err) {
+        console.log(err)
         assert.include(err.message, 'is not a function')
       }
     })

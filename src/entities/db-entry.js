@@ -27,14 +27,16 @@ class DBEntry {
       throw new Error('Entry requires an data property.')
     }
 
+    const now = new Date()
+
     const key = txid
     const value = {
       message,
       signature,
-      data
+      data,
+      timestamp: now.getTime()
     }
 
-    const now = new Date()
     const createdAt = now.getTime()
 
     const entry = {

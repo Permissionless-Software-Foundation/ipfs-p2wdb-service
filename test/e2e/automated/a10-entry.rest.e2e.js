@@ -51,7 +51,7 @@ describe('Entry', () => {
 
         assert(false, 'Unexpected result')
       } catch (err) {
-        console.log(err)
+        // console.log(err)
         assert(err.response.status === 422, 'Error code 422 expected.')
       }
     })
@@ -255,6 +255,7 @@ describe('Entry', () => {
       assert.property(entry.data, 'value')
     })
   })
+
   describe('GET /entry/appid/:appid', () => {
     it("should return empty array if appId doesn't exist", async () => {
       const options = {
@@ -287,6 +288,61 @@ describe('Entry', () => {
       assert.property(entry, 'hash')
       assert.property(entry, 'key')
       assert.property(entry, 'value')
+    })
+  })
+
+  describe('GET /entry/cost/psf', () => {
+    it('should return the current PSF cost for a write', async () => {
+      const options = {
+        method: 'GET',
+        url: `${LOCALHOST}/entry/cost/psf`
+      }
+      const result = await axios(options)
+      // console.log('result.data: ', result.data)
+
+      assert.property(result.data, 'success')
+      assert.property(result.data, 'psfCost')
+
+      assert.equal(result.data.success, true)
+      assert.equal(result.data.psfCost, 0.133)
+    })
+  })
+
+  describe('POST /entry/cost/psf', () => {
+    it('should reject when data is incomplete', async () => {
+      try {
+        const options = {
+          method: 'POST',
+          url: `${LOCALHOST}/entry/cost/psf`,
+          data: {}
+        }
+
+        await axios(options)
+
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        // console.log(err)
+        assert(err.response.status === 422, 'Error code 422 expected.')
+      }
+    })
+
+    it('should get rate for a target date', async () => {
+      const options = {
+        method: 'POST',
+        url: `${LOCALHOST}/entry/cost/psf`,
+        data: {
+          targetDate: '06/21/2022'
+        }
+      }
+
+      const result = await axios(options)
+      // console.log(result.data)
+
+      assert.property(result.data, 'success')
+      assert.property(result.data, 'psfCost')
+
+      assert.equal(result.data.success, true)
+      assert.equal(result.data.psfCost, 0.126)
     })
   })
 })

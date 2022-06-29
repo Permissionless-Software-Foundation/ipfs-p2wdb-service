@@ -28,11 +28,11 @@ class PayToWriteAccessController extends AccessController {
     this._orbitdb = orbitdb
     this._db = null
     this._options = options || {}
+    // console.log('this._options: ', this._options)
 
     // Encapsulate dependencies
     // this.bchjs = new BCHJS()
     this.config = config
-
     this.wallet = new Wallet(undefined, {
       noUpdate: true,
       interface: 'consumer-api',
@@ -185,7 +185,7 @@ class PayToWriteAccessController extends AccessController {
   // to the existing peer databases while respecting rate limits.
   async canAppend (entry, identityProvider) {
     try {
-      // console.log('canAppend entry: ', entry)
+      console.log('canAppend entry: ', entry)
 
       let validTx = false
 
@@ -216,11 +216,28 @@ class PayToWriteAccessController extends AccessController {
         return isValid
       }
 
+      // Ensure the entry is less than a year old.
+      const isAYearOld = this.checkDate(entry.payload)
+      if (isAYearOld) {
+        console.log('Entry is older than a year, ignoring.')
+        return false
+      }
+
+      // If this is recent transaction, then wait a few seconds to ensure the SLP
+      // indexer has time to process it.
+      // const entryDate = new Date(entry.payload.value.timestamp)
+      const timestamp = entry.payload.value.timestamp
+      const now = new Date()
+      const tenSeconds = 10000
+      if (timestamp > now.getTime() - tenSeconds) {
+        await this.bchjs.Util.sleep(5000)
+      }
+
       // Validate the TXID against the blockchain; use a queue with automatic retry.
       // New nodes connecting will attempt to rapidly validate a lot of entries.
       // A promise-based queue allows this to happen while respecting rate-limits
       // of the blockchain service provider.
-      const inputObj = { txid, signature, message }
+      const inputObj = { txid, signature, message, entry }
       validTx = await this.retryQueue.addToQueue(
         this.validateAgainstBlockchain,
         inputObj
@@ -248,10 +265,24 @@ class PayToWriteAccessController extends AccessController {
     }
   }
 
+  // Checks the date of the entry. Returns true if it is older than a year,
+  // otherwise it returns false.
+  checkDate (payload) {
+    const now = new Date()
+    const oneYear = 60000 * 60 * 24 * 365
+    const oneYearAgo = now.getTime() - oneYear
+
+    const timestamp = payload.value.timestamp
+
+    if (timestamp < oneYearAgo) return true
+
+    return false
+  }
+
   // This is an async wrapper function. It wraps all other logic for validating
   // a new entry and it's proof-of-burn against the blockchain.
   async validateAgainstBlockchain (inputObj) {
-    const { txid, signature, message } = inputObj
+    const { txid, signature, message, entry } = inputObj
 
     try {
       // Input validation
@@ -285,7 +316,7 @@ class PayToWriteAccessController extends AccessController {
       }
 
       // Validate the transaction matches the burning rules.
-      validTx = await _this._validateTx(txid)
+      validTx = await _this._validateTx(txid, entry)
 
       return validTx
     } catch (err) {
@@ -341,7 +372,7 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Returns true if the txid burned at least 0.001 tokens.
-  async _validateTx (txid) {
+  async _validateTx (txid, entry) {
     try {
       if (!txid || typeof txid !== 'string') {
         throw new Error('txid must be a string')
@@ -380,19 +411,35 @@ class PayToWriteAccessController extends AccessController {
         return false
       }
 
+      // Get the difference, or the amount of PSF tokens burned.
       let diff = await this.getTokenQtyDiff(txInfo)
       diff = this.bchjs.Util.floor8(diff)
+
+      // Get the timestamp of the entry.
+      let timestamp = entry.payload.value.timestamp
+      timestamp = new Date(timestamp)
+      console.log('timestamp: ', timestamp)
+
+      // TODO: Try to determine timestamp from the TX. If that fails, fall back
+      // to the payload timestamp.
+
+      // Get the required burn price, based on the timestamp.
+      console.log('this._options: ', this._options)
+      const requiredPrice = this._options.writePrice.getTargetCostPsf(timestamp)
+      console.log('requiredPrice: ', requiredPrice)
 
       // If the difference is above a positive threshold, then it's a burn
       // transaction.
       // Give a 2% grace for rounding errors.
-      const tokenQtyWithGrade = this.bchjs.Util.floor8(
-        this.config.reqTokenQty * 0.98
+      const tokenQtyWithGrace = this.bchjs.Util.floor8(
+        // this.config.reqTokenQty * 0.98
+        // ToDo: Replace this with write-price library
+        requiredPrice * 0.98
       )
 
-      console.log(`Token diff: ${diff}, threshold: ${tokenQtyWithGrade}`)
+      console.log(`Token diff: ${diff}, threshold: ${tokenQtyWithGrace}`)
 
-      if (diff >= tokenQtyWithGrade) {
+      if (diff >= tokenQtyWithGrace) {
         console.log(
           `TX ${txid} proved burn of tokens. Will be allowed to write to DB.`
         )
@@ -409,11 +456,11 @@ class PayToWriteAccessController extends AccessController {
       if (err.error) throw new Error(err.error)
 
       // Handle nginx 429 errors.
-      try {
-        if (err.indexOf('429 Too Many Requests') > -1) {
-          throw new Error('nginx: 420 Too Many Requests')
-        }
-      } catch {}
+      // try {
+      //   if (err.indexOf('429 Too Many Requests') > -1) {
+      //     throw new Error('nginx: 429 Too Many Requests')
+      //   }
+      // } catch {}
 
       // Throw an error rather than return false. This will pass rate-limit
       // errors to the retry logic.
@@ -489,6 +536,7 @@ class PayToWriteAccessController extends AccessController {
       }
 
       let tx = await this.wallet.getTxData([txid])
+      // console.log(`tx data: ${JSON.stringify(tx, null, 2)}`)
 
       if (!tx) throw new Error('Could not get transaction details from BCH service.')
 
@@ -513,7 +561,8 @@ class PayToWriteAccessController extends AccessController {
     } catch (err) {
       console.error('Error in _validateSignature ')
 
-      if (err.error) throw new Error(err.error)
+      // Dev note: Mock data is needed to
+      // if (err.error) throw new Error(err.error)
       throw err
     }
   }

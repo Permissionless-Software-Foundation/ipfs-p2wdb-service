@@ -195,6 +195,30 @@ describe('#Entry-REST-Controller', () => {
     })
   })
 
+  describe('#getPsfCost', () => {
+    it('body should contain data', async () => {
+      await uut.getPsfCost(ctx)
+      // console.log('ctx.body: ', ctx.body)
+
+      assert.equal(ctx.body.success, true)
+    })
+
+    it('should catch and throw an error', async () => {
+      try {
+        // Force an error
+        sandbox
+          .stub(uut.useCases.entry.cost, 'getPsfCost')
+          .rejects(new Error('test error'))
+
+        await uut.getPsfCost(ctx)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
   describe('#handleError', () => {
     it('should include error message', () => {
       try {

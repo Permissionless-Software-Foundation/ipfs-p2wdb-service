@@ -80,4 +80,9 @@ const localdb = {
   }
 }
 
-module.exports = { ipfs, localdb, p2wdb, entry, webhook }
+const writePrice = {
+  currentRate: 0.133,
+  getTargetCostPsf: () => 0.133
+}
+
+module.exports = { ipfs, localdb, p2wdb, entry, webhook, writePrice }

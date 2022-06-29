@@ -114,6 +114,25 @@ describe('#PayToWriteAccessController', () => {
 
       assert.isTrue(result)
     })
+
+    it('should throw error if TX can not be retrieved', async () => {
+      try {
+      // Mock
+        sandbox.stub(uut.wallet, 'getTxData').resolves()
+
+        const txId =
+        'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
+        const signature =
+        'H+S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI='
+        const message = 'A message'
+
+        await uut._validateSignature(txId, signature, message)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Could not get transaction details from BCH service.')
+      }
+    })
   })
 
   describe('#_validateTx', () => {
@@ -178,26 +197,51 @@ describe('#PayToWriteAccessController', () => {
       }
     })
 
-    it('should return false if token burn is less than the threshold', async () => {
+    it('should throw error if tokenId is not included', async () => {
       try {
-        // const spy = sinon.spy(uut, 'getTokenQtyDiff')
-        sandbox.stub(uut.wallet, 'getTxData').resolves([
-          {
-            tokenId:
-              '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
-            isValidSlp: true
-          }
-        ])
-        // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
-        sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.0001)
+        sandbox
+          .stub(uut.wallet, 'getTxData')
+          .resolves([{ isValidSlp: true, tokenId: '' }])
 
         const txId = mock.tx.txid
-        const result = await uut._validateTx(txId)
+        await uut._validateTx(txId)
 
-        assert.isFalse(result)
-      } catch (err) {
         assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        assert.include(err.message, 'Transaction data does not include a token ID.')
       }
+    })
+
+    it('should return false if token burn is less than the threshold', async () => {
+      // const spy = sinon.spy(uut, 'getTokenQtyDiff')
+      sandbox.stub(uut.wallet, 'getTxData').resolves([
+        {
+          tokenId:
+              '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
+          isValidSlp: true
+        }
+      ])
+      // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
+      sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.0001)
+
+      // Mock data
+      const now = new Date()
+      const entry = {
+        payload: {
+          value: {
+            timestamp: now.getTime()
+          }
+        }
+      }
+      uut._options.writePrice = {
+        getTargetCostPsf: () => 0.133
+      }
+
+      const txId = mock.tx.txid
+      const result = await uut._validateTx(txId, entry)
+
+      assert.isFalse(result)
     })
 
     it('should return true if required tokens are burned', async () => {
@@ -212,11 +256,76 @@ describe('#PayToWriteAccessController', () => {
         }
       ])
       // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
+      sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.5)
+
+      // Mock data
+      const now = new Date()
+      const entry = {
+        payload: {
+          value: {
+            timestamp: now.getTime()
+          }
+        }
+      }
+      uut._options.writePrice = {
+        getTargetCostPsf: () => 0.133
+      }
 
       const txId = mock.tx.txid
-      const result = await uut._validateTx(txId)
+      const result = await uut._validateTx(txId, entry)
       assert.isTrue(result)
     })
+
+    it('should display complete error if it has no message', async () => {
+      try {
+        sandbox
+          .stub(uut.wallet, 'getTxData')
+          .rejects({ a: 'b' })
+
+        const txId = mock.tx.txid
+        await uut._validateTx(txId)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        // assert.include(err.message, 'Transaction data does not include a token ID.')
+        assert.equal(err.a, 'b')
+      }
+    })
+
+    it('should repackage errors with an error property', async () => {
+      try {
+        sandbox
+          .stub(uut.wallet, 'getTxData')
+          .rejects({ error: 'test error' })
+
+        const txId = mock.tx.txid
+        await uut._validateTx(txId)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        // assert.include(err.message, 'Transaction data does not include a token ID.')
+        assert.equal(err.message, 'test error')
+      }
+    })
+
+    // it('should handle nginx 429 errors', async () => {
+    //   try {
+    //     sandbox
+    //       .stub(uut.wallet, 'getTxData')
+    //       .rejects({ a: '429 Too Many Requests' })
+    //
+    //     const txId = mock.tx.txid
+    //     await uut._validateTx(txId)
+    //
+    //     assert.fail('Unexpected code path')
+    //   } catch (err) {
+    //     // console.log('err: ', err)
+    //     // assert.include(err.message, 'Transaction data does not include a token ID.')
+    //     assert.equal(err.message, 'nginx: 429 Too Many Requests')
+    //   }
+    // })
   })
 
   describe('#getTokenQtyDiff', () => {
@@ -257,6 +366,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'txid must be a string')
       }
     })
+
     it('should throw error if txid is not a string', async () => {
       try {
         await uut.markInvalid(1)
@@ -318,6 +428,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'Cannot destructure property')
       }
     })
+
     it('should throw error if input is wrong type', async () => {
       try {
         await uut.validateAgainstBlockchain(1)
@@ -326,6 +437,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'input must be an object')
       }
     })
+
     it('should throw error if "txid" property is not provided', async () => {
       try {
         await uut.validateAgainstBlockchain({})
@@ -334,6 +446,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'txid must be a string')
       }
     })
+
     it('should throw error if "signature" property is not provided', async () => {
       try {
         const obj = {
@@ -345,6 +458,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'signature must be a string')
       }
     })
+
     it('should throw error if "message" property is not provided', async () => {
       try {
         const obj = {
@@ -358,6 +472,7 @@ describe('#PayToWriteAccessController', () => {
         assert.include(err.message, 'message must be a string')
       }
     })
+
     it('should return false for invalid signature', async () => {
       // Mock
       sandbox.stub(uut, '_validateSignature').resolves(false)
@@ -410,10 +525,12 @@ describe('#PayToWriteAccessController', () => {
       const result = await uut.canAppend(mock.entryMaxSize)
       assert.isFalse(result)
     })
+
     it('should return false if input missing', async () => {
       const result = await uut.canAppend()
       assert.isFalse(result)
     })
+
     it('should return false if the input data is greater than the maxDataSize', async () => {
       const result = await uut.canAppend(mock.entryMaxSize)
       assert.isFalse(result)
@@ -428,6 +545,7 @@ describe('#PayToWriteAccessController', () => {
 
     it('should return true if blockchain validation passes', async () => {
       sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      sandbox.stub(uut.bchjs.Util, 'sleep').resolves()
 
       const result = await uut.canAppend(mock.entry)
       assert.isTrue(result)
@@ -437,6 +555,7 @@ describe('#PayToWriteAccessController', () => {
       let eventInput
 
       sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      sandbox.stub(uut.bchjs.Util, 'sleep').resolves()
 
       sandbox
         .stub(uut.validationEvent, 'emit')
@@ -453,6 +572,45 @@ describe('#PayToWriteAccessController', () => {
       assert.isObject(eventInput, 'An object is expected to be emited')
       assert.equal(eventInput.hash, entry.hash)
       assert.equal(eventInput.data, entry.payload.value.data)
+    })
+
+    it('should return false if entry is older than a year', async () => {
+      sandbox.stub(uut, 'checkDate').resolves(false)
+
+      const result = await uut.canAppend(mock.entry)
+      assert.isFalse(result)
+    })
+  })
+
+  describe('#checkDate', () => {
+    it('should return false if date is less than a year old', () => {
+      const now = new Date()
+      const target = now.getTime() - 60000 * 60 * 24 * 2
+
+      const payload = {
+        value: {
+          timestamp: target
+        }
+      }
+
+      const result = uut.checkDate(payload)
+
+      assert.equal(result, false)
+    })
+
+    it('should return true if date is more than a year old', () => {
+      const now = new Date()
+      const target = now.getTime() - 60000 * 60 * 24 * 400
+
+      const payload = {
+        value: {
+          timestamp: target
+        }
+      }
+
+      const result = uut.checkDate(payload)
+
+      assert.equal(result, true)
     })
   })
 })

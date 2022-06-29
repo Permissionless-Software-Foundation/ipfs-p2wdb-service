@@ -2,12 +2,32 @@
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
+## Overview
+
+P2WDB is an acronym for **pay-to-write database**. It's a peer-to-peer (p2p) database that operates over [IPFS](https://ipfs.io), and functions similarly to a blockchain.
+
+This code repository is the 'server' or 'service' side, for operating a P2WDB locally. If you simply want to read or write data to the P2WDB, check out the 'client' JavaScript library: [p2wdb](https://www.npmjs.com/package/p2wdb).
+
+The P2WDB has the advantages of a blockchain:
+- There are multiple *nodes* on the network hosting their own copy of the database.
+- These *redundant copies* make it very difficult to censor content in the database, and ensure high availability of the data.
+- The nodes sync their databases using *consensus rules*.
+- Writes are paid for by burning PSF tokens. This provides *incentive* to improve the software and services.
+
+The P2WDB has the advantages of a web-app database:
+- Up to 10KB of data can be included per write.
+- Reduced size, since P2WDB prunes data over a year old.
+- Easy backup of data to Filecoin for long-term storage.
+- REST API interface for CRUD (Create, Read, Update, Delete) operations over web2.
+- JSON RPC interface for CRUD operations over web3 (IPFS).
+- Webhooks for triggering events when application-specific data is written to the P2WDB.
+
 ## What Is P2WDB?
 
 - [YouTube Video Overview of the P2WDB Project](https://youtu.be/korI-8W240s)
 - [JSON RPC and REST API Documentation](https://p2wdb-docs.fullstack.cash/)
 
-P2WDB is an acronym for pay-to-write database. It's a peer-to-peer (p2p) databse that operates similarly to a blockchain. It solves two growing problems in the blockchain space:
+P2WDB is an acronym for pay-to-write database. It's a peer-to-peer (p2p) database that operates similarly to a blockchain. It solves two growing problems in the blockchain space:
 
 - **On-chain data** - Blockchains can be thought of as censorship resistant databases. They are great at censorship resistance, but they are really bad at being databases. On-chain data 'bloat' or 'state management' is one of the hardest scaling problems in the blockchain space. The P2WDB helps blockchains scale by providing a place to move data off-chain, but still be able to access that data on-chain.
 
@@ -33,9 +53,9 @@ There are three primary communication interfaces for a P2WDB:
 
 ### P2WDB Architecture
 
-Each blockchain will have its own P2WDB instance that is specific to that blockchain. The local P2WDB can be written-to by providing a proof-of-burn on that blockchain. A proof-of-burn is simply a transaction ID (TXID), where a specific quantity of a specific token (e.g. 0.01 [PSF tokens](https://psfoundation.cash)) was burned in that transaction. That is the 'ticket' that lets a user write new data to the database. Anyone can read from the database.
+Each blockchain will have its own P2WDB instance that is specific to that blockchain. The local P2WDB can be written-to by providing a proof-of-burn on that blockchain. A proof-of-burn is simply a transaction ID (TXID), where a specific quantity of a specific token (e.g. $0.01 USD in [PSF tokens](https://psfoundation.cash)) was burned in that transaction. That is the 'ticket' that lets a user write new data to the database. Anyone can read from the database for free.
 
-All the local P2WDBs will feed into a global P2WDB, which will be blockchain agnostic. This does not require any effort on the users part. Any data written to a local P2WDB will be automatically added to the global P2WDB. In this way, the P2WDB can function as a cross-blockchain communication medium and data provider.
+The first P2WDB instance focuses on the BCH blockchain. When other blockchains are incorporated, the blockchain-specific P2WDBs will feed into a global P2WDB, which will be blockchain agnostic. This does not require any effort on the users part. Any data written to a blockchain-specific P2WDB will be automatically added to the global P2WDB. In this way, the P2WDB can function as a cross-blockchain communication medium and data provider.
 
 ### Backups
 
@@ -45,33 +65,23 @@ Smaller databases make decentralization and censorship resistance better. For th
 
 Keeping the P2WDB small and nimble ensures it's easy to replicate by many service providers. The more service providers participating in the ecosystem, the more censorship resistant the data becomes.
 
-- node **^14.18.2**
-- npm **^8.3.0**
+## Requirements
+
+- node **^16.15.1**
+- npm **^8.11.0**
 - Docker **^20.10.8**
 - Docker Compose **^1.27.4**
 
 ## About This Repository
 
-This is a fork of [ipfs-service-provider](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). This project ports the pay-to-write (P2W) database (DB) code from [this older project](https://github.com/Permissionless-Software-Foundation/pay-to-write-orbitdb) and adds it to the ipfs-service-provider boilerplate code in order to add both a REST API over HTTP interface and JSON RPC over IPFS interface to access the P2WDB services.
+ipfs-p2wdb-service is a fork of [ipfs-service-provider](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). This project ports the pay-to-write (P2W) database (DB) specific code to the ipfs-service-provider boilerplate code. ipfs-service-provider provides both a *REST API over HTTP* interface (web2) and *JSON RPC over IPFS* interface (web3) to access the P2WDB services.
 
-Two API endpoints are currently implemented:
+### Documentation:
 
-- Write - add an entry to the database.
-- Read all - read all entries in the database.
-
-Each endpoint is available over two interfaces:
-
-- A REST API over HTTP
-- A JSON RPC over IPFS, using [chat.fullstack.cash](https://chat.fullstack.cash)
-
-Documentation:
-
-- [API documentation for both interfaces can be found here.](https://p2wdb.fullstackcash.nl/)
+- [API documentation for both interfaces can be found here.](https://p2wdb.fullstack.cash/)
 - [Example code for burning tokens and writing data to the DB.](./examples)
 - [Developer Documentation and Architectural Overview](./dev-docs)
 - [Next Steps for this project](./dev-docs/next-steps.md)
-
-This project is under heavy development and is only appropriate for use by JavaScript developers familiar with REST API or JSON RPC development.
 
 ### Operation Notes
 
@@ -79,32 +89,23 @@ This project is under heavy development and is only appropriate for use by JavaS
 
 - [Instructions on setting up IPFS private networks.](https://github.com/ipfs/go-ipfs/blob/master/docs/experimental-features.md#private-networks)
 - For external installations, the swarm.key file will typically go in `~/.ipfs/swarm.key`
-- For production Docker containers, the key would go in `ipfs-service-provider/production/data/go-ipfs/data/swarm.key`
-
-- By default, the P2WDB accesses the BCH blockchain through https://free-bch.fullstack.cash, which is simply a running implementation of [ipfs-bch-wallet-consumer](https://github.com/Permissionless-Software-Foundation/ipfs-bch-wallet-consumer). If you want to connect to a different instance, set the URL in the `CONSUMER_URL` environment variable.
+- For production Docker containers, the key is automatically mounted by the container.
+- By default, the P2WDB accesses the BCH blockchain through https://free-bch.fullstack.cash, which is simply a running instance of [ipfs-bch-wallet-consumer](https://github.com/Permissionless-Software-Foundation/ipfs-bch-wallet-consumer). This is part of the PSF web3 infrastructure, described at [CashStack.info](https://cashstack.info). If you want to connect to a different instance, set the URL in the `CONSUMER_URL` environment variable. A list of instances is available [in this gist](https://gist.github.com/christroutner/63c5513782181f8b8ea3eb89f7cadeb6).
 
 ### Setup Development Environment
 
-**Note:** These instructions are out of date and need to be updated.
+TODO: This section needs more information added to it.
 
-The development environment is assumed to be Ubuntu Linux.
+There is additional developer documentation in the [dev-docs directory](./dev-docs).
 
-- Clone this repository.
-- Make sure you have node-pre-gyp installed: `sudo npm install -g node-pre-gyp`
-- Install dependencies with `npm install`
-- If MongoDB is not installed, install it by running the `./install-mongo.sh` script
-- Run tests with `npm test`
-- Start with `npm start`
+## Dependencies
 
 ### Docker container
 
 The target production deployment of this software is as a Docker container. The [docker folder](./production/docker) contains the Dockerfile and `docker-compose.yml` file to generate a new Docker image. The production target is Ubuntu Linux 20.04, running Docker and Docker Compose.
 
-- Generate a new Docker image: `docker-compose build --no-cache`
+- Pull down the Docker images: `docker-compose pull`
 - Start the Docker container: `docker-compose up -d`
-- Stop the Docker container: `docker-compose down`
-- Copy the [swarm.key](./swarm.key) file to `ipfs-p2wdb-service/production/data/go-ipfs/data/swarm.key`.
-- Bring the containers back up with `docker-compose up -d`.
 
 ## License
 

@@ -64,6 +64,7 @@ describe('#DBEntry', () => {
       assert.property(entry.value, 'message')
       assert.property(entry.value, 'signature')
       assert.property(entry.value, 'data')
+      assert.property(entry.value, 'timestamp')
 
       // Assert that values match expectations.
       assert.equal(entry.hash, rawData.hash)

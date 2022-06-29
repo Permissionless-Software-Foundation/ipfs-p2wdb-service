@@ -2,24 +2,31 @@
   Unit tests for the pay-to-write.js library.
 */
 
+// Global npm libraries
 const sinon = require('sinon')
 const assert = require('chai').assert
 
+// local libraries
 const OrbitDBAdapter = require('../../../../src/adapters/orbit')
 const KeyValueMock = require('../../mocks/model-mock.js')
 const OrbitDBMock = require('../../mocks/orbitdb-mock').OrbitDBMock
 const config = require('../../../../config')
-let uut
-let sandbox
+const WritePrice = require('../../../../src/adapters/write-price')
 
 describe('#OrbitDBAdapter', () => {
+  let uut
+  let sandbox
+
   beforeEach(() => {
+    const writePrice = new WritePrice()
+
     uut = new OrbitDBAdapter({
       ipfs: {
         id: () => {
           return 'ipfs id'
         }
-      }
+      },
+      writePrice
     })
 
     // Mock database dependencies.
@@ -33,6 +40,19 @@ describe('#OrbitDBAdapter', () => {
 
   describe('#constructor', () => {
     it('should throw an error if instance of IPFS is not provided', () => {
+      try {
+        const ipfs = { a: 'b' }
+
+        const _uut = new OrbitDBAdapter({ ipfs })
+
+        console.log(_uut)
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Pass instance of writePrice when instantiating OrbitDBAdapter adapter library.')
+      }
+    })
+
+    it('should throw an error if instance of WriteCost adapter is not provided', () => {
       try {
         const _uut = new OrbitDBAdapter()
         console.log(_uut)
@@ -117,6 +137,38 @@ describe('#OrbitDBAdapter', () => {
       } catch (err) {
         assert.include(err.message, 'test error')
       }
+    })
+
+    it('should throw error if bch-js is not passed', async () => {
+      try {
+        const myDbName = 'myDbName'
+
+        await uut.createDb({ dbName: myDbName })
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Instance of bchjs required when called createDb()')
+      }
+    })
+
+    it('should exit if manifest can not be retrieved', async () => {
+      const myDbName = 'myDbName'
+
+      // mock function for keyvalue instance in orbitdb
+      const keyValueFakeFn = (dbName) => {
+        // assert.equal(dbName, myDbName, 'expected to use db name provided')
+        // return new OrbitDBMock()
+        throw new Error('test error')
+      }
+
+      // mock for orbitdb instance
+      sandbox
+        .stub(uut.OrbitDB, 'createInstance')
+        .resolves({ keyvalue: keyValueFakeFn })
+      sandbox.stub(uut, 'exitProgram').returns()
+
+      await uut.createDb({ dbName: myDbName, bchjs: {} })
+      assert.isTrue(uut.isReady)
     })
   })
 

@@ -3,10 +3,10 @@
 */
 
 // Public npm libraries
-// const jsonrpc = require('jsonrpc-lite')
+const jsonrpc = require('jsonrpc-lite')
 const sinon = require('sinon')
 const assert = require('chai').assert
-// const { v4: uid } = require('uuid')
+const { v4: uid } = require('uuid')
 
 // Set the environment variable to signal this is a test.
 process.env.P2W_ENV = 'test'
@@ -297,6 +297,211 @@ describe('#ENTRY-JSON-RPC', () => {
       assert.equal(result.status, 422)
       assert.equal(result.endpoint, 'getByAppId')
       assert.include(result.message, 'Cannot read')
+    })
+  })
+
+  describe('#entryRouter', () => {
+    it('should route to the readAll method', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'readAll').resolves(true)
+
+      // Generate the parsed data that the main router would pass to this
+      // endpoint.
+      const id = uid()
+      const call = jsonrpc.request(id, 'p2wdb', { endpoint: 'readAll' })
+      const jsonStr = JSON.stringify(call, null, 2)
+      const rpcData = jsonrpc.parse(jsonStr)
+      rpcData.from = 'Origin request'
+
+      const result = await uut.entryRouter(rpcData)
+
+      assert.equal(result, true)
+    })
+
+    it('should route to the write method', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'write').resolves(true)
+
+      // Generate the parsed data that the main router would pass to this
+      // endpoint.
+      const id = uid()
+      const call = jsonrpc.request(id, 'p2wdb', { endpoint: 'write' })
+      const jsonStr = JSON.stringify(call, null, 2)
+      const rpcData = jsonrpc.parse(jsonStr)
+      rpcData.from = 'Origin request'
+
+      const result = await uut.entryRouter(rpcData)
+
+      assert.equal(result, true)
+    })
+
+    it('should route to the getByHash method', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'getByHash').resolves(true)
+
+      // Generate the parsed data that the main router would pass to this
+      // endpoint.
+      const id = uid()
+      const call = jsonrpc.request(id, 'p2wdb', { endpoint: 'getByHash' })
+      const jsonStr = JSON.stringify(call, null, 2)
+      const rpcData = jsonrpc.parse(jsonStr)
+      rpcData.from = 'Origin request'
+
+      const result = await uut.entryRouter(rpcData)
+
+      assert.equal(result, true)
+    })
+
+    it('should route to the getByTxid method', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'getByTxid').resolves(true)
+
+      // Generate the parsed data that the main router would pass to this
+      // endpoint.
+      const id = uid()
+      const call = jsonrpc.request(id, 'p2wdb', { endpoint: 'getByTxid' })
+      const jsonStr = JSON.stringify(call, null, 2)
+      const rpcData = jsonrpc.parse(jsonStr)
+      rpcData.from = 'Origin request'
+
+      const result = await uut.entryRouter(rpcData)
+
+      assert.equal(result, true)
+    })
+
+    it('should route to the getByAppId method', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'getByAppId').resolves(true)
+
+      // Generate the parsed data that the main router would pass to this
+      // endpoint.
+      const id = uid()
+      const call = jsonrpc.request(id, 'p2wdb', { endpoint: 'getByAppId' })
+      const jsonStr = JSON.stringify(call, null, 2)
+      const rpcData = jsonrpc.parse(jsonStr)
+      rpcData.from = 'Origin request'
+
+      const result = await uut.entryRouter(rpcData)
+
+      assert.equal(result, true)
+    })
+
+    // it('should route to the getAllUsers method', async () => {
+    //   // Mock dependencies
+    //   sandbox.stub(uut, 'getAll').resolves(true)
+    //
+    //   // Generate the parsed data that the main router would pass to this
+    //   // endpoint.
+    //   const id = uid()
+    //   const userCall = jsonrpc.request(id, 'users', {
+    //     endpoint: 'getAllUsers',
+    //     apiToken: testUser.token
+    //   })
+    //   const jsonStr = JSON.stringify(userCall, null, 2)
+    //   const rpcData = jsonrpc.parse(jsonStr)
+    //   rpcData.from = 'Origin request'
+    //
+    //   // Force middleware to pass.
+    //   sandbox.stub(uut.validators, 'ensureUser').resolves(true)
+    //
+    //   const result = await uut.userRouter(rpcData)
+    //   // console.log('result', result)
+    //   assert.equal(result, true)
+    // })
+
+    // it('should route to the updateUser method', async () => {
+    //   // Mock dependencies
+    //   sandbox.stub(uut, 'updateUser').resolves(true)
+    //
+    //   // Generate the parsed data that the main router would pass to this
+    //   // endpoint.
+    //   const id = uid()
+    //   const userCall = jsonrpc.request(id, 'users', {
+    //     endpoint: 'updateUser',
+    //     apiToken: 'fakeJWTToken',
+    //     userId: 'abc123'
+    //   })
+    //   const jsonStr = JSON.stringify(userCall, null, 2)
+    //   const rpcData = jsonrpc.parse(jsonStr)
+    //   rpcData.from = 'Origin request'
+    //
+    //   // Force middleware to pass.
+    //   sandbox.stub(uut.validators, 'ensureTargetUserOrAdmin').resolves(true)
+    //
+    //   const result = await uut.userRouter(rpcData)
+    //   // console.log('result: ', result)
+    //
+    //   assert.equal(result, true)
+    // })
+
+    // it('should route to the getUser method', async () => {
+    //   // Mock dependencies
+    //   sandbox.stub(uut, 'getUser').resolves(true)
+    //
+    //   // Generate the parsed data that the main router would pass to this
+    //   // endpoint.
+    //   const id = uid()
+    //   const userCall = jsonrpc.request(id, 'users', {
+    //     endpoint: 'getUser',
+    //     apiToken: testUser.token
+    //   })
+    //   const jsonStr = JSON.stringify(userCall, null, 2)
+    //   const rpcData = jsonrpc.parse(jsonStr)
+    //   rpcData.from = 'Origin request'
+    //
+    //   // Force middleware to pass.
+    //   sandbox.stub(uut.validators, 'ensureUser').resolves(true)
+    //
+    //   const result = await uut.userRouter(rpcData)
+    //   // console.log('result: ', result)
+    //
+    //   assert.equal(result, true)
+    // })
+
+    // it('should route to the deleteUsers method', async () => {
+    //   // Mock dependencies
+    //   sandbox.stub(uut, 'deleteUser').resolves(true)
+    //
+    //   // Generate the parsed data that the main router would pass to this
+    //   // endpoint.
+    //   const id = uid()
+    //   const userCall = jsonrpc.request(id, 'users', {
+    //     endpoint: 'deleteUser',
+    //     apiToken: 'fakeJWTToken',
+    //     userId: 'abc123'
+    //   })
+    //   const jsonStr = JSON.stringify(userCall, null, 2)
+    //   const rpcData = jsonrpc.parse(jsonStr)
+    //   rpcData.from = 'Origin request'
+    //
+    //   // Force middleware to pass.
+    //   sandbox.stub(uut.validators, 'ensureTargetUserOrAdmin').resolves(true)
+    //
+    //   const result = await uut.userRouter(rpcData)
+    //   // console.log('result: ', result)
+    //
+    //   assert.equal(result, true)
+    // })
+
+    it('should return 500 status on routing issue', async () => {
+      // Force an error
+      sandbox.stub(uut, 'readAll').rejects(new Error('test error'))
+
+      // Generate the parsed data that the main router would pass to this
+      // endpoint.
+      const id = uid()
+      const call = jsonrpc.request(id, 'p2wdb', { endpoint: 'readAll' })
+      const jsonStr = JSON.stringify(call, null, 2)
+      const rpcData = jsonrpc.parse(jsonStr)
+      rpcData.from = 'Origin request'
+
+      const result = await uut.entryRouter(rpcData)
+      // console.log('result: ', result)
+
+      assert.equal(result.success, false)
+      assert.equal(result.status, 500)
+      assert.equal(result.message, 'test error')
+      assert.equal(result.endpoint, 'readAll')
     })
   })
 })

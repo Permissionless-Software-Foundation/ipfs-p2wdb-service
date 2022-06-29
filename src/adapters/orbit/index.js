@@ -22,13 +22,17 @@ AccessControllers.addAccessController({
 
 class OrbitDBAdapter {
   constructor (localConfig = {}) {
-    // Input Validation
-    if (!localConfig.ipfs) {
+    // Dependency injection
+    this.ipfs = localConfig.ipfs
+    if (!this.ipfs) {
       throw new Error(
         'Must pass an instance of ipfs when instancing the OrbitDBAdapter class.'
       )
     }
-    this.ipfs = localConfig.ipfs
+    this.writePrice = localConfig.writePrice
+    if (!this.writePrice) {
+      throw new Error('Pass instance of writePrice when instantiating OrbitDBAdapter adapter library.')
+    }
 
     // Encapsulate dependencies
     this.config = config
@@ -81,7 +85,8 @@ class OrbitDBAdapter {
       const options = {
         accessController: {
           type: 'payToWrite',
-          write: ['*']
+          write: ['*'],
+          writePrice: this.writePrice
         }
       }
 
@@ -92,7 +97,7 @@ class OrbitDBAdapter {
         this.db = await orbitdb.keyvalue(dbName, options)
       } catch (err) {
         console.log(`Can not download manifest for OrbitDB ${dbName}.\nExiting`)
-        process.exit(-1)
+        this.exitProgram()
       }
 
       // Overwrite the default bchjs instance used by the pay-to-write access
@@ -116,6 +121,10 @@ class OrbitDBAdapter {
       console.error('Error in createDb(): ', err)
       throw err
     }
+  }
+
+  exitProgram () {
+    process.exit(-1)
   }
 
   // The event handler.
