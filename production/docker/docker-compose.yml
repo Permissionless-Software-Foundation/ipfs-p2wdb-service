@@ -44,8 +44,8 @@ services:
     restart: always
 
   p2wdb:
-    build: .
-    #image: christroutner/ipfs-service-provider:v2.2.1
+    #build: .
+    image: christroutner/ipfs-p2wdb-service:v3.0.1
     container_name: p2wdb
     logging:
       driver: 'json-file'
