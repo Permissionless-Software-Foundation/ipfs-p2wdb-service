@@ -14,7 +14,7 @@ services:
     restart: always
 
   p2wdb-ipfs:
-    image: ipfs/go-ipfs:v0.12.0
+    image: ipfs/go-ipfs:v0.13.0
     container_name: ipfs
     environment:
       MY_ENV_VAR: 'placeholder'
@@ -44,8 +44,8 @@ services:
     restart: always
 
   p2wdb:
-    #build: .
-    image: christroutner/ipfs-service-provider:v2.2.1
+    build: .
+    #image: christroutner/ipfs-service-provider:v2.2.1
     container_name: p2wdb
     logging:
       driver: 'json-file'
@@ -62,4 +62,5 @@ services:
       #- 5669:5669 # IPFS WS Port
     volumes:
       - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+      - ./start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
     restart: always
