@@ -29,8 +29,8 @@ export FULLSTACKPASS=demo
 export DBURL=mongodb://172.17.0.1:5666/p2wdb-service-dev
 
 # Configure IPFS ports
-export IPFS_TCP_PORT=5668
-export IPFS_WS_PORT=5669
+#export IPFS_TCP_PORT=5668
+#export IPFS_WS_PORT=5669
 
 # Configure REST API port
 export PORT=5667
@@ -39,6 +39,7 @@ export P2W_ENV=production
 export IPFS_HOST=172.17.0.1
 export IPFS_API_PORT=5001
 export IPFS_TCP_PORT=4001
+#export IPFS_WS_PORT=5669
 
 # P2WDB specific env vars
 export ORBITDB_NAME=/orbitdb/zdpuAtoSxVUvmwsHNnADePrY6DsgMZ55DGqF6ovGXT9opB4F4/psf-bch-p2wdb-keyvalue-v3.0.0-0001
