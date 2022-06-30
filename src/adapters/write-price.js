@@ -34,21 +34,30 @@ class WritePrice {
   // and periodically every hour.
   async getCostsFromToken () {
     try {
-      const tokenData = await this.wallet.getTokenData(writeTokenId)
-      // console.log('tokenData: ', tokenData)
+      let mutableCid
+      try {
+        const tokenData = await this.wallet.getTokenData(writeTokenId)
+        // console.log('tokenData: ', tokenData)
 
-      // Remove the ipfs:// prefix.
-      const mutableCid = tokenData.mutableData.slice(7)
+        // Remove the ipfs:// prefix.
+        mutableCid = tokenData.mutableData.slice(7)
       // console.log('mutableCid: ', mutableCid)
+      } catch (err) {
+        throw new Error('Could not get P2WDB price from blockchain.')
+      }
 
-      // Get the data from IPFS.
-      const request = await this.axios.get(`https://${mutableCid}.ipfs.dweb.link/data.json`)
-      // console.log(`request.data: ${JSON.stringify(request.data, null, 2)}`)
+      try {
+        // Get the data from IPFS.
+        const request = await this.axios.get(`https://${mutableCid}.ipfs.dweb.link/data.json`)
+        // console.log(`request.data: ${JSON.stringify(request.data, null, 2)}`)
 
-      // Update the state with the price history array.
-      this.priceHistory = request.data.p2wdbPriceHistory
+        // Update the state with the price history array.
+        this.priceHistory = request.data.p2wdbPriceHistory
 
-      return this.priceHistory
+        return this.priceHistory
+      } catch (err) {
+        throw new Error('Could not retrieve price data from Filecoin.')
+      }
     } catch (err) {
       console.error('Error in adapters/write-price.js/getCostsFromToken()')
       throw err
