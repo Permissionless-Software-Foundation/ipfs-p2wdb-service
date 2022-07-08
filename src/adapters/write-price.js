@@ -151,17 +151,9 @@ class WritePrice {
       }
       // console.log('currentRate: ', currentRate)
 
-      // if (!result) throw new Error('Could not retrieve write rate in PSF tokens.')
-
-      // Convert the date string into a Date object.
-      // currentRate.date = new Date(currentRate.date)
-
-      // Store the price in the state of this instance.
-      // if (!targetDate) { this.currentRate = currentRate.psfPerWrite }
-
       return result.psfPerWrite
     } catch (err) {
-      console.error('Error in adapters/write-price.js/getCurrentCost()')
+      console.error('Error in adapters/write-price.js/getTargetCostPsf(): ', err)
       throw err
     }
   }

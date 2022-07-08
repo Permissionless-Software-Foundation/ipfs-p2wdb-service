@@ -59,12 +59,13 @@ class Adapters {
         this.bchjs = await this.fullStackJwt.instanceBchjs()
       }
 
-      await this.writePrice.getCostsFromToken()
-      const currentRate = this.writePrice.getCurrentCostPSF()
-      console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
-
       // Do not start these adapters if this is an e2e test.
       if (this.config.env !== 'test') {
+        // Get the write price from the reference token.
+        await this.writePrice.getCostsFromToken()
+        const currentRate = this.writePrice.getCurrentCostPSF()
+        console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
+
         // Start the IPFS node.
         await this.ipfs.start({ bchjs: this.bchjs })
 
