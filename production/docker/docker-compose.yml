@@ -14,7 +14,7 @@ services:
     restart: always
 
   p2wdb-ipfs:
-    image: ipfs/go-ipfs:v0.13.0
+    image: ipfs/go-ipfs:v0.14.0
     container_name: ipfs
     environment:
       MY_ENV_VAR: 'placeholder'
@@ -26,6 +26,7 @@ services:
     mem_limit: 2000mb
     ports:
       - 4001:4001
+      - 4003:4003
       - 172.17.0.1:5001:5001
       #- 5001:5001
       - 172.17.0.1:8080:8080
@@ -44,8 +45,8 @@ services:
     restart: always
 
   p2wdb:
-    #build: .
-    image: christroutner/p2wdb:v3.0.6
+    build: .
+    #image: christroutner/p2wdb:v3.0.6
     container_name: p2wdb
     logging:
       driver: 'json-file'
