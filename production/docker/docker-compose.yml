@@ -45,8 +45,8 @@ services:
     restart: always
 
   p2wdb:
-    build: .
-    #image: christroutner/p2wdb:v3.0.6
+    #build: .
+    image: christroutner/p2wdb:v3.0.8
     container_name: p2wdb
     logging:
       driver: 'json-file'
