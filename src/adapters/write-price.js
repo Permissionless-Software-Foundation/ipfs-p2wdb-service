@@ -43,7 +43,7 @@ class WritePrice {
         mutableCid = tokenData.mutableData.slice(7)
       // console.log('mutableCid: ', mutableCid)
       } catch (err) {
-        throw new Error('Could not get P2WDB price from blockchain.')
+        throw new Error(`Could not get P2WDB price from blockchain: ${err.message}`)
       }
 
       try {

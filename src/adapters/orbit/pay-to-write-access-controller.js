@@ -185,7 +185,7 @@ class PayToWriteAccessController extends AccessController {
   // to the existing peer databases while respecting rate limits.
   async canAppend (entry, identityProvider) {
     try {
-      console.log('canAppend entry: ', entry)
+      // console.log('canAppend entry: ', entry)
 
       let validTx = false
 
@@ -215,6 +215,9 @@ class PayToWriteAccessController extends AccessController {
         const isValid = mongoRes[0].isValid
         return isValid
       }
+
+      // Display the entry if it did not pass a check of the MongoDB.
+      console.log('canAppend entry: ', entry)
 
       // Ensure the entry is less than a year old.
       const isAYearOld = this.checkDate(entry.payload)
