@@ -48,7 +48,7 @@ describe('#write-price', () => {
 
         assert.fail('Unexpected result')
       } catch (err) {
-        assert.include(err.message, 'Could not get P2WDB price from blockchain.')
+        assert.include(err.message, 'Could not get P2WDB price from blockchain:')
       }
     })
   })
