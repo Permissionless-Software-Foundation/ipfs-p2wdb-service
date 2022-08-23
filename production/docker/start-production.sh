@@ -26,7 +26,7 @@ export FULLSTACKPASS=demo
 
 
 # Production database connection string.
-export DBURL=mongodb://172.17.0.1:5666/p2wdb-service-dev
+export DBURL=mongodb://172.17.0.1:5666/p2wdb-service-prod
 
 # Configure IPFS ports
 #export IPFS_TCP_PORT=5668
