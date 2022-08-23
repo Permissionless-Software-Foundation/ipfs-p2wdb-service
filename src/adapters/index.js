@@ -20,6 +20,7 @@ const P2WDB = require('./p2wdb')
 const EntryAdapter = require('./entry')
 const WebhookAdapter = require('./webhook')
 const WritePrice = require('./write-price')
+const Wallet = require('./wallet')
 
 const config = require('../../config')
 
@@ -37,6 +38,7 @@ class Adapters {
     this.entry = new EntryAdapter()
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()
+    this.wallet = new Wallet()
 
     // Pass the instance of write-price when instantiating the P2WDB OrbitDB.
     localConfig.writePrice = this.writePrice
@@ -66,10 +68,15 @@ class Adapters {
         const currentRate = this.writePrice.getCurrentCostPSF()
         console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
 
-        // Retrieve the cost of a write in BCH, if that feature is enabled.
+        // Only execute the code in this block if BCH payments are enabled.
         if (this.config.enableBchPayment) {
+          // Retrieve the cost of a write in BCH, if that feature is enabled.
           const bchRate = await this.writePrice.getWriteCostInBch()
           console.log(`BCH payments enabled. Current P2WDB cost is ${bchRate} BCH per write.`)
+
+          // Instance the wallet.
+          const walletData = await this.wallet.openWallet()
+          await this.wallet.instanceWallet(walletData)
         }
 
         // Start the IPFS node.

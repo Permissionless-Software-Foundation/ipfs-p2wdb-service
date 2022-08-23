@@ -60,85 +60,20 @@ describe('#Cost', () => {
     })
   })
 
-  // describe('#addUserEntry', () => {
-  //   it('should throw an error if entry already exists in the database.', async () => {
-  //     try {
-  //       // Mock dependencies.
-  //       sandbox.stub(uut.entryAdapter, 'doesEntryExist').resolves(true)
-  //
-  //       await uut.addUserEntry(rawData)
-  //
-  //       assert.fail('Unexpected code path')
-  //     } catch (err) {
-  //       assert.include(err.message, 'Entry already exists in the database.')
-  //     }
-  //   })
-  //
-  //   it('should add an entry to the P2WDB', async () => {
-  //     // Mock dependencies
-  //     // console.log('uut.entryAdapter: ', uut.entryAdapter)
-  //     sandbox.stub(uut.entryAdapter, 'doesEntryExist').resolves(false)
-  //     sandbox.stub(uut.p2wdbAdapter, 'insert').resolves('test-hash')
-  //
-  //     const result = await uut.addUserEntry(rawData)
-  //
-  //     assert.equal(result, 'test-hash')
-  //   })
-  // })
+  describe('#getBchCost', () => {
+    it('should generate a new DB model and return an address and cost', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.adapters.writePrice, 'getWriteCostInBch').resolves(0.0001)
+      sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
+        cashAddress: 'testAddr',
+        hdIndex: 2
+      })
 
-  // describe('#addPeerEntry', () => {
-  //   it('should throw an error if entry already exists in the database.', async () => {
-  //     try {
-  //       // Mock dependencies.
-  //       sandbox.stub(uut.entryAdapter, 'doesEntryExist').resolves(true)
-  //
-  //       await uut.addPeerEntry(rawData)
-  //
-  //       assert.fail('Unexpected code path')
-  //     } catch (err) {
-  //       assert.include(err.message, 'Entry already exists in the database.')
-  //     }
-  //   })
-  //
-  //   it('should add an entry to the P2WDB', async () => {
-  //     // Mock dependencies
-  //     sandbox.stub(uut.entryAdapter, 'doesEntryExist').resolves(false)
-  //
-  //     const result = await uut.addPeerEntry(rawData)
-  //
-  //     assert.equal(result, true)
-  //   })
-  // })
+      const result = await uut.getBchCost()
+      // console.log('result: ', result)
 
-  // describe('#_extractAppId', () => {
-  //   it('should extract appId from data', () => {
-  //     // Create test data for input.
-  //     const peerData = {
-  //       data: {
-  //         appId: 'test'
-  //       }
-  //     }
-  //     peerData.data = JSON.stringify(peerData.data)
-  //
-  //     const result = uut._extractAppId(peerData)
-  //     // console.log('result: ', result)
-  //
-  //     assert.equal(result.appId, 'test')
-  //   })
-  //
-  //   it('should exit quietly when there is an error, and returns input data.', () => {
-  //     // Create test data for input.
-  //     let peerData = {
-  //       data: {
-  //         appId: 'test'
-  //       }
-  //     }
-  //     peerData = JSON.stringify(peerData)
-  //
-  //     const result = uut._extractAppId(peerData)
-  //     // console.log('result: ', result)
-  //
-  //     assert.include(result, 'test')
-  //   })
-  // })
+      assert.equal(result.bchCost, 0.0001)
+      assert.equal(result.address, 'testAddr')
+    })
+  })
 })

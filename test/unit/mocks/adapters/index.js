@@ -88,6 +88,12 @@ const localdb = {
     }
   },
 
+  BchPayment: class BchPayment {
+    async save () {
+      return {}
+    }
+  },
+
   validatePassword: () => {
     return true
   }
@@ -95,7 +101,12 @@ const localdb = {
 
 const writePrice = {
   currentRate: 0.133,
-  getTargetCostPsf: () => 0.133
+  getTargetCostPsf: () => 0.133,
+  getWriteCostInBch: async () => {}
 }
 
-module.exports = { ipfs, localdb, p2wdb, entry, webhook, writePrice }
+const wallet = {
+  getKeyPair: async () => {}
+}
+
+module.exports = { ipfs, localdb, p2wdb, entry, webhook, writePrice, wallet }
