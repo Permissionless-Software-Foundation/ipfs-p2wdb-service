@@ -52,12 +52,13 @@ class JsonFiles {
         _this.fs.readFile(fileName, (err, data) => {
           if (err) {
             if (err.code === 'ENOENT') {
-              console.log('Admin .json file not found!')
+              console.log('.json file not found!')
             } else {
               console.log(`err: ${JSON.stringify(err, null, 2)}`)
             }
 
-            throw err
+            // throw err
+            return reject(err)
           }
 
           const obj = JSON.parse(data)
