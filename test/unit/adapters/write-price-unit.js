@@ -51,6 +51,20 @@ describe('#write-price', () => {
         assert.include(err.message, 'Could not get P2WDB price from blockchain:')
       }
     })
+
+    it('should handle error retrieving data from Filecoin', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.wallet, 'getTokenData').resolves(mockData.mockTokenData01)
+        sandbox.stub(uut.axios, 'get').rejects(new Error('test error'))
+
+        await uut.getCostsFromToken()
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Could not retrieve price data from Filecoin.')
+      }
+    })
   })
 
   describe('#getCurrentCostPSF', () => {
@@ -102,6 +116,50 @@ describe('#write-price', () => {
       } catch (err) {
         assert.include(err.message, 'targetDate input is required.')
       }
+    })
+  })
+
+  describe('#getPsfPriceInBch', () => {
+    it('should get the price of PSF tokens in BCH', async () => {
+      // Mock network calls
+      sandbox.stub(uut.axios, 'get').resolves({
+        data: {
+          usdPerBCH: 132.02,
+          bchBalance: 18.42684558,
+          tokenBalance: 47862.62842697,
+          usdPerToken: 0.09992589
+        }
+      })
+
+      const result = await uut.getPsfPriceInBch()
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.00075689)
+    })
+
+    it('should catch and throw an error', async () => {
+      try {
+        // Force and error
+        sandbox.stub(uut.axios, 'get').rejects(new Error('test error'))
+
+        await uut.getPsfPriceInBch()
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#getWriteCostInBch', () => {
+    it('should get write cost in BCH', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'getPsfPriceInBch').resolves(0.00075689)
+
+      const result = await uut.getWriteCostInBch()
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.00011073)
     })
   })
 })

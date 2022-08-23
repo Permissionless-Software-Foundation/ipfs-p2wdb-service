@@ -117,5 +117,8 @@ module.exports = {
     ? parseInt(process.env.IPFS_API_PORT)
     : 5001,
 
-  chatPubSubChan: 'psf-ipfs-chat-001'
+  chatPubSubChan: 'psf-ipfs-chat-001',
+
+  // Markup for providing PSF tokens so user can pay in BCH.
+  psfTradeMarkup: 0.1
 }
