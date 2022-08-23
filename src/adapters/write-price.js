@@ -26,6 +26,7 @@ class WritePrice {
 
     // state
     this.currentRate = 0.133
+    this.currentRateInBch = 0.0001
     this.priceHistory = []
   }
 
@@ -186,9 +187,16 @@ class WritePrice {
   async getWriteCostInBch () {
     const bchPerToken = await this.getPsfPriceInBch()
 
-    const costToUser = this.currentRate * bchPerToken * (1 + this.config.psfTradeMarkup)
+    // Cost in BCH + markup.
+    let costToUser = this.currentRate * bchPerToken * (1 + this.config.psfTradeMarkup)
 
-    return this.bchjs.Util.floor8(costToUser)
+    // Round to 8 decimals.
+    costToUser = this.bchjs.Util.floor8(costToUser)
+
+    // Save to state.
+    this.currentRateInBch = costToUser
+
+    return costToUser
   }
 }
 

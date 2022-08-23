@@ -66,6 +66,12 @@ class Adapters {
         const currentRate = this.writePrice.getCurrentCostPSF()
         console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
 
+        // Retrieve the cost of a write in BCH, if that feature is enabled.
+        if (this.config.enableBchPayment) {
+          const bchRate = await this.writePrice.getWriteCostInBch()
+          console.log(`BCH payments enabled. Current P2WDB cost is ${bchRate} BCH per write.`)
+        }
+
         // Start the IPFS node.
         await this.ipfs.start({ bchjs: this.bchjs })
 

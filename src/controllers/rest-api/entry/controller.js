@@ -2,7 +2,9 @@
   REST API Controller library for the /entry route
 */
 
+// Local libraries
 const { wlogger } = require('../../../adapters/wlogger')
+const config = require('../../../../config')
 
 let _this
 
@@ -23,8 +25,7 @@ class EntryRESTControllerLib {
     }
 
     // Encapsulate dependencies
-    // this.UserModel = this.adapters.localdb.Users
-    // this.userUseCases = this.useCases.user
+    this.config = config
 
     _this = this
   }
@@ -491,6 +492,68 @@ class EntryRESTControllerLib {
       }
     } catch (err) {
       // console.log('Error in get-by-txid.js/restController(): ', err)
+      // throw err
+      _this.handleError(ctx, err)
+    }
+  }
+
+  /**
+   * @api {get} /entry/cost/bch Get the write cost in BCH
+   * @apiPermission public
+   * @apiName P2WDB Cost in BCH
+   * @apiGroup REST P2WDB
+   *
+   * @apiDescription
+   * Get the cost of writing an entry to the database, denominated in BCH. This
+   * is a feature that is turned off by default. The operator of the P2WDB instance
+   * must add a wallet, hold PSF tokens, and enable the feature. This feature lets the
+   * P2WDB trade PSF tokens on-the-fly so that the end user can simply use BCH
+   * and does not have to worry about holding PSF tokens.
+   *
+   *  This endpoint returns the following properties if BCH payment is enabled:
+   *
+   *  - success : true/false
+   *  - bchCost: Amount of BCH to pay in order to write to the P2WDB
+   *  - address: BCH address to pay for a write.
+   *
+   * If BCH payments are not enabled, it returns a 501 error.
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5010/entry/cost/bch
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *  HTTP/1.1 200 OK
+   *  {
+   *     "success": true,
+   *     "bchCost": 0.000106,
+   *     "address": "bitcoincash:qqsrke9lh257tqen99dkyy2emh4uty0vky9y0z0lsr"
+   *  }
+   * @apiError UnprocessableEntity Missing required parameters
+   *
+   * @apiErrorExample {json} Error-Response:
+   *     HTTP/1.1 422 Unprocessable Entity
+   *     {
+   *       "status": 422,
+   *       "error": "Unprocessable Entity"
+   *     }
+   */
+  async getBchCost (ctx) {
+    if (!this.config.enableBchPayment) {
+      console.log('Throwing error. This is expected behavior.')
+      ctx.throw(501, 'BCH payments are not enabled in this instance of P2WDB.')
+    }
+
+    try {
+      // Get the cost in PSF tokens to write to the DB.
+      const { bchCost, address } = await this.useCases.entry.cost.getBchCost()
+
+      ctx.body = {
+        success: true,
+        bchCost,
+        address
+      }
+    } catch (err) {
+      console.log('Error in entry REST API getBchCost() handler.')
       // throw err
       _this.handleError(ctx, err)
     }

@@ -27,6 +27,15 @@ class Cost {
 
     return psfCost
   }
+
+  async getBchCost () {
+    // Placeholder
+    const address = 'bitcoincash:qqsrke9lh257tqen99dkyy2emh4uty0vky9y0z0lsr'
+
+    const bchCost = await this.adapters.writePrice.getWriteCostInBch()
+
+    return { bchCost, address }
+  }
 }
 
 module.exports = Cost
