@@ -52,6 +52,7 @@ class EntryController {
     }
 
     // Define the routes and attach the controller.
+    this.router.post('/write/bch', this.postBchEntry)
     this.router.post('/write', this.postEntry)
     this.router.get('/all/:page', this.readAllEntries)
     this.router.get('/hash/:hash', this.getByHash)
@@ -70,6 +71,11 @@ class EntryController {
   async postEntry (ctx, next) {
     // await _this.validators.ensureUser(ctx, next)
     await _this.entryRESTController.postEntry(ctx, next)
+  }
+
+  async postBchEntry (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.postBchEntry(ctx, next)
   }
 
   async readAllEntries (ctx, next) {
