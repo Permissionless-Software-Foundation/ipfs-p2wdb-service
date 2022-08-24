@@ -82,12 +82,13 @@ class WalletAdapter {
       }
 
       // Instantiate minimal-slp-wallet.
-      this.bchWallet = new this.BchWallet(walletData.mnemonic, advancedConfig)
+      // this.bchWallet = new this.BchWallet(walletData.mnemonic, advancedConfig)
+      this.bchWallet = await this._instanceWallet(walletData.mnemonic, advancedConfig)
 
       // Wait for wallet to initialize.
       await this.bchWallet.walletInfoPromise
       console.log(`BCH wallet initialized. Wallet address: ${this.bchWallet.walletInfo.cashAddress}`)
-      // console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
+      console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
 
       // Initialize the wallet
       await this.bchWallet.initialize()
@@ -97,6 +98,13 @@ class WalletAdapter {
       console.error('Error in instanceWallet()')
       throw err
     }
+  }
+
+  // This function is used for easier mocking of unit tests.
+  async _instanceWallet (mnemonic, config) {
+    const wallet = new this.BchWallet(mnemonic, config)
+    await wallet.walletInfoPromise
+    return wallet
   }
 
   // Increments the 'nextAddress' property in the wallet file. This property

@@ -200,7 +200,7 @@ describe('#AddEntry', () => {
       await tempWallet.walletInfoPromise
       sandbox.stub(tempWallet, 'initialize').resolves()
       sandbox.stub(tempWallet, 'sendAll').resolves('fake-txid')
-      sandbox.stub(uut, 'createTempWallet').resolves(tempWallet)
+      sandbox.stub(uut, '_createTempWallet').resolves(tempWallet)
 
       // Mock the P2WDB library
       uut.Write = class Write {
@@ -214,7 +214,100 @@ describe('#AddEntry', () => {
       }
 
       const result = await uut.addBchEntry(data)
-      console.log('result: ', result)
+      // console.log('result: ', result)
+
+      assert.equal(result, 'fake-hash')
+    })
+
+    it('should throw an error if BCH address is not found in the database', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves(null)
+
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+
+        await uut.addBchEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Payment model not found. Call POST /entry/cost/bch first to get a BCH payment address.')
+      }
+    })
+
+    it('should throw an error if BCH payment has not been made', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+          _id: '63054bb29ebc5f612533845a',
+          address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+          hdIndex: '5',
+          timeCreated: '2022-08-23T21:50:42.253Z',
+          bchCost: '0.00011073',
+          __v: 0,
+          remove: async () => {}
+        })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(0)
+
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+
+        await uut.addBchEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'which is less than the required fee of')
+      }
+    })
+
+    it('should throw an error issue with database lookup of address', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+          _id: '63054bb29ebc5f612533845a',
+          address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+          hdIndex: '5',
+          timeCreated: '2022-08-23T21:50:42.253Z',
+          bchCost: '0.00011073',
+          __v: 0,
+          remove: async () => {}
+        })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(11073)
+        sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
+          cashAddress: 'bad-address',
+          wif: 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS',
+          hdIndex: '6'
+        })
+
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+
+        await uut.addBchEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Unexpected error: HD index')
+      }
+    })
+  })
+
+  describe('#_createTempWallet', () => {
+    it('should create a wallet given a WIF', async () => {
+      const wif = 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS'
+
+      const result = await uut._createTempWallet(wif)
+      // console.log('result: ', result)
+
+      assert.equal(result.walletInfo.privateKey, wif)
     })
   })
 })

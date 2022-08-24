@@ -121,7 +121,7 @@ class AddEntry {
       // Verify that bchPayment model exists.
       const BchPaymentModel = this.adapters.localdb.BchPayment
       const bchPayment = await BchPaymentModel.findOne({ address })
-      console.log('bchPayment: ', bchPayment)
+      // console.log('bchPayment: ', bchPayment)
 
       // Throw error if bchPayment does not exist.
       if (!bchPayment) {
@@ -131,7 +131,7 @@ class AddEntry {
       // Verify that address has the required BCH payment.
       const requiredFee = bchPayment.bchCost
       const balance = await this.adapters.wallet.bchWallet.getBalance(address)
-      console.log('balance: ', balance)
+      // console.log('balance: ', balance)
 
       // Throw error if address does not have the necessary payment.
       if (balance < requiredFee) {
@@ -143,11 +143,11 @@ class AddEntry {
       if (keyPair.cashAddress !== address) {
         throw new Error(`Unexpected error: HD index ${bchPayment.hdIndex} generated address ${keyPair.cashAddress}, which does not match expected address ${address}`)
       }
-      console.log('keyPair: ', keyPair)
+      // console.log('keyPair: ', keyPair)
 
       // Instantiate a wallet using the addresses private key.
       // const tempWallet = new this.adapters.wallet.BchWallet(keyPair.wif, { interface: 'consumer-api' })
-      const tempWallet = await this.createTempWallet(keyPair.wif)
+      const tempWallet = await this._createTempWallet(keyPair.wif)
       await tempWallet.initialize()
 
       // Move payment to app's root address.
@@ -165,13 +165,13 @@ class AddEntry {
 
       return hash
     } catch (err) {
-      console.error('Error in add-entry.js/addBchEntry(): ', err)
+      console.error('Error in add-entry.js/addBchEntry()')
       throw err
     }
   }
 
   // This function is used for easier mocking during tests.
-  async createTempWallet (wif) {
+  async _createTempWallet (wif) {
     const tempWallet = new this.adapters.wallet.BchWallet(wif, { interface: 'consumer-api' })
     await tempWallet.walletInfoPromise
     return tempWallet
