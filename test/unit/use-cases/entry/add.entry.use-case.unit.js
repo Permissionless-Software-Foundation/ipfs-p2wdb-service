@@ -2,9 +2,13 @@
   Unit tests for the P2WDB Add Entry Use Cases
 */
 
+// Global npm libraries
 const assert = require('chai').assert
 const sinon = require('sinon')
+const BchWallet = require('minimal-slp-wallet/index')
+const clone = require('lodash.clonedeep')
 
+// Local libraries
 const AddEntry = require('../../../../src/use-cases/entry/add-entry')
 
 // Mocks
@@ -18,10 +22,15 @@ describe('#AddEntry', () => {
   before(async () => {})
 
   beforeEach(() => {
-    uut = new AddEntry({
-      p2wdbAdapter: adaptersMock.p2wdb,
-      entryAdapter: adaptersMock.entry
-    })
+    // uut = new AddEntry({
+    //   p2wdbAdapter: adaptersMock.p2wdb,
+    //   entryAdapter: adaptersMock.entry
+    // })
+
+    // console.log('adaptersMock: ', adaptersMock)
+    const adapters = clone(adaptersMock)
+    // console.log('adapters: ', adapters)
+    uut = new AddEntry({ adapters })
 
     rawData = {
       hash: 'zdpuAuxCW346zUG71Aai21Y31EJ1XNxcjXV5rz93DxftKnpjn',
@@ -39,7 +48,7 @@ describe('#AddEntry', () => {
   afterEach(() => sandbox.restore())
 
   describe('#constructor', () => {
-    it('should throw an error if p2wdb instance is not included', () => {
+    it('should throw an error if adapters instance is not included', () => {
       try {
         uut = new AddEntry()
 
@@ -47,20 +56,39 @@ describe('#AddEntry', () => {
       } catch (err) {
         assert.include(
           err.message,
-          'p2wdbAdapter instance must be included when instantiating AddEntry'
+          'Instance of adapters must be passed in when instantiating Entry Use Cases library.'
+        )
+      }
+    })
+
+    it('should throw an error if p2wdb instance is not included', () => {
+      try {
+        const adapters = clone(adaptersMock)
+        delete adapters.p2wdb
+
+        uut = new AddEntry({ adapters })
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(
+          err.message,
+          'p2wdb adapter instance must be included when instantiating AddEntry'
         )
       }
     })
 
     it('should throw an error if entry adapter instance is not included', () => {
       try {
-        uut = new AddEntry({ p2wdbAdapter: {} })
+        const adapters = clone(adaptersMock)
+        delete adapters.entry
+
+        uut = new AddEntry({ adapters })
 
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(
           err.message,
-          'entryAdapter instance must be included when instantiating AddEntry use case'
+          'entry adapter instance must be included when instantiating AddEntry use case'
         )
       }
     })
@@ -145,6 +173,48 @@ describe('#AddEntry', () => {
       // console.log('result: ', result)
 
       assert.include(result, 'test')
+    })
+  })
+
+  describe('#addBchEntry', () => {
+    it('should write an entry to the P2WDB', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+        _id: '63054bb29ebc5f612533845a',
+        address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+        hdIndex: '5',
+        timeCreated: '2022-08-23T21:50:42.253Z',
+        bchCost: '0.00011073',
+        __v: 0,
+        remove: async () => {}
+      })
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(11073)
+      sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
+        cashAddress: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+        wif: 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS',
+        hdIndex: '6'
+      })
+
+      // Mock BCH wallet
+      const tempWallet = new BchWallet()
+      await tempWallet.walletInfoPromise
+      sandbox.stub(tempWallet, 'initialize').resolves()
+      sandbox.stub(tempWallet, 'sendAll').resolves('fake-txid')
+      sandbox.stub(uut, 'createTempWallet').resolves(tempWallet)
+
+      // Mock the P2WDB library
+      uut.Write = class Write {
+        async postEntry () { return 'fake-hash' }
+      }
+
+      const data = {
+        address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+        data: 'fake-data',
+        appId: 'fake-appId'
+      }
+
+      const result = await uut.addBchEntry(data)
+      console.log('result: ', result)
     })
   })
 })

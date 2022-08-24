@@ -89,6 +89,8 @@ const localdb = {
   },
 
   BchPayment: class BchPayment {
+    static findOne () {}
+
     async save () {
       return {}
     }
@@ -106,7 +108,14 @@ const writePrice = {
 }
 
 const wallet = {
-  getKeyPair: async () => {}
+  getKeyPair: async () => {},
+
+  bchWallet: {
+    walletInfo: {
+      cashAddress: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu'
+    },
+    getBalance: async () => {}
+  }
 }
 
 module.exports = { ipfs, localdb, p2wdb, entry, webhook, writePrice, wallet }

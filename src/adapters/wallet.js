@@ -89,6 +89,9 @@ class WalletAdapter {
       console.log(`BCH wallet initialized. Wallet address: ${this.bchWallet.walletInfo.cashAddress}`)
       // console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
 
+      // Initialize the wallet
+      await this.bchWallet.initialize()
+
       return this.bchWallet
     } catch (err) {
       console.error('Error in instanceWallet()')

@@ -29,7 +29,7 @@ class AddEntry {
     this.p2wdbAdapter = localConfig.adapters.p2wdb
     if (!localConfig.adapters.entry) {
       throw new Error(
-        'entry Adapter instance must be included when instantiating AddEntry use case'
+        'entry adapter instance must be included when instantiating AddEntry use case'
       )
     }
     this.entryAdapter = localConfig.adapters.entry
@@ -37,6 +37,7 @@ class AddEntry {
     // Encapsulate dependencies.
     this.dbEntry = new DBEntry()
     this.config = config
+    this.Write = Write
 
     _this = this
   }
@@ -142,10 +143,12 @@ class AddEntry {
       if (keyPair.cashAddress !== address) {
         throw new Error(`Unexpected error: HD index ${bchPayment.hdIndex} generated address ${keyPair.cashAddress}, which does not match expected address ${address}`)
       }
+      console.log('keyPair: ', keyPair)
 
       // Instantiate a wallet using the addresses private key.
-      const tempWallet = new this.adapters.wallet.BchWallet(keyPair.wif, { interface: 'consumer-api' })
-      await tempWallet.walletInfoPromise
+      // const tempWallet = new this.adapters.wallet.BchWallet(keyPair.wif, { interface: 'consumer-api' })
+      const tempWallet = await this.createTempWallet(keyPair.wif)
+      await tempWallet.initialize()
 
       // Move payment to app's root address.
       const rootAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
@@ -157,7 +160,7 @@ class AddEntry {
 
       // Write an entry to this P2WDB, using the PSF tokens in this apps wallet.
       const appWif = this.adapters.wallet.bchWallet.walletInfo.privateKey
-      const write = new Write({ wif: appWif, serverURL: `http://localhost:${this.config.port}` })
+      const write = new this.Write({ wif: appWif, serverURL: `http://localhost:${this.config.port}` })
       const hash = await write.postEntry(data, appId)
 
       return hash
@@ -165,6 +168,13 @@ class AddEntry {
       console.error('Error in add-entry.js/addBchEntry(): ', err)
       throw err
     }
+  }
+
+  // This function is used for easier mocking during tests.
+  async createTempWallet (wif) {
+    const tempWallet = new this.adapters.wallet.BchWallet(wif, { interface: 'consumer-api' })
+    await tempWallet.walletInfoPromise
+    return tempWallet
   }
 }
 
