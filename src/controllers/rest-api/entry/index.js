@@ -52,6 +52,7 @@ class EntryController {
     }
 
     // Define the routes and attach the controller.
+    this.router.post('/write/bch', this.postBchEntry)
     this.router.post('/write', this.postEntry)
     this.router.get('/all/:page', this.readAllEntries)
     this.router.get('/hash/:hash', this.getByHash)
@@ -59,6 +60,7 @@ class EntryController {
     this.router.get('/appid/:appid', this.getByAppId)
     this.router.get('/cost/psf', this.getPsfCost)
     this.router.post('/cost/psf', this.getPsfCostTarget)
+    this.router.get('/cost/bch', this.getBchCost)
 
     // Attach the Controller routes to the Koa app.
     app.use(cors({ origin: '*' }))
@@ -69,6 +71,11 @@ class EntryController {
   async postEntry (ctx, next) {
     // await _this.validators.ensureUser(ctx, next)
     await _this.entryRESTController.postEntry(ctx, next)
+  }
+
+  async postBchEntry (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.postBchEntry(ctx, next)
   }
 
   async readAllEntries (ctx, next) {
@@ -99,6 +106,11 @@ class EntryController {
   async getPsfCostTarget (ctx, next) {
     // await _this.validators.ensureUser(ctx, next)
     await _this.entryRESTController.getPsfCostTarget(ctx, next)
+  }
+
+  async getBchCost (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.getBchCost(ctx, next)
   }
 }
 

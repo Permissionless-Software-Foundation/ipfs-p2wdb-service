@@ -67,7 +67,9 @@ class UseCasesMock {
       }
     },
     cost: {
-      getPsfCost: () => {}
+      getPsfCost: async () => {},
+      getPsfCostTarget: async () => {},
+      getBchCost: async () => {}
     }
   }
 }

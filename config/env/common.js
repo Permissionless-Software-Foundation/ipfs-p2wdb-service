@@ -117,5 +117,11 @@ module.exports = {
     ? parseInt(process.env.IPFS_API_PORT)
     : 5001,
 
-  chatPubSubChan: 'psf-ipfs-chat-001'
+  chatPubSubChan: 'psf-ipfs-chat-001',
+
+  // Markup for providing PSF tokens so user can pay in BCH.
+  psfTradeMarkup: 0.1,
+
+  // Turn on pay-in-bch plugin. Disabled by default. Use env var to overwrite.
+  enableBchPayment: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false
 }

@@ -26,6 +26,7 @@ class WritePrice {
 
     // state
     this.currentRate = 0.133
+    this.currentRateInBch = 0.0001
     this.priceHistory = []
   }
 
@@ -156,6 +157,46 @@ class WritePrice {
       console.error('Error in adapters/write-price.js/getTargetCostPsf(): ', err)
       throw err
     }
+  }
+
+  // Get's the cost of PSF tokens in BCH from the PSF token liquidity app.
+  // This value is used to allow users to pay in BCH, and enables the P2WDB
+  // to essentailly exchange a PSF tokens for BCH, in order to write to the DB.
+  async getPsfPriceInBch () {
+    try {
+      const response = await this.axios.get('https://psfoundation.cash/price')
+      // console.log('response.data: ', response.data)
+
+      const usdPerBch = response.data.usdPerBCH
+      const usdPerToken = response.data.usdPerToken
+
+      const bchPerToken = this.bchjs.Util.floor8(usdPerToken / usdPerBch)
+      // console.log('bchPerToken: ', bchPerToken)
+
+      return bchPerToken
+    } catch (err) {
+      console.error('Error in adapters/write-price.js/getPsfPrice(): ', err)
+      throw err
+    }
+  }
+
+  // This function calls getPsfPrice() to get the price of PSF tokens in BCH.
+  // It then calculates and returns the cost to write to the P2WDB in BCH.
+  // That includes a markup cost for the service of providing PSF tokens to
+  // the user. The market cost is set in the config file.
+  async getWriteCostInBch () {
+    const bchPerToken = await this.getPsfPriceInBch()
+
+    // Cost in BCH + markup.
+    let costToUser = this.currentRate * bchPerToken * (1 + this.config.psfTradeMarkup)
+
+    // Round to 8 decimals.
+    costToUser = this.bchjs.Util.floor8(costToUser)
+
+    // Save to state.
+    this.currentRateInBch = costToUser
+
+    return costToUser
   }
 }
 

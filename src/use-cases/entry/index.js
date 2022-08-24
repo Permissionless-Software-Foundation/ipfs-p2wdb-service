@@ -19,10 +19,11 @@ class EntryUseCases {
     }
 
     // Instantiate the use cases.
-    this.addEntry = new AddEntry({
-      p2wdbAdapter: this.adapters.p2wdb,
-      entryAdapter: this.adapters.entry
-    })
+    // this.addEntry = new AddEntry({
+    //   p2wdbAdapter: this.adapters.p2wdb,
+    //   entryAdapter: this.adapters.entry
+    // })
+    this.addEntry = new AddEntry(localConfig)
 
     this.readEntry = new ReadEntry({ p2wdbAdapter: this.adapters.p2wdb })
 

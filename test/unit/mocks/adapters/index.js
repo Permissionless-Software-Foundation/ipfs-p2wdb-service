@@ -2,6 +2,8 @@
   Mocks for the Adapter library.
 */
 
+const BchWallet = require('minimal-slp-wallet/index')
+
 class IpfsAdapter {
   constructor () {
     this.ipfs = {
@@ -88,6 +90,14 @@ const localdb = {
     }
   },
 
+  BchPayment: class BchPayment {
+    static findOne () {}
+
+    async save () {
+      return {}
+    }
+  },
+
   validatePassword: () => {
     return true
   }
@@ -95,7 +105,21 @@ const localdb = {
 
 const writePrice = {
   currentRate: 0.133,
-  getTargetCostPsf: () => 0.133
+  getTargetCostPsf: () => 0.133,
+  getWriteCostInBch: async () => {}
 }
 
-module.exports = { ipfs, localdb, p2wdb, entry, webhook, writePrice }
+const wallet = {
+  getKeyPair: async () => {},
+
+  bchWallet: {
+    walletInfo: {
+      cashAddress: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu'
+    },
+    getBalance: async () => {}
+  },
+
+  BchWallet: BchWallet
+}
+
+module.exports = { ipfs, localdb, p2wdb, entry, webhook, writePrice, wallet }
