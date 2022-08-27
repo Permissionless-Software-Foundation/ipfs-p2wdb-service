@@ -123,5 +123,8 @@ module.exports = {
   psfTradeMarkup: 0.1,
 
   // Turn on pay-in-bch plugin. Disabled by default. Use env var to overwrite.
-  enableBchPayment: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false
+  enableBchPayment: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
+
+  // By default use the web3 Cash Stack from CashStack.info, but can overide to use web2 infra like FullStack.cash
+  useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false
 }

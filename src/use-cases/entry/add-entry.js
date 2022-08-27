@@ -158,14 +158,20 @@ class AddEntry {
       // Delete the database model.
       await bchPayment.remove()
 
+      let blockchainInterface = 'consumer-api'
+      if (this.config.useFullStackCash) {
+        blockchainInterface = 'rest-api'
+      }
+
       // Write an entry to this P2WDB, using the PSF tokens in this apps wallet.
       const appWif = this.adapters.wallet.bchWallet.walletInfo.privateKey
-      const write = new this.Write({ wif: appWif, serverURL: `http://localhost:${this.config.port}` })
+
+      const write = new this.Write({ wif: appWif, serverURL: `http://localhost:${this.config.port}`, interface: blockchainInterface })
       const hash = await write.postEntry(data, appId)
 
       return hash
     } catch (err) {
-      console.error('Error in add-entry.js/addBchEntry()')
+      console.error('Error in add-entry.js/addBchEntry(): ', err)
       throw err
     }
   }
