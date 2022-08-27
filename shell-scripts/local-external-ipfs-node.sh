@@ -30,6 +30,6 @@ export P2W_ENV=production
 export DBURL=mongodb://localhost:27017/p2wdb-service-dev
 
 # Enable BCH payments for P2WDB writes
-export ENABLE_BCH_PAYMENT=1
+#export ENABLE_BCH_PAYMENT=1
 
 npm start
