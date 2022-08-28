@@ -1,0 +1,64 @@
+# Start the service with the command 'docker-compose up -d'
+
+version: '3.9'
+
+services:
+  p2wdb-mongodb:
+    image: mongo:4.2.0
+    container_name: p2wdb-mongo
+    ports:
+      - '172.17.0.1:5666:27017' # <host port>:<container port>
+    volumes:
+      - ../data/mongodb:/data/db
+    command: mongod --logpath=/dev/null # -- quiet
+    restart: always
+
+  p2wdb-ipfs:
+    image: christroutner/trickle-ipfs-rpi:v1.0.1
+    #build:
+    #  context: ./
+    #  dockerfile: Dockerfile
+    container_name: ipfs
+    environment:
+      IPFS_DAEMON_ARGUMENTS: '--enable-pubsub-experiment --migrate=true --agent-version-suffix=docker --routing=dhtclient'
+      UPLOAD_KBPS: '1000'
+      DOWNLOAD_KBPS: '1000'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    mem_limit: 2000mb
+    ports:
+      - 4001:4001
+      - 4003:4003
+      - 172.17.0.1:5001:5001
+      - 172.17.0.1:8080:8080
+    command: [
+      './start-ipfs.sh'
+    ]
+    volumes:
+      - ../data/go-ipfs/data:/root/.ipfs
+    restart: always
+
+  p2wdb:
+    #build: .
+    image: christroutner/p2wdb:v3.0.10
+    container_name: p2wdb
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    mem_limit: 1gb
+    links:
+      - p2wdb-mongodb
+    ports:
+      # <host port>:<container port>
+      - 5667:5667 # REST API
+      #- 5668:5668 # IPFS TCP port
+      #- 5669:5669 # IPFS WS Port
+    volumes:
+      - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+      - ./start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
+    restart: always
