@@ -3,8 +3,9 @@
 */
 
 // Local libraries
-const { wlogger } = require('../../../adapters/wlogger')
-const config = require('../../../../config')
+import wlogger from '../../../adapters/wlogger.js'
+
+import config from '../../../../config/index.js'
 
 let _this
 
@@ -643,4 +644,4 @@ class EntryRESTControllerLib {
   }
 }
 
-module.exports = EntryRESTControllerLib
+export default EntryRESTControllerLib

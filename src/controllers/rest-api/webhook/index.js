@@ -4,10 +4,11 @@
 */
 
 // Public npm libraries.
-const Router = require('koa-router')
+import Router from 'koa-router'
 
 // Load the REST API Controllers.
-const WebhookRESTControllerLib = require('./controller')
+import WebhookRESTControllerLib from './controller.js'
+
 // const Validators = require('../middleware/validators')
 
 let _this
@@ -72,4 +73,4 @@ class WebhookRESTController {
   }
 }
 
-module.exports = WebhookRESTController
+export default WebhookRESTController

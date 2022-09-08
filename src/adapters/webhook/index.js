@@ -4,11 +4,12 @@
 */
 
 // Public npm libraries.
-const axios = require('axios')
+import axios from 'axios'
 
 // Local libraries.
-const validationEvent = require('../orbit/validation-event')
-const WebhookModel = require('../localdb/models/webhook')
+import validationEvent from '../orbit/validation-event.js'
+
+import WebhookModel from '../localdb/models/webhook.js'
 
 let _this
 
@@ -132,4 +133,4 @@ class WebhookAdapter {
   }
 }
 
-module.exports = WebhookAdapter
+export default WebhookAdapter

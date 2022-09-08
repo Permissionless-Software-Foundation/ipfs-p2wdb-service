@@ -5,24 +5,24 @@
 */
 
 // Public NPM libraries
-const BCHJS = require('@psf/bch-js')
+import BCHJS from '@psf/bch-js'
 
 // Load individual adapter libraries.
-const IPFSAdapter = require('./ipfs')
-const LocalDB = require('./localdb')
-const LogsAPI = require('./logapi')
-const Passport = require('./passport')
-const Nodemailer = require('./nodemailer')
-// const { wlogger } = require('./wlogger')
-const JSONFiles = require('./json-files')
-const FullStackJWT = require('./fullstack-jwt')
-const P2WDB = require('./p2wdb')
-const EntryAdapter = require('./entry')
-const WebhookAdapter = require('./webhook')
-const WritePrice = require('./write-price')
-const Wallet = require('./wallet')
+import IPFSAdapter from './ipfs/index.js'
+import LocalDB from './localdb/index.js'
+import LogsAPI from './logapi.js'
+import Passport from './passport.js'
+import Nodemailer from './nodemailer.js'
+import JSONFiles from './json-files.js'
+import FullStackJWT from './fullstack-jwt.js'
+import config from '../../config/index.js'
 
-const config = require('../../config')
+// TODO: Refactor and uncomment each of these libraries.
+import P2WDB from './p2wdb/index.js'
+import EntryAdapter from './entry/index.js'
+import WebhookAdapter from './webhook/index.js'
+import WritePrice from './write-price.js'
+import Wallet from './wallet.js'
 
 class Adapters {
   constructor (localConfig = {}) {
@@ -96,4 +96,4 @@ class Adapters {
   }
 }
 
-module.exports = Adapters
+export default Adapters

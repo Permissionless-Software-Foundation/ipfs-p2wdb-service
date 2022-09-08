@@ -5,8 +5,8 @@
 */
 
 // Individual Use Case libraries
-const AddWebhook = require('./add-webhook')
-const RemoveWebhook = require('./remove-webhook')
+import AddWebhook from './add-webhook.js'
+import RemoveWebhook from './remove-webhook.js'
 
 class WebhookUseCases {
   constructor (localConfig = {}) {
@@ -27,4 +27,4 @@ class WebhookUseCases {
   }
 }
 
-module.exports = WebhookUseCases
+export default WebhookUseCases

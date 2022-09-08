@@ -3,8 +3,8 @@
 */
 
 // Load Mongoose models.
-const Users = require('./models/users')
-const BchPayment = require('./models/bch-payment')
+import Users from './models/users.js'
+import BchPayment from './models/bch-payment.js'
 
 class LocalDB {
   constructor () {
@@ -14,4 +14,4 @@ class LocalDB {
   }
 }
 
-module.exports = LocalDB
+export default LocalDB

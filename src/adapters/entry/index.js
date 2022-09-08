@@ -4,7 +4,7 @@
   Entity that needs to know which specific database is being used.
 */
 
-const KeyValue = require('../localdb/models/key-value')
+import KeyValue from '../localdb/models/key-value.js'
 
 class EntryAdapter {
   constructor (localConfig = {}) {
@@ -62,4 +62,4 @@ class EntryAdapter {
   }
 }
 
-module.exports = EntryAdapter
+export default EntryAdapter

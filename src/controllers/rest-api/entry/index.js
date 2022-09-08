@@ -4,11 +4,12 @@
 */
 
 // Public npm libraries.
-const Router = require('koa-router')
-const cors = require('kcors')
+import Router from 'koa-router'
+import cors from 'kcors'
 
 // Load the REST API Controllers.
-const EntryRESTControllerLib = require('./controller')
+import EntryRESTControllerLib from './controller.js'
+
 // const Validators = require('../middleware/validators')
 
 let _this
@@ -114,4 +115,4 @@ class EntryController {
   }
 }
 
-module.exports = EntryController
+export default EntryController

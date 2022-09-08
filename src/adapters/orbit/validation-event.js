@@ -7,8 +7,8 @@
   the new entry to the local MongoDB and triggering a webhook.
 */
 
-const events = require('events')
+import events from 'events'
 
 const em = new events.EventEmitter()
 
-module.exports = em
+export default em

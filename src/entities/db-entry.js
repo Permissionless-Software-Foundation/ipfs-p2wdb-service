@@ -83,4 +83,4 @@ class DBEntry {
   }
 }
 
-module.exports = DBEntry
+export default DBEntry

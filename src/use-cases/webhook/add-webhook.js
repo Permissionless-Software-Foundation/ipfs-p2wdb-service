@@ -3,7 +3,7 @@
   wants to add a new webhook to the system.
 */
 
-const WebhookEntity = require('../../entities/webhook')
+import WebhookEntity from '../../entities/webhook.js'
 
 let _this
 
@@ -45,4 +45,4 @@ class AddWebhook {
   }
 }
 
-module.exports = AddWebhook
+export default AddWebhook

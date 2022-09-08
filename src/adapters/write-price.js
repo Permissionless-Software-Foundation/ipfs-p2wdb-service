@@ -4,11 +4,11 @@
 */
 
 // Global npm libraries
-const Wallet = require('minimal-slp-wallet/index')
-const axios = require('axios')
+import Wallet from 'minimal-slp-wallet/index.js'
+import axios from 'axios'
 
 // Local libraries
-const config = require('../../config')
+import config from '../../config/index.js'
 
 const writeTokenId = '0ac28ff1e1fa93bf734430fd151115959307cf872c6d130b308a6d29182991d8'
 
@@ -200,4 +200,4 @@ class WritePrice {
   }
 }
 
-module.exports = WritePrice
+export default WritePrice

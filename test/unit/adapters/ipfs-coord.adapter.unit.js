@@ -2,22 +2,21 @@
   Unit tests for the IPFS Adapter.
 */
 
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai'
 
-const IPFSCoordAdapter = require('../../../src/adapters/ipfs/ipfs-coord')
-const IPFSMock = require('../mocks/ipfs-mock')
-const IPFSCoordMock = require('../mocks/ipfs-coord-mock')
-const config = require('../../../config')
+import sinon from 'sinon'
+import IPFSCoordAdapter from '../../../src/adapters/ipfs/ipfs-coord.js'
+import create from '../mocks/ipfs-mock.js'
+import IPFSCoordMock from '../mocks/ipfs-coord-mock.js'
+import config from '../../../config/index.js'
 
 describe('#ipfs-coord', () => {
   let uut
   let sandbox
 
   beforeEach(() => {
-    const ipfs = IPFSMock.create()
-    const bchjs = {}
-    uut = new IPFSCoordAdapter({ ipfs, bchjs })
+    const ipfs = create()
+    uut = new IPFSCoordAdapter({ ipfs })
 
     sandbox = sinon.createSandbox()
   })
@@ -38,19 +37,19 @@ describe('#ipfs-coord', () => {
       }
     })
 
-    it('should throw an error if bchjs instance is not included', () => {
-      try {
-        const ipfs = IPFSMock.create()
-        uut = new IPFSCoordAdapter({ ipfs })
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(
-          err.message,
-          'Instance of bch-js must be passed when instantiating ipfs-coord.'
-        )
-      }
-    })
+    // it('should throw an error if bchjs instance is not included', () => {
+    //   try {
+    //     const ipfs = create()
+    //     uut = new IPFSCoordAdapter({ ipfs })
+    //
+    //     assert.fail('Unexpected code path')
+    //   } catch (err) {
+    //     assert.include(
+    //       err.message,
+    //       'Instance of bch-js must be passed when instantiating ipfs-coord.'
+    //     )
+    //   }
+    // })
 
     it('should get the public IP address if this node is a Circuit Relay', async () => {
       // Mock dependencies.

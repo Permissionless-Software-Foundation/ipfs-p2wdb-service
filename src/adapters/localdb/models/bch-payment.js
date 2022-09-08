@@ -2,7 +2,7 @@
   This model is used to track BCH Payments for writing to the P2WDB.
 */
 
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const BchPayment = new mongoose.Schema({
   address: { type: String, required: true },
@@ -11,4 +11,4 @@ const BchPayment = new mongoose.Schema({
   hdIndex: { type: String, required: true }
 })
 
-module.exports = mongoose.model('bchPayment', BchPayment)
+export default mongoose.model('bchPayment', BchPayment)

@@ -122,4 +122,4 @@ const wallet = {
   BchWallet: BchWallet
 }
 
-module.exports = { ipfs, localdb, p2wdb, entry, webhook, writePrice, wallet }
+export default = { ipfs, localdb, p2wdb, entry, webhook, writePrice, wallet }

@@ -2,7 +2,7 @@
   REST API Controller library for the /webhook route
 */
 
-const { wlogger } = require('../../../adapters/wlogger')
+import wlogger from '../../../adapters/wlogger.js'
 
 // let _this
 
@@ -152,4 +152,4 @@ class WebhookRESTControllerLib {
   }
 }
 
-module.exports = WebhookRESTControllerLib
+export default WebhookRESTControllerLib

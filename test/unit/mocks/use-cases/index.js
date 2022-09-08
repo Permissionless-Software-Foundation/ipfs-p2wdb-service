@@ -74,4 +74,4 @@ class UseCasesMock {
   }
 }
 
-module.exports = UseCasesMock
+export default UseCasesMock;

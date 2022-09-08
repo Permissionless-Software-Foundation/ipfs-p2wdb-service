@@ -13,11 +13,11 @@
 */
 
 // Customizable constants.
-const ENTRIES_PER_PAGE = 20
+import IpfsAdapters from '../ipfs/index.js'
+import OribitAdapter from '../orbit/index.js'
+import KeyValue from '../localdb/models/key-value.js'
 
-const IpfsAdapters = require('../ipfs')
-const OribitAdapter = require('../orbit')
-const KeyValue = require('../localdb/models/key-value')
+const ENTRIES_PER_PAGE = 20
 
 let _this
 
@@ -179,4 +179,4 @@ class P2WDB {
   }
 }
 
-module.exports = P2WDB
+export default P2WDB

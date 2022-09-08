@@ -5,9 +5,9 @@
 */
 
 // Individual Use Case libraries
-const EntryUseCases = require('./entry')
-const WebhookUseCases = require('./webhook')
-const UserUseCases = require('./user')
+import UserUseCases from './user.js'
+import EntryUseCases from './entry/index.js'
+import WebhookUseCases from './webhook/index.js'
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -38,4 +38,4 @@ class UseCases {
   }
 }
 
-module.exports = UseCases
+export default UseCases

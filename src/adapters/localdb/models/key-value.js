@@ -5,7 +5,8 @@
   blockchain when the app is started.
 */
 
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
+
 // const config = require('../../config')
 
 const KeyValue = new mongoose.Schema({
@@ -18,4 +19,4 @@ const KeyValue = new mongoose.Schema({
 })
 
 // export default mongoose.model('user', User)
-module.exports = mongoose.model('keyvalue', KeyValue)
+export default mongoose.model('keyvalue', KeyValue)

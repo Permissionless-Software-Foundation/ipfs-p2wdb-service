@@ -7,17 +7,21 @@
 */
 
 // Public npm libraries
-const AccessController = require('orbit-db-access-controllers/src/access-controller-interface')
-const pMapSeries = require('p-map-series')
+import AccessController from 'orbit-db-access-controllers/src/access-controller-interface.js'
+
+import pMapSeries from 'p-map-series'
+
 // const BCHJS = require('@psf/bch-js')
-const Wallet = require('minimal-slp-wallet/index')
-const path = require('path')
+import Wallet from 'minimal-slp-wallet/index.js'
+
+import path from 'path'
 
 // Local libraries
-const config = require('../../../config')
-const KeyValue = require('../localdb/models/key-value')
-const RetryQueue = require('./retry-queue')
-const validationEvent = require('./validation-event')
+import config from '../../../config/index.js'
+
+import KeyValue from '../localdb/models/key-value.js'
+import RetryQueue from './retry-queue.js'
+import validationEvent from './validation-event.js'
 // const Webhook = require('./webhook')
 
 let _this
@@ -571,4 +575,4 @@ class PayToWriteAccessController extends AccessController {
   }
 }
 
-module.exports = PayToWriteAccessController
+export default PayToWriteAccessController

@@ -9,7 +9,7 @@
 // const jsonrpc = require('jsonrpc-lite')
 
 // Local libraries
-const { wlogger } = require('../../../adapters/wlogger')
+import wlogger from '../../../adapters/wlogger.js'
 
 class EntryRPC {
   constructor (localConfig = {}) {
@@ -631,4 +631,4 @@ class EntryRPC {
   }
 }
 
-module.exports = EntryRPC
+export default EntryRPC

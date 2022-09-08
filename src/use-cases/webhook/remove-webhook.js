@@ -3,7 +3,7 @@
   is when the user wants to remove a previously created webhook.
 */
 
-const WebhookEntity = require('../../entities/webhook')
+import WebhookEntity from '../../entities/webhook.js'
 
 let _this
 
@@ -39,4 +39,4 @@ class RemoveWebhook {
   }
 }
 
-module.exports = RemoveWebhook
+export default RemoveWebhook

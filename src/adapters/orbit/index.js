@@ -3,17 +3,20 @@
 */
 
 // Public npm libraries.
-const OrbitDB = require('orbit-db')
+import OrbitDB from 'orbit-db'
 
 // Local libraries
-const config = require('../../../config')
-const validationEvent = require('./validation-event')
+import config from '../../../config/index.js'
+
+import validationEvent from './validation-event.js'
+
 // const wlogger = require('../wlogger')
 // const KeyValue = require('../../models/key-value')
 
 // Define the pay-to-write access controller.
-const AccessControllers = require('orbit-db-access-controllers')
-const PayToWriteAccessController = require('./pay-to-write-access-controller')
+import AccessControllers from 'orbit-db-access-controllers'
+
+import PayToWriteAccessController from './pay-to-write-access-controller.js'
 AccessControllers.addAccessController({
   AccessController: PayToWriteAccessController
 })
@@ -79,7 +82,7 @@ class OrbitDBAdapter {
       const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
         // directory: "./orbitdb/examples/eventlog",
         directory: './.ipfsdata/p2wdb/dbs/keyvalue',
-        AccessControllers: AccessControllers
+        AccessControllers
       })
 
       const options = {
@@ -160,4 +163,4 @@ class OrbitDBAdapter {
   }
 }
 
-module.exports = OrbitDBAdapter
+export default OrbitDBAdapter

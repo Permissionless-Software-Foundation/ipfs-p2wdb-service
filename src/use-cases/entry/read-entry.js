@@ -79,4 +79,4 @@ class ReadEntry {
   }
 }
 
-module.exports = ReadEntry
+export default ReadEntry

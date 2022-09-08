@@ -64,4 +64,4 @@ class Cost {
   }
 }
 
-module.exports = Cost
+export default Cost

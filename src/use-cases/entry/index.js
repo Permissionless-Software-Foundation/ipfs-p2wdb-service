@@ -5,9 +5,9 @@
 */
 
 // Individual Use Case libraries
-const AddEntry = require('./add-entry')
-const ReadEntry = require('./read-entry')
-const Cost = require('./cost')
+import AddEntry from './add-entry.js'
+import ReadEntry from './read-entry.js'
+import Cost from './cost.js'
 
 class EntryUseCases {
   constructor (localConfig = {}) {
@@ -31,4 +31,4 @@ class EntryUseCases {
   }
 }
 
-module.exports = EntryUseCases
+export default EntryUseCases

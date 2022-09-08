@@ -18,4 +18,4 @@ class Webhook {
   }
 }
 
-module.exports = Webhook
+export default Webhook

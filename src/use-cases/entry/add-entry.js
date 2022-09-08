@@ -5,11 +5,12 @@
 */
 
 // Global npm libraries
-const { Write } = require('p2wdb/index')
+import { Write } from 'p2wdb/index.js'
 
 // Local libraries
-const DBEntry = require('../../entities/db-entry')
-const config = require('../../../config')
+import DBEntry from '../../entities/db-entry.js'
+
+import config from '../../../config/index.js'
 
 let _this
 
@@ -184,4 +185,4 @@ class AddEntry {
   }
 }
 
-module.exports = AddEntry
+export default AddEntry
