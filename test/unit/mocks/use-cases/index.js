@@ -64,7 +64,8 @@ class UseCasesMock {
     addEntry: {
       addUserEntry: () => {
         return 'hash'
-      }
+      },
+      addBchEntry: async () => {}
     },
     cost: {
       getPsfCost: async () => {},

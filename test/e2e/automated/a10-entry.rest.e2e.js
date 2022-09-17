@@ -347,4 +347,52 @@ describe('Entry', () => {
     //   assert.equal(result.data.psfCost, 0.126)
     // })
   })
+
+  describe('POST /write/bch - Try to write using BCH', () => {
+    it('should reject when bch writes are not enabled', async () => {
+      try {
+        const options = {
+          method: 'POST',
+          url: `${LOCALHOST}/entry/write/bch`,
+          data: {}
+        }
+
+        await axios(options)
+
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        // console.log(err)
+        const status = err.response.status
+        const statusIs422 = status === 422
+        const statusIs501 = status === 501
+        const statusIs422Or501 = statusIs422 || statusIs501
+
+        assert.equal(statusIs422Or501, true)
+      }
+    })
+  })
+
+  describe('GET /cost/bch - Get cost for a write in BCH', () => {
+    it('should reject when bch writes are not enabled', async () => {
+      try {
+        const options = {
+          method: 'GET',
+          url: `${LOCALHOST}/entry/cost/bch`,
+          data: {}
+        }
+
+        await axios(options)
+
+        assert(false, 'Unexpected result')
+      } catch (err) {
+        // console.log(err)
+        const status = err.response.status
+        const statusIs422 = status === 422
+        const statusIs501 = status === 501
+        const statusIs422Or501 = statusIs422 || statusIs501
+
+        assert.equal(statusIs422Or501, true)
+      }
+    })
+  })
 })

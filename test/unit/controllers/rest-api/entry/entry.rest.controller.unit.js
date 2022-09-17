@@ -310,6 +310,33 @@ describe('#Entry-REST-Controller', () => {
     })
   })
 
+  describe('#postBchEntry', () => {
+    it('should throw an error if BCH payments are disabled', async () => {
+      uut.config.enableBchPayment = false
+
+      try {
+        await uut.postBchEntry(ctx)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'BCH payments are not enabled in this instance of P2WDB.')
+      }
+    })
+
+    it('should write an entry paid in BCH', async () => {
+      uut.config.enableBchPayment = true
+
+      // Mock dependencies
+      sandbox.stub(uut.useCases.entry.addEntry, 'addBchEntry').resolves('fake-hash')
+
+      ctx.request.body = {}
+
+      await uut.postBchEntry(ctx)
+
+      assert.equal(ctx.body.hash, 'fake-hash')
+    })
+  })
+
   describe('#handleError', () => {
     it('should include error message', () => {
       try {

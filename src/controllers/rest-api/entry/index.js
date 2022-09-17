@@ -52,7 +52,6 @@ class EntryController {
     }
 
     // Define the routes and attach the controller.
-    this.router.post('/write/bch', this.postBchEntry)
     this.router.post('/write', this.postEntry)
     this.router.get('/all/:page', this.readAllEntries)
     this.router.get('/hash/:hash', this.getByHash)
@@ -61,6 +60,7 @@ class EntryController {
     this.router.get('/cost/psf', this.getPsfCost)
     this.router.post('/cost/psf', this.getPsfCostTarget)
     this.router.get('/cost/bch', this.getBchCost)
+    this.router.post('/write/bch', this.postBchEntry)
 
     // Attach the Controller routes to the Koa app.
     app.use(cors({ origin: '*' }))

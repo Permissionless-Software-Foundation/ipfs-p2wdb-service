@@ -601,7 +601,7 @@ class EntryRESTControllerLib {
     try {
       // Throw error if BCH payments are not enabled.
       if (!this.config.enableBchPayment) {
-        console.log('Throwing error. This is expected behavior.')
+        console.log('Throwing error because BCH payments are not enabled. This is expected behavior.')
         ctx.throw(501, 'BCH payments are not enabled in this instance of P2WDB.')
       }
 
