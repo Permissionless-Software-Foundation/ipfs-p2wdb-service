@@ -10,7 +10,7 @@
 const AccessController = require('orbit-db-access-controllers/src/access-controller-interface')
 const pMapSeries = require('p-map-series')
 // const BCHJS = require('@psf/bch-js')
-const Wallet = require('minimal-slp-wallet/index')
+// const Wallet = require('minimal-slp-wallet/index')
 const path = require('path')
 
 // Local libraries
@@ -19,6 +19,7 @@ const KeyValue = require('../localdb/models/key-value')
 const RetryQueue = require('./retry-queue')
 const validationEvent = require('./validation-event')
 // const Webhook = require('./webhook')
+const WalletAdapter = require('../wallet')
 
 let _this
 
@@ -30,22 +31,60 @@ class PayToWriteAccessController extends AccessController {
     this._options = options || {}
     // console.log('this._options: ', this._options)
 
+    // State of this library
+    this.isInitialized = false
+
     // Encapsulate dependencies
     // this.bchjs = new BCHJS()
     this.config = config
-    this.wallet = new Wallet(undefined, {
-      noUpdate: true,
-      interface: 'consumer-api',
-      restURL: config.consumerUrl
-    })
-    this.bchjs = this.wallet.bchjs
+    // this.wallet = new Wallet(undefined, {
+    //   noUpdate: true,
+    //   interface: 'consumer-api',
+    //   restURL: config.consumerUrl
+    // })
+    this.wallet = undefined // Placeholder
+    // this.bchjs = this.wallet.bchjs
+    this.bchjs = undefined // Placeholder
     this.KeyValue = KeyValue
+    this.WalletAdapter = WalletAdapter
 
-    this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
+    // this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
+    this.retryQueue = undefined // Placeholder
     this.validationEvent = validationEvent
     // this.webhook = new Webhook()
 
+    // this.initialize()
+
     _this = this
+  }
+
+  // Initialize this library by executing the async setup.
+  async initialize () {
+    if (!this.isInitialized) {
+      await this.instanceWallet()
+
+      this.bchjs = this.wallet.bchjs
+      this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
+
+      // Signal that the library is initialized
+      this.isInitialized = true
+
+      return true
+    }
+  }
+
+  // Instantiate the wallet if it has not already been instantiated.
+  async instanceWallet () {
+    if (!this.wallet) {
+      const walletAdapter = new this.WalletAdapter()
+
+      const walletData = await walletAdapter.openWallet()
+      this.wallet = await walletAdapter.instanceWalletWithoutInitialization(walletData)
+
+      return true
+    }
+
+    return false
   }
 
   // Returns the type of the access controller
@@ -187,6 +226,9 @@ class PayToWriteAccessController extends AccessController {
     try {
       // console.log('canAppend entry: ', entry)
 
+      // Initialize the wallet if it hasn't already been done.
+      await this.initialize()
+
       let validTx = false
 
       const txid = entry.payload.key
@@ -303,6 +345,9 @@ class PayToWriteAccessController extends AccessController {
       }
 
       let validTx = false
+
+      // Ensure the wallet has been instantiated.
+      await _this.instanceWallet()
 
       // Validate the signature to ensure the user submitting data owns
       // the address that did the token burn.
