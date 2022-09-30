@@ -55,6 +55,7 @@ class Server {
 
       console.log(`Starting environment: ${this.config.env}`)
       console.log(`Debug level: ${this.config.debugLevel}`)
+      console.log(`Using FullStack.cash: ${this.config.useFullStackCash}`)
 
       // MIDDLEWARE START
 
