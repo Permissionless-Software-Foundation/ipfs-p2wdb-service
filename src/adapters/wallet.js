@@ -100,6 +100,16 @@ class WalletAdapter {
     }
   }
 
+  // This is simply a wrapper for the initialize() function built into minimal-slp-wallet.
+  async initialize () {
+    await this.bchWallet.initialize()
+
+    return true
+  }
+
+  // ToDo: this function below should be phased out in favor of calling
+  // initialize() above.
+  //
   // This is used for initializing the wallet, without waiting to update the wallet
   // UTXOs from the blockchain.
   // This is useful when the wallet is simply needed to make calls to the blockchain,
