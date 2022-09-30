@@ -31,8 +31,9 @@ describe('#PayToWriteAccessController', () => {
     })
   })
 
-  beforeEach(() => {
+  beforeEach(async () => {
     uut = new PayToWriteAccessController()
+    await uut.initialize()
 
     sandbox = sinon.createSandbox()
   })
@@ -41,6 +42,44 @@ describe('#PayToWriteAccessController', () => {
 
   after(() => {
     mongoose.connection.close()
+  })
+
+  describe('#initialize', () => {
+    it('should initialize the library', async () => {
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut, 'instanceWallet').resolves()
+      uut.wallet = {
+        bchjs: {}
+      }
+
+      const result = await uut.initialize()
+
+      assert.equal(result, true)
+    })
+  })
+
+  describe('#instanceWallet', () => {
+    it('should return false if wallet is already instantiated', async () => {
+      // Mock dependencies and force desired code path
+      uut.wallet = true
+
+      const result = await uut.instanceWallet()
+
+      assert.equal(result, false)
+    })
+
+    it('should return true after instantiating wallet', async () => {
+      // Mock dependencies and force desired code path
+      uut.wallet = false
+      uut.WalletAdapter = class WalletAdapter {
+        async openWallet () { return true }
+        async instanceWalletWithoutInitialization () { return true }
+      }
+
+      const result = await uut.instanceWallet()
+
+      assert.equal(result, true)
+    })
   })
 
   describe('_validateSignature()', () => {
@@ -82,22 +121,18 @@ describe('#PayToWriteAccessController', () => {
     })
 
     it('should return false for invalid signature', async () => {
-      try {
-        // Mock
-        sandbox.stub(uut.wallet, 'getTxData').resolves([mock.tx])
+      // Mock
+      sandbox.stub(uut.wallet, 'getTxData').resolves([mock.tx])
 
-        const txId =
-          'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
-        const signature =
-          'H+S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI='
-        const message = 'wrong message'
+      const txId =
+        'dc6a7bd80860f58e392d36f6da0fb32d23eb52f03447c11a472c32b2c1267cd0'
+      const signature =
+        'H+S7OTnqZzs34lAJW4DPvCkLIv4HlR1wBux7x2OxmeiCVJ8xDmo3jcHjtWc4N9mdBVB4VUSPRt9Ete9wVVDzDeI='
+      const message = 'wrong message'
 
-        const result = await uut._validateSignature(txId, signature, message)
+      const result = await uut._validateSignature(txId, signature, message)
 
-        assert.isFalse(result)
-      } catch (err) {
-        assert(false, 'Unexpected result')
-      }
+      assert.isFalse(result)
     })
 
     it('should return true for valid signature', async () => {

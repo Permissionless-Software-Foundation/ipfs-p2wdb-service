@@ -88,7 +88,7 @@ class WalletAdapter {
       // Wait for wallet to initialize.
       await this.bchWallet.walletInfoPromise
       console.log(`BCH wallet initialized. Wallet address: ${this.bchWallet.walletInfo.cashAddress}`)
-      console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
+      // console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
 
       // Initialize the wallet
       await this.bchWallet.initialize()
@@ -96,6 +96,48 @@ class WalletAdapter {
       return this.bchWallet
     } catch (err) {
       console.error('Error in instanceWallet()')
+      throw err
+    }
+  }
+
+  // This is used for initializing the wallet, without waiting to update the wallet
+  // UTXOs from the blockchain.
+  // This is useful when the wallet is simply needed to make calls to the blockchain,
+  // and there is no need to hydrate it with UTXO data.
+  async instanceWalletWithoutInitialization (walletData) {
+    try {
+      // console.log(`instanceWallet() walletData: ${JSON.stringify(walletData, null, 2)}`)
+
+      // TODO: throw error if wallet data is not passed in.
+      if (!walletData.mnemonic) {
+        throw new Error('Wallet data is not formatted correctly. Can not read mnemonic in wallet file!')
+      }
+
+      const advancedConfig = {}
+      if (this.config.useFullStackCash) {
+        advancedConfig.interface = 'rest-api'
+        advancedConfig.restURL = this.config.apiServer
+        advancedConfig.apiToken = this.config.apiToken
+      } else {
+        advancedConfig.interface = 'consumer-api'
+        advancedConfig.restURL = this.config.consumerUrl
+      }
+
+      // Instantiate minimal-slp-wallet.
+      // this.bchWallet = new this.BchWallet(walletData.mnemonic, advancedConfig)
+      this.bchWallet = await this._instanceWallet(walletData.mnemonic, advancedConfig)
+
+      // Wait for wallet to initialize.
+      await this.bchWallet.walletInfoPromise
+      console.log(`BCH wallet initialized. Wallet address: ${this.bchWallet.walletInfo.cashAddress}`)
+      // console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
+
+      // Initialize the wallet
+      // await this.bchWallet.initialize()
+
+      return this.bchWallet
+    } catch (err) {
+      console.error('Error in instanceWalletWithoutInitialization()')
       throw err
     }
   }
