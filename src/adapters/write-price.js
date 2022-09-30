@@ -4,25 +4,29 @@
 */
 
 // Global npm libraries
-const Wallet = require('minimal-slp-wallet/index')
+// const Wallet = require('minimal-slp-wallet/index')
 const axios = require('axios')
 
 // Local libraries
 const config = require('../../config')
+const WalletAdapter = require('./wallet')
 
 const writeTokenId = '0ac28ff1e1fa93bf734430fd151115959307cf872c6d130b308a6d29182991d8'
 
 class WritePrice {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
-    this.wallet = new Wallet(undefined, {
-      noUpdate: true,
-      interface: 'consumer-api',
-      restURL: config.consumerUrl
-    })
-    this.bchjs = this.wallet.bchjs
+    // this.wallet = new Wallet(undefined, {
+    //   noUpdate: true,
+    //   interface: 'consumer-api',
+    //   restURL: config.consumerUrl
+    // })
+    // this.bchjs = this.wallet.bchjs
+    this.wallet = undefined // placeholder
+    this.bchjs = undefined // placeholder
     this.axios = axios
     this.config = config
+    this.WalletAdapter = WalletAdapter
 
     // state
     this.currentRate = 0.133
@@ -30,11 +34,28 @@ class WritePrice {
     this.priceHistory = []
   }
 
+  // Instantiate the wallet if it has not already been instantiated.
+  async instanceWallet () {
+    if (!this.wallet) {
+      const walletAdapter = new this.WalletAdapter()
+
+      const walletData = await walletAdapter.openWallet()
+      this.wallet = await walletAdapter.instanceWalletWithoutInitialization(walletData)
+      this.bchjs = this.wallet.bchjs
+
+      return true
+    }
+
+    return false
+  }
+
   // This function retrieves an array of costs and data from the token mutable
   // data. This is an initialization function that should be called at started,
   // and periodically every hour.
   async getCostsFromToken () {
     try {
+      await this.instanceWallet()
+
       let mutableCid
       try {
         const tokenData = await this.wallet.getTokenData(writeTokenId)

@@ -47,6 +47,7 @@ describe('#PayToWriteAccessController', () => {
   describe('#initialize', () => {
     it('should initialize the library', async () => {
       // Mock dependencies and force desired code path
+      uut.isInitialized = false
       sandbox.stub(uut, 'instanceWallet').resolves()
       uut.wallet = {
         bchjs: {}

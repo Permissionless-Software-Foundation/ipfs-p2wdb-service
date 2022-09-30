@@ -14,8 +14,9 @@ const mockDataLib = require('../mocks/adapters/write-price-mocks')
 describe('#write-price', () => {
   let uut, sandbox, mockData
 
-  beforeEach(() => {
+  beforeEach(async () => {
     uut = new WritePrice()
+    await uut.instanceWallet()
 
     mockData = cloneDeep(mockDataLib)
 
@@ -23,6 +24,30 @@ describe('#write-price', () => {
   })
 
   afterEach(() => sandbox.restore())
+
+  describe('#instanceWallet', () => {
+    it('should return false if wallet is already instantiated', async () => {
+      // Mock dependencies and force desired code path
+      uut.wallet = true
+
+      const result = await uut.instanceWallet()
+
+      assert.equal(result, false)
+    })
+
+    it('should return true after instantiating wallet', async () => {
+      // Mock dependencies and force desired code path
+      uut.wallet = false
+      uut.WalletAdapter = class WalletAdapter {
+        async openWallet () { return true }
+        async instanceWalletWithoutInitialization () { return true }
+      }
+
+      const result = await uut.instanceWallet()
+
+      assert.equal(result, true)
+    })
+  })
 
   describe('#getCostsFromToken', () => {
     it('should retrieve cost history from token mutable data', async () => {

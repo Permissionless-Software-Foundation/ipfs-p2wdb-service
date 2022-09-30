@@ -60,15 +60,17 @@ class PayToWriteAccessController extends AccessController {
 
   // Initialize this library by executing the async setup.
   async initialize () {
-    await this.instanceWallet()
+    if (!this.isInitialized) {
+      await this.instanceWallet()
 
-    this.bchjs = this.wallet.bchjs
-    this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
+      this.bchjs = this.wallet.bchjs
+      this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
 
-    // Signal that the library is initialized
-    this.isInitialized = true
+      // Signal that the library is initialized
+      this.isInitialized = true
 
-    return true
+      return true
+    }
   }
 
   // Instantiate the wallet if it has not already been instantiated.
@@ -223,6 +225,9 @@ class PayToWriteAccessController extends AccessController {
   async canAppend (entry, identityProvider) {
     try {
       // console.log('canAppend entry: ', entry)
+
+      // Initialize the wallet if it hasn't already been done.
+      await this.initialize()
 
       let validTx = false
 
