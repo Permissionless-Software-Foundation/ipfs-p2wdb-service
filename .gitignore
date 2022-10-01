@@ -77,3 +77,4 @@ data/
 backup/
 
 wallet.json
+local-dev.sh
