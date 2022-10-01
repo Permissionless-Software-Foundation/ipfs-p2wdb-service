@@ -43,7 +43,7 @@ services:
 
   p2wdb:
     #build: .
-    image: christroutner/p2wdb:v3.1.5
+    image: christroutner/p2wdb:v3.1.8
     container_name: p2wdb
     logging:
       driver: 'json-file'
