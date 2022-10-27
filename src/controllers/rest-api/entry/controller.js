@@ -432,7 +432,8 @@ class EntryRESTControllerLib {
 
       ctx.body = {
         success: true,
-        psfCost
+        psfCost,
+        tokenId: this.config.tokenId
       }
     } catch (err) {
       // console.log('Error in get-by-txid.js/restController(): ', err)
