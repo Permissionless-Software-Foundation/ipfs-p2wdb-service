@@ -3,7 +3,7 @@
 */
 
 // Public npm libraries
-const BchWallet = require('minimal-slp-wallet/index')
+const BchWallet = require('minimal-slp-wallet')
 
 // Local libraries
 const JsonFiles = require('./json-files')

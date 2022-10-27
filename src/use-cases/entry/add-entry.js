@@ -5,7 +5,7 @@
 */
 
 // Global npm libraries
-const { Write } = require('p2wdb/index')
+const { Write } = require('p2wdb')
 
 // Local libraries
 const DBEntry = require('../../entities/db-entry')

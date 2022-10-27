@@ -6,7 +6,7 @@
 const assert = require('chai').assert
 const sinon = require('sinon')
 const fs = require('fs')
-const BchWallet = require('minimal-slp-wallet/index')
+const BchWallet = require('minimal-slp-wallet')
 // const BCHJS = require('@psf/bch-js')
 
 // Local libraries.
