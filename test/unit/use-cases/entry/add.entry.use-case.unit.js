@@ -5,7 +5,7 @@
 // Global npm libraries
 const assert = require('chai').assert
 const sinon = require('sinon')
-const BchWallet = require('minimal-slp-wallet/index')
+const BchWallet = require('minimal-slp-wallet')
 const clone = require('lodash.clonedeep')
 
 // Local libraries
