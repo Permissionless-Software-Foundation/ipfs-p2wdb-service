@@ -4,7 +4,7 @@
 
 ## Overview
 
-P2WDB is an acronym for **pay-to-write database**. It's a peer-to-peer (p2p) database that operates over [IPFS](https://ipfs.io), and functions similarly to a blockchain.
+P2WDB is an acronym for **pay-to-write database**. It's a peer-to-peer (p2p) database that operates over [IPFS](https://ipfs.io), and functions similarly to a blockchain. Visit [P2WDB.com for documentation](https://p2wdb.com).
 
 This code repository is the 'server' or 'service' side, for operating a P2WDB locally. If you simply want to read or write data to the P2WDB, check out the 'client' JavaScript library: [p2wdb](https://www.npmjs.com/package/p2wdb).
 
