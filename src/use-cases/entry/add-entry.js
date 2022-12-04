@@ -166,7 +166,12 @@ class AddEntry {
       // Write an entry to this P2WDB, using the PSF tokens in this apps wallet.
       const appWif = this.adapters.wallet.bchWallet.walletInfo.privateKey
 
-      const write = new this.Write({ wif: appWif, serverURL: `http://localhost:${this.config.port}`, interface: blockchainInterface })
+      const write = new this.Write({
+        bchWallet: this.adapters.wallet.bchWallet,
+        wif: appWif,
+        serverURL: `http://localhost:${this.config.port}`,
+        interface: blockchainInterface
+      })
       const hash = await write.postEntry(data, appId)
 
       return hash
