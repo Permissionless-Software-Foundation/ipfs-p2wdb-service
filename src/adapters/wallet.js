@@ -226,6 +226,13 @@ class WalletAdapter {
       throw err
     }
   }
+
+  // Optimize the wallet by consolidating the UTXOs.
+  async optimize () {
+    await this.bchWallet.optimize()
+
+    return true
+  }
 }
 
 module.exports = WalletAdapter

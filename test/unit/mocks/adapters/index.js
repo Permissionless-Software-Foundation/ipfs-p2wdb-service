@@ -119,7 +119,9 @@ const wallet = {
     getBalance: async () => {}
   },
 
-  BchWallet: BchWallet
+  BchWallet: BchWallet,
+
+  optimize: async () => {}
 }
 
 module.exports = { ipfs, localdb, p2wdb, entry, webhook, writePrice, wallet }

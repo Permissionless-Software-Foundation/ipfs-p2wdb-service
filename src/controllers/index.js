@@ -10,22 +10,25 @@
 const Adapters = require('../adapters')
 const validationEvent = require('../adapters/orbit/validation-event')
 
-// Load the JSON RPC Controller.
-const JSONRPC = require('./json-rpc')
-
 // Load the Clean Architecture Use Case libraries.
 const UseCases = require('../use-cases')
-// const useCases = new UseCases({ adapters })
 
-// Load the REST API Controllers.
+// Load the Controller libraries
+const JSONRPC = require('./json-rpc')
 const RESTControllers = require('./rest-api')
+const TimerControllers = require('./timer-controllers.js')
 
 let _this
 
 class Controllers {
   constructor (localConfig = {}) {
+    // Encapsulate dependencies
     this.adapters = new Adapters()
     this.useCases = new UseCases({ adapters: this.adapters })
+    this.timerControllers = new TimerControllers({
+      adapters: this.adapters,
+      useCases: this.useCases
+    })
 
     // Attach the event handler to the event.
     // This event is responsible for adding validated entries to MongoDB.

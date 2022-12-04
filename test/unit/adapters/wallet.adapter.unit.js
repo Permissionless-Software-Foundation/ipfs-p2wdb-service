@@ -336,6 +336,18 @@ describe('#wallet', () => {
       }
     })
   })
+
+  describe('#optimize', () => {
+    it('should call the wallet optimize function', async () => {
+      // mock instance of minimal-slp-wallet
+      uut.bchWallet = new MockBchWallet()
+      sandbox.stub(uut.bchWallet, 'optimize').resolves()
+
+      const result = await uut.optimize()
+
+      assert.equal(result, true)
+    })
+  })
 })
 
 const deleteFile = (filepath) => {
