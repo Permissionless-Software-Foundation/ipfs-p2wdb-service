@@ -43,7 +43,7 @@ services:
 
   p2wdb:
     #build: .
-    image: christroutner/p2wdb:v3.2.0
+    image: christroutner/p2wdb:v3.3.1
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
