@@ -77,6 +77,7 @@ class WalletAdapter {
         advancedConfig.interface = 'rest-api'
         advancedConfig.restURL = this.config.apiServer
         advancedConfig.apiToken = this.config.apiToken
+        advancedConfig.authPass = this.config.authPass
       } else {
         advancedConfig.interface = 'consumer-api'
         advancedConfig.restURL = this.config.consumerUrl

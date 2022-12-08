@@ -45,6 +45,9 @@ module.exports = {
   fullstackPassword: process.env.FULLSTACKPASS
     ? process.env.FULLSTACKPASS
     : 'demo',
+  authPass: process.env.FULLSTACK_AUTH_PASS
+    ? process.env.FULLSTACK_AUTH_PASS
+    : '',
 
   // ipfs-bch-wallet-consumer URL
   consumerUrl: process.env.CONSUMER_URL
