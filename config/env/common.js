@@ -15,7 +15,7 @@ const ipfsCoordName = process.env.COORD_NAME
 
 module.exports = {
   // Configure TCP port.
-  port: process.env.PORT || 5001,
+  port: process.env.PORT || 5667,
 
   // Password for HTML UI that displays logs.
   logPass: 'test',
@@ -45,6 +45,9 @@ module.exports = {
   fullstackPassword: process.env.FULLSTACKPASS
     ? process.env.FULLSTACKPASS
     : 'demo',
+  authPass: process.env.FULLSTACK_AUTH_PASS
+    ? process.env.FULLSTACK_AUTH_PASS
+    : '',
 
   // ipfs-bch-wallet-consumer URL
   consumerUrl: process.env.CONSUMER_URL
@@ -76,6 +79,8 @@ module.exports = {
     : '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
 
   // Quantity of tokens required to burn in order to write to DB.
+  // This setting is being deprecated. It is being replaced by a lookup at
+  // startup to get the price set by the PSF Minting Council.
   reqTokenQty: process.env.REQ_TOKEN_QTY
     ? parseInt(process.env.REQ_TOKEN_QTY)
     : 0.01,
@@ -98,8 +103,8 @@ module.exports = {
   },
 
   // IPFS Ports
-  ipfsTcpPort: process.env.IPFS_TCP_PORT ? process.env.IPFS_TCP_PORT : 5668,
-  ipfsWsPort: process.env.IPFS_WS_PORT ? process.env.IPFS_WS_PORT : 5669,
+  ipfsTcpPort: process.env.IPFS_TCP_PORT ? process.env.IPFS_TCP_PORT : 4001,
+  ipfsWsPort: process.env.IPFS_WS_PORT ? process.env.IPFS_WS_PORT : 4003,
 
   // IPNS hash to get the latest config info.
   // Not currently implemented.
