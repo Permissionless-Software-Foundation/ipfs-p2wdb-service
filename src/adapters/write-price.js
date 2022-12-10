@@ -63,14 +63,16 @@ class WritePrice {
 
         // Remove the ipfs:// prefix.
         mutableCid = tokenData.mutableData.slice(7)
-      // console.log('mutableCid: ', mutableCid)
+        console.log('mutableCid: ', mutableCid)
       } catch (err) {
         throw new Error(`Could not get P2WDB price from blockchain: ${err.message}`)
       }
 
       try {
         // Get the data from IPFS.
-        const request = await this.axios.get(`https://${mutableCid}.ipfs.dweb.link/data.json`)
+        // const request = await this.axios.get(`https://${mutableCid}.ipfs.dweb.link/data.json`)
+        const request = await this.axios.get(`https://p2wdb-gateway-678.fullstack.cash/ipfs/${mutableCid}/data.json`)
+        // https://p2wdb-gateway-678.fullstack.cash/ipfs/bafybeiavsmo4crwvhe6vas7e5tiecsgj7yblueqdbcoeb335js3zgi7reu/data.json
         // console.log(`request.data: ${JSON.stringify(request.data, null, 2)}`)
 
         // Update the state with the price history array.
