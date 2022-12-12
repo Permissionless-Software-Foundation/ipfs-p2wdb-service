@@ -472,7 +472,7 @@ class PayToWriteAccessController extends AccessController {
       // to the payload timestamp.
 
       // Get the required burn price, based on the timestamp.
-      console.log('this._options: ', this._options)
+      // console.log('this._options: ', this._options)
       const requiredPrice = this._options.writePrice.getTargetCostPsf(timestamp)
       console.log('requiredPrice: ', requiredPrice)
 
