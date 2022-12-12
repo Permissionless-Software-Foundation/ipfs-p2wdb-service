@@ -208,6 +208,12 @@ class WritePrice {
   // That includes a markup cost for the service of providing PSF tokens to
   // the user. The market cost is set in the config file.
   async getWriteCostInBch () {
+    // For debugging. Write the current balance of the wallet and token balance.
+    const bchBalance = await this.wallet.getBalance()
+    console.log('App wallet BCH balance: ', bchBalance)
+    const tokenBalance = await this.wallet.listTokens()
+    console.log('App wallet SLP balance: ', tokenBalance)
+
     const bchPerToken = await this.getPsfPriceInBch()
 
     // Cost in BCH + markup.
