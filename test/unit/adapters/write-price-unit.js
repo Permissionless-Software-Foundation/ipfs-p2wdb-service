@@ -180,6 +180,8 @@ describe('#write-price', () => {
     it('should get write cost in BCH', async () => {
       // Mock dependencies
       sandbox.stub(uut, 'getPsfPriceInBch').resolves(0.00075689)
+      sandbox.stub(uut.wallet, 'getBalance').resolves()
+      sandbox.stub(uut.wallet, 'listTokens').resolves()
 
       const result = await uut.getWriteCostInBch()
       // console.log('result: ', result)
