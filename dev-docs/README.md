@@ -1,6 +1,5 @@
 # Developer Documentation
 
-<<<<<<< HEAD
 This directory contains Markdown documents which describe the architecture of the pay-to-write database (P2WDB). The one-sentence description of the P2WDB is: "a peer-to-peer database that requires proof-of-burn in order to add entries to the database". The documents in this directory serve to expand on that statement, and describe all the subcomponents that go into that idea.
 
 ## OrbitDB
@@ -13,11 +12,11 @@ The ACL rules become part of the hash for the database name. If a malicious user
 
 ## Proof-of-Burn
 
-The 'big innovation' in this project is to combine OrbitDB with a proof-of-burn to control database writes. The proof-of-burn is simply a transaction ID (TXID) on a blockchain. Each independent copy of the P2WDB will evaluate this transaction and verify that the transaction involves burning a specific quantity of a specific token. If those criteria are met, then the user is allowed to write data to the database. Otherwise the write request is rejected. Each instance of the P2WDB independently validates these write entries, similar to nodes on a blockchain.
+The 'big innovation' in this project is to combine OrbitDB with a proof-of-burn to control database writes. The proof-of-burn is simply a transaction ID (TXID) on a blockchain. Each independent copy of the P2WDB will evaluate this transaction and verify that the transaction involves burning a specific quantity of a specific token. If those criteria are met, then the user is allowed to write data to the database. Otherwise the write request is rejected. Each instance of the P2WDB independently validates these write entries through consensus rules, similar to nodes on a blockchain.
 
 Right now the Bitcoin Cash (BCH) blockchain is used for the proof-of-burn, but one goal of this project is to expand the proof-of-burn to other blockchains, including [Avalanche](https://www.avax.network/) and [eCash](https://e.cash). Implementing interfaces for different blockchains will allow the P2WDB to become a medium for cross-blockchain communication. For example, an event on one blockchain could trigger a smart contract or Script on another blockchain.
 
-Currently, the proof of burn requires $0.01 USD in [PSF tokens](https://psfoundation.cash) burned in order to write (up to) 10KB of text data to the database. These numbers will probably change in the future, but these are what is currently implemented. [Example scripts](../examples) are provided to help developers interact with the database.
+Currently, the proof of burn requires $0.01 USD in [PSF tokens](https://psfoundation.cash) burned in order to write (up to) 10KB of text data to the database. These numbers will probably change in the future, but these are what is currently implemented. [Example code](https://github.com/Permissionless-Software-Foundation/psf-js-examples/tree/master/p2wdb) are provided to help developers interact with the database.
 
 ## P2WDB API & RPC
 
@@ -62,7 +61,7 @@ In addition to the REST and JSON interfaces, on-chain interfaces are planned to 
 
 This would allow on-chain oracles to be driven by entries to the P2WDB. It would allow on-chain applications on one blockchain to pass data to another on-chain applications on their blockchain and on other blockchains.
 
-This would make it much more pragmatic for applications to use pruned nodes instead of archival nodes. Archival nodes maintain a full copy of the blockchain (200GB and growing for BCH). Archival nodes have onerous data requirements and long sync times. Moving application data to an external but accessible database, makes blockchain technology much more scalable.
+This would make it much more pragmatic for applications to use pruned nodes instead of archival nodes. Archival nodes maintain a full copy of the blockchain (250GB and growing for BCH). Archival nodes have onerous data requirements and long sync times. Moving application data to an external but accessible database, makes blockchain technology much more scalable.
 
 ## Clean Architecture
 
@@ -96,13 +95,3 @@ This idea compliments blockchains by creating a much more flexible and scalable 
 ## Join Us
 
 If you have technical questions, please ask them in our [community tech support Telegram channel](https://t.me/bch_js_toolkit). If you want to work with like-minded JavaScript developers on this software, join the [PSF Telegram channel](https://t.me/permissionless_software) and learn more about the [Permissionless Software Foundation](https://psfoundation.info).
-=======
-This directory needs to be fleshed out with more information. The markdown files in this directory are intended to provide additional documentation for software developers that use this boilerplate to run their own forks.
-
-## Startup
-This software requires an IPFS node in order to operate the JSON RPC and ipfs-coord features. There are two ways to incorporate an IPFS node:
-
-- js-ipfs is integrated into this repository. If you simply run `npm start`, then this app will default to the js-ipfs IPFS node. However, js-ipfs is not as full featured as go-ipfs. It has memory leaks and lags considerably behind go-ipfs in terms of features.
-
-- go-ipfs is the preferred way to run a node. It can be run externally by following the guidence on the [IPFS homepage](https://ipfs.io). Once the IPFS node is running, this app can take control of it. Use the [local-external-ipfs-node.sh](../shell-scripts/local-external-ipfs-node.sh) shell script to start this app and attach it to the go-ipfs node.
->>>>>>> upstream/master
