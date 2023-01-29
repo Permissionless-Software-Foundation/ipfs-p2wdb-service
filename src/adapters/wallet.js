@@ -230,7 +230,15 @@ class WalletAdapter {
 
   // Optimize the wallet by consolidating the UTXOs.
   async optimize () {
-    await this.bchWallet.optimize()
+    const UTXO_THREASHOLD = 7
+
+    // Do a dry-run first to see if there are enough UTXOs worth consolidating.
+    const dryRunOut = await this.bchWallet.optimize(true)
+
+    if (dryRunOut.bchUtxoCnt > UTXO_THREASHOLD) {
+      // Consolidate BCH UTXOs if the count is above the threashold.
+      await this.bchWallet.optimize()
+    }
 
     return true
   }

@@ -341,7 +341,7 @@ describe('#wallet', () => {
     it('should call the wallet optimize function', async () => {
       // mock instance of minimal-slp-wallet
       uut.bchWallet = new MockBchWallet()
-      sandbox.stub(uut.bchWallet, 'optimize').resolves()
+      sandbox.stub(uut.bchWallet, 'optimize').resolves({ bchUtxoCnt: 10 })
 
       const result = await uut.optimize()
 
