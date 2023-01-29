@@ -36,7 +36,7 @@ class TimerControllers {
   startTimers () {
     console.log('this.config.enableBchPayment: ', this.config.enableBchPayment)
     if (this.config.enableBchPayment) {
-      this.optimizeWalletHandle = setInterval(this.optimizeWallet, 60000 * 60 * 24)
+      this.optimizeWalletHandle = setInterval(this.optimizeWallet, 60000 * 10) // Every 10 minutes
       // this.optimizeWalletHandle = setTimeout(this.optimizeWallet, 60000 * 0.5)
     }
   }
