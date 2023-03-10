@@ -68,15 +68,34 @@ class WritePrice {
         throw new Error(`Could not get P2WDB price from blockchain: ${err.message}`)
       }
 
+      if (!mutableCid) throw new Error('Mutable data came back empty!')
+
       try {
         // Get the data from IPFS.
+        const fullstackUrl = `https://p2wdb-gateway-678.fullstack.cash/ipfs/${mutableCid}/data.json`
+        console.log(`fullstackUrl: ${fullstackUrl}`)
+        const filecoinUrl = `https://${mutableCid}.ipfs.dweb.link/data.json`
+        console.log(`filecoinUrl: ${filecoinUrl}`)
+
+        let request
+        try {
+          console.log('Trying to get P2WDB write price from P2WDB pinning cluster...')
+          request = await this.axios.get(fullstackUrl)
+        } catch (err) {
+          console.log('...P2WDB pinning cluster failed. Trying to get P2WDB write price from Filecoin...')
+          request = await this.axios.get(filecoinUrl)
+        }
+        console.log('request.data: ', request.data)
+
         // const request = await this.axios.get(`https://${mutableCid}.ipfs.dweb.link/data.json`)
-        const request = await this.axios.get(`https://p2wdb-gateway-678.fullstack.cash/ipfs/${mutableCid}/data.json`)
+
         // https://p2wdb-gateway-678.fullstack.cash/ipfs/bafybeiavsmo4crwvhe6vas7e5tiecsgj7yblueqdbcoeb335js3zgi7reu/data.json
         // console.log(`request.data: ${JSON.stringify(request.data, null, 2)}`)
 
         // Update the state with the price history array.
-        this.priceHistory = request.data.p2wdbPriceHistory
+        // this.priceHistory = request.data.p2wdbPriceHistory
+        this.priceHistory = [{ date: '06/20/2022', psfPerWrite: 0.126 }]
+        console.log('this.priceHistory: ', this.priceHistory)
 
         return this.priceHistory
       } catch (err) {
@@ -110,27 +129,33 @@ class WritePrice {
         const thisRate = rates[i]
         const rateDate = new Date(thisRate.date)
 
+        console.log('rateData: ', rateDate)
+        console.log('now.getTime(): ', now.getTime())
+        console.log('rateDate.getTime(): ', rateDate.getTime())
+
         // let rateDateDiff = bestDateDiff
         const rateDateDiff = Math.abs(now.getTime() - rateDate.getTime())
-
-        // console.log(`rateDateDiff ${i}: `, rateDateDiff)
+        console.log(`rateDateDiff ${i}: `, rateDateDiff)
 
         if (rateDateDiff < bestDateDiff) {
           bestDateDiff = rateDateDiff
           currentRate = thisRate
         }
       }
-      // console.log('currentRate: ', currentRate)
+      console.log('currentRate: ', currentRate)
 
       // if (!currentRate) throw new Error('Could not retrieve write rate in PSF tokens.')
 
       // Convert the date string into a Date object.
-      currentRate.date = new Date(currentRate.date)
+      // currentRate.date = new Date(currentRate.date)
+      currentRate.date = new Date()
 
       // Store the price in the state of this instance.
       this.currentRate = currentRate.psfPerWrite
+      // this.currentRate = 0.1
 
       return currentRate.psfPerWrite
+      // return this.currentRate
     } catch (err) {
       console.error('Error in adapters/write-price.js/getCurrentCost()')
       throw err
