@@ -11,7 +11,9 @@ const axios = require('axios')
 const config = require('../../config')
 const WalletAdapter = require('./wallet')
 
+// Constants
 const writeTokenId = '0ac28ff1e1fa93bf734430fd151115959307cf872c6d130b308a6d29182991d8'
+const MINTING_COUNCIL_ADDRESS = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'
 
 class WritePrice {
   constructor (localConfig = {}) {
@@ -251,6 +253,65 @@ class WritePrice {
     this.currentRateInBch = costToUser
 
     return costToUser
+  }
+
+  // This function retrieves the current write price in PSF tokens, leveraging
+  // PS009: https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps009-multisig-approval.md
+  /*
+    Below is a prototype function for finding the approval transaction from the
+    Minting Council (MC) and updating the write price based on it. Here is the
+    workflow that needs to be developed:
+
+    - Get TX history for the address.
+    - Retrieve TX details 20 TXIDs at a time.
+    - Filter the results of each block of 20 TXIDs for an APPROVAL entry in the
+      OP_RETURN. The output of this step should be an array of objects, each object
+      contains the TX data, block height, of each transaction that has APPROVAL,
+      sorted by block height with largest block height first.
+    - Get the Update TXID from the OP_RETURN, retrieve the IPFS data from that TX.
+    - Recreate the multisig wallet from the IPFS data, and verify that the input
+      to the APPROVAL TX matches the multisig address.
+    - Create/update a database entry of write price, so that P2WDB can look it up.
+    - On subsequent startups, the P2WDB only needs to find the first APPROVAL entry
+      in the TX history. If it matches the same TXID as the one in the database,
+      then the verification does not need to be repeated.
+  */
+  async getPsfPrice2 () {
+    try {
+      // Get the transaction history for the Minting Council address used to set
+      // the P2WDB price.
+      // Note: it is assumed that tx's come in in descending order with the most
+      // recent TX (largest block height) first.
+      const txHistory = await this.wallet.getTransactions(MINTING_COUNCIL_ADDRESS)
+      console.log('txHistory: ', JSON.stringify(txHistory, null, 2))
+
+      // for(let i=0; i < txHistory.length; i++) {
+      for (let i = 0; i < 3; i++) {
+        const thisTxid = txHistory[i].tx_hash
+
+        // Get the transaction details for this transaction.
+        const txDetails = await this.wallet.getTxData([thisTxid])
+        // console.log('txDetails: ', JSON.stringify(txDetails, null, 2))
+
+        // Get the contents of the first output of the transaction.
+        const scriptPubKey = txDetails[0].vout[0].scriptPubKey.asm.split(' ')
+
+        // Skip this TX if it does not contain an OP_RETURN in the first output.
+        if (!scriptPubKey[0].includes('OP_RETURN')) continue
+
+        const approvalMsg = Buffer.from(scriptPubKey[1], 'hex').toString('ascii')
+        console.log('approvalMsg: ', approvalMsg)
+
+        // Skip this TX if the OP_RETURN does not contain the word APPROVE
+        if (!approvalMsg.includes('APPROVE')) continue
+
+        const updateTxid = Buffer.from(scriptPubKey[2], 'hex').toString('ascii')
+        console.log('updateTxid: ', updateTxid)
+      }
+    } catch (err) {
+      console.error('Error in getPsfPrice2()')
+      throw err
+    }
   }
 }
 
