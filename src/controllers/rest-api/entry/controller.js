@@ -627,6 +627,56 @@ class EntryRESTControllerLib {
     }
   }
 
+  /**
+   * @api {get} /entry/balance Get the balance of the apps wallet
+   * @apiPermission public
+   * @apiName P2WDB Wallet Balance
+   * @apiGroup REST P2WDB
+   *
+   * @apiDescription
+   * If this P2WDB is configured as an IPFS pinning cluster, with a crypto wallet,
+   * this endpoint will return the BCH and PSF token balance of that wallet.
+   * This endpoint is handy for checking the health of the node and ensuring
+   * that it is capable of creating new entries for users.
+   *
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5010/entry/balance
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *  HTTP/1.1 200 OK
+   *  {
+   *     "success": true,
+   *     "satBalance": 41012,
+   *     "psfBalance": 2
+   *  }
+   * @apiError UnprocessableEntity Missing required parameters
+   *
+   * @apiErrorExample {json} Error-Response:
+   *     HTTP/1.1 422 Unprocessable Entity
+   *     {
+   *       "status": 422,
+   *       "error": "Unprocessable Entity"
+   *     }
+   */
+  async getBalance (ctx) {
+    if (!this.config.enableBchPayment) {
+      console.log('Throwing error. This is expected behavior.')
+      ctx.throw(501, 'BCH payments are not enabled in this instance of P2WDB.')
+    }
+
+    try {
+      // Get the cost in PSF tokens to write to the DB.
+      const balance = await this.adapters.wallet.getBalance()
+
+      ctx.body = balance
+    } catch (err) {
+      console.log('Error in entry REST API getBalance() handler.')
+      // throw err
+      _this.handleError(ctx, err)
+    }
+  }
+
   // DRY error handler
   handleError (ctx, err) {
     // If an HTTP status is specified by the buisiness logic, use that.

@@ -348,6 +348,33 @@ describe('#wallet', () => {
       assert.equal(result, true)
     })
   })
+
+  describe('#getBalance', () => {
+    it('should get the balance for the wallet', async () => {
+      // mock instance of minimal-slp-wallet
+      uut.bchWallet = new MockBchWallet()
+
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut.bchWallet, 'getBalance').resolves(41012)
+      sandbox.stub(uut.bchWallet, 'listTokens').resolves([{
+        tokenId: '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
+        ticker: 'PSF',
+        name: 'Permissionless Software Foundation',
+        decimals: 8,
+        tokenType: 1,
+        url: 'psfoundation.cash',
+        qty: 2
+      }])
+
+      const result = await uut.getBalance()
+      // console.log('result: ', result)
+
+      // Assert the expected properties exist and have the expected values.
+      assert.equal(result.satBalance, 41012)
+      assert.equal(result.psfBalance, 2)
+      assert.equal(result.success, true)
+    })
+  })
 })
 
 const deleteFile = (filepath) => {

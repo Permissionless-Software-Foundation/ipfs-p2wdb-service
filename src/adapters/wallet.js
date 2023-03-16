@@ -242,6 +242,33 @@ class WalletAdapter {
 
     return true
   }
+
+  // Get the balance of the wallet in sats and PSF tokens.
+  // This function is called by the GET /entry/balance controller.
+  async getBalance () {
+    const balance = await this.bchWallet.getBalance()
+    // console.log('balance: ', balance)
+
+    const tokens = await this.bchWallet.listTokens()
+    // console.log('tokens: ', tokens)
+
+    // Find the array entry for the PSF token
+    const psfTokens = tokens.find(x => x.tokenId === '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0')
+    // console.log('psfTokens: ', psfTokens)
+
+    let psfBalance = 0
+    if (psfTokens) {
+      psfBalance = psfTokens.qty
+    }
+
+    const outObj = {
+      satBalance: balance,
+      psfBalance,
+      success: true
+    }
+
+    return outObj
+  }
 }
 
 module.exports = WalletAdapter
