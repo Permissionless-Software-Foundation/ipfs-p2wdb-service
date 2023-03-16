@@ -335,6 +335,61 @@ describe('#Entry-REST-Controller', () => {
 
       assert.equal(ctx.body.hash, 'fake-hash')
     })
+
+    it('should catch and throw errors when retrieving BCH cost', async () => {
+      uut.config.enableBchPayment = true
+
+      try {
+        // sandbox.stub(uut.useCases.entry.addEntry, 'addBchEntry').rejects(new Error('test error'))
+
+        await uut.postBchEntry(ctx)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        console.log('err: ', err)
+        assert.include(err.message, 'Cannot read')
+      }
+    })
+  })
+
+  describe('#getBalance', () => {
+    it('should throw an error if BCH payments are disabled', async () => {
+      uut.config.enableBchPayment = false
+
+      try {
+        await uut.getBalance(ctx)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'BCH payments are not enabled in this instance of P2WDB.')
+      }
+    })
+
+    it('should get the balances of the wallet', async () => {
+      uut.config.enableBchPayment = true
+
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut.adapters.wallet, 'getBalance').resolves({ success: true })
+
+      ctx.request.body = {}
+
+      await uut.getBalance(ctx)
+      assert.equal(ctx.body.success, true)
+    })
+
+    it('should catch and throw errors when retrieving BCH cost', async () => {
+      uut.config.enableBchPayment = true
+
+      try {
+        sandbox.stub(uut.adapters.wallet, 'getBalance').rejects(new Error('test error'))
+
+        await uut.getBalance(ctx)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
   })
 
   describe('#handleError', () => {

@@ -647,8 +647,8 @@ class EntryRESTControllerLib {
    *  HTTP/1.1 200 OK
    *  {
    *     "success": true,
-   *     "bchCost": 0.000106,
-   *     "address": "bitcoincash:qqsrke9lh257tqen99dkyy2emh4uty0vky9y0z0lsr"
+   *     "satBalance": 41012,
+   *     "psfBalance": 2
    *  }
    * @apiError UnprocessableEntity Missing required parameters
    *
@@ -667,13 +667,11 @@ class EntryRESTControllerLib {
 
     try {
       // Get the cost in PSF tokens to write to the DB.
-      await this.adapters.wallet.getBalance()
+      const balance = await this.adapters.wallet.getBalance()
 
-      ctx.body = {
-        success: true
-      }
+      ctx.body = balance
     } catch (err) {
-      console.log('Error in entry REST API getBchCost() handler.')
+      console.log('Error in entry REST API getBalance() handler.')
       // throw err
       _this.handleError(ctx, err)
     }

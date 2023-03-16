@@ -27,8 +27,9 @@ class MockBchWallet {
     this.sendTokens = async () => {
       return 'fakeTxid'
     }
-    this.getUtxos = async () => {
-    }
+    this.getUtxos = async () => {}
+    this.getBalance = async () => {}
+    this.listTokens = async () => {}
     this.getTxData = async () => {
       return [{
         tokenTicker: 'TROUT'
