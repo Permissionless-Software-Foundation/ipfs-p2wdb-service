@@ -242,6 +242,14 @@ class WalletAdapter {
 
     return true
   }
+
+  async getBalance () {
+    const balance = await this.bchWallet.getBalance()
+    console.log('balance: ', balance)
+
+    const tokens = await this.bchWallet.listTokens()
+    console.log('tokens: ', tokens)
+  }
 }
 
 module.exports = WalletAdapter

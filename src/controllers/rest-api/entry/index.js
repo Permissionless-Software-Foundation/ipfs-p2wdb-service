@@ -61,6 +61,7 @@ class EntryController {
     this.router.post('/cost/psf', this.getPsfCostTarget)
     this.router.get('/cost/bch', this.getBchCost)
     this.router.post('/write/bch', this.postBchEntry)
+    this.router.get('/balance', this.getBalance)
 
     // Attach the Controller routes to the Koa app.
     app.use(cors({ origin: '*' }))
@@ -111,6 +112,11 @@ class EntryController {
   async getBchCost (ctx, next) {
     // await _this.validators.ensureUser(ctx, next)
     await _this.entryRESTController.getBchCost(ctx, next)
+  }
+
+  async getBalance (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.getBalance(ctx, next)
   }
 }
 
