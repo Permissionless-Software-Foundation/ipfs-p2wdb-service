@@ -237,7 +237,8 @@ class WalletAdapter {
 
     if (dryRunOut.bchUtxoCnt > UTXO_THREASHOLD) {
       // Consolidate BCH UTXOs if the count is above the threashold.
-      await this.bchWallet.optimize()
+      const txids = await this.bchWallet.optimize()
+      console.log(`Wallet optimized with these return values: ${JSON.stringify(txids, null, 2)}`)
     }
 
     return true
