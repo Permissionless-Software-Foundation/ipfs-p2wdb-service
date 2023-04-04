@@ -6,10 +6,12 @@
 // Global npm libraries
 // const Wallet = require('minimal-slp-wallet/index')
 const axios = require('axios')
+const bitcore = require('bitcore-lib-cash')
 
 // Local libraries
 const config = require('../../config')
 const WalletAdapter = require('./wallet')
+const WritePriceModel = require('./localdb/models/write-price')
 
 const writeTokenId = '0ac28ff1e1fa93bf734430fd151115959307cf872c6d130b308a6d29182991d8'
 
@@ -27,6 +29,8 @@ class WritePrice {
     this.axios = axios
     this.config = config
     this.WalletAdapter = WalletAdapter
+    this.WritePriceModel = WritePriceModel
+    this.bitcore = bitcore
 
     // state
     this.currentRate = 0.133
@@ -50,8 +54,8 @@ class WritePrice {
   }
 
   // This function retrieves an array of costs and data from the token mutable
-  // data. This is an initialization function that should be called at started,
-  // and periodically every hour.
+  // data. This is an initialization function that should be called at start,
+  // and periodically refreshed every hour.
   async getCostsFromToken () {
     try {
       await this.instanceWallet()
@@ -251,6 +255,175 @@ class WritePrice {
     this.currentRateInBch = costToUser
 
     return costToUser
+  }
+
+  // Get the write price set by the PSF Minting Council.
+  // This function assumes that transaction history is retrieved from the Cash
+  // Stack is sorted in descending order with the biggest (newest) block
+  // in the first element in the transaction history array.
+  async getMcWritePrice () {
+    // Hard codeded value. 04/04/23
+    // This value is returned if there are any issues returning the write price.
+    // It should be higher than actual fee, so that any writes will propegate to
+    // the P2WDB nodes that successfully retrieved the current write price.
+    let writePrice = 0.2
+
+    try {
+      const WRITE_PRICE_ADDR = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'
+
+      // Instance the wallet.
+      await this.instanceWallet()
+
+      const txHistory = await this.wallet.getTransactions(WRITE_PRICE_ADDR)
+      console.log('txHistory: ', JSON.stringify(txHistory, null, 2))
+
+      // Loop through the transaction history
+      for (let i = 0; i < txHistory.length; i++) {
+        const thisTxid = txHistory[i]
+
+        // const { height, tx_hash } = thisTxid
+        const height = thisTxid.height
+        const txHash = thisTxid.tx_hash
+
+        const writePriceModel = await this.WritePriceModel.findOne({ txid: txHash })
+        console.log('writePriceModel: ', writePriceModel)
+
+        // If this TX is not in the database, then download and analyze it.
+        if (!writePriceModel) {
+          // Get the transaction details for the transaction
+          const txDetails = await this.wallet.getTxData([txHash])
+          console.log('txDetails: ', JSON.stringify(txDetails, null, 2))
+          console.log(`txid: ${txHash}`)
+
+          // If the first output is no an OP_RETURN, then the tx can be discarded.
+          if (!txDetails[0].vout[0].scriptPubKey.asm.includes('OP_RETURN')) {
+            const newTx = new this.WritePriceModel({
+              txid: txHash,
+              isApprovalTx: false,
+              blockHeight: height
+            })
+            await newTx.save()
+          }
+
+          // convert the asm field into sections
+          const asmSections = txDetails[0].vout[0].scriptPubKey.asm.split(' ')
+          console.log('asmSections: ', asmSections)
+
+          // Analyze the second part (the first part that is not OP_RETURN)
+          const part1 = Buffer.from(asmSections[1], 'hex').toString('ascii')
+          console.log('part1: ', part1)
+
+          if (part1.includes('APPROVE')) {
+            console.log('Approval transaction detected')
+            const updateTxid = Buffer.from(asmSections[2], 'hex').toString('ascii')
+
+            writePrice = await this.validateApprovalTx({ approvalTxDetails: txDetails[0], updateTxid })
+
+            const newTx = new this.WritePriceModel({
+              txid: txHash,
+              isApprovalTx: true,
+              blockHeight: height,
+              verified: true
+            })
+            await newTx.save()
+
+            break
+          } else {
+            const newTx = new this.WritePriceModel({
+              txid: txHash,
+              isApprovalTx: false,
+              blockHeight: height
+            })
+            await newTx.save()
+          }
+        } else {
+          if (writePriceModel.isApprovalTx && writePriceModel.verified) {
+            writePrice = writePriceModel.writePrice
+
+            break
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error in getMcWritePrice(): ', err)
+      throw err
+    }
+
+    return writePrice
+  }
+
+  // Validate an approval transaction.
+  // This function retrieves the 'Update' TX that is referenced in the approval
+  // transaction. It then retrieves the JSON data referenced in that update
+  // transaction from IPFS. It then uses the data in that JSON file to validate
+  // that the approval TX was indeed approved by the minting council.
+  async validateApprovalTx (inObj = {}) {
+    try {
+      const { approvalTxDetails, updateTxid } = inObj
+      // console.log(`approvalTxDetails: ${JSON.stringify(approvalTxDetails, null, 2)}`)
+      // console.log(`updateTxid: ${JSON.stringify(updateTxid, null, 2)}`)
+
+      // Get the validation TX data from the approval TX
+      const validationTxData = await this.wallet.getTxData([updateTxid])
+      // console.log(`validationTxData: ${JSON.stringify(validationTxData, null, 2)}`)
+
+      const asmSections = validationTxData[0].vout[0].scriptPubKey.asm.split(' ')
+      const jsonStr = Buffer.from(asmSections[2], 'hex').toString('ascii')
+      // console.log('jsonStr: ', jsonStr)
+      const jsonData = JSON.parse(jsonStr)
+      const cid = jsonData.cid
+
+      // Download the update JSON data from the P2WDB pinning cluster
+      const validationData = await this.axios.get(`${this.config.ipfsGateway}${cid}/data.json`)
+      // console.log('validationData.data: ', validationData.data)
+
+      const mcAddr = this.verifyMcData(validationData.data)
+      // console.log('mcAddr: ', mcAddr)
+
+      const writePrice = validationData.data.p2wdbWritePrice
+
+      const onChainMcAddr = approvalTxDetails.vin[0].address
+
+      if (mcAddr !== onChainMcAddr) {
+        throw new Error(`On-chain Minting Council address of ${onChainMcAddr} does not match the calculated address ${mcAddr} from the update transaction.`)
+      }
+
+      return writePrice
+    } catch (err) {
+      console.error('Error in validateApprovalTx(): ', err)
+      throw err
+    }
+  }
+
+  // This function validates the JSON data downloaded from IPFS. It uses this
+  // data to construct the Minting Council multisig address. It then returns
+  // that address. If the address matches the on-chain addresses that generated
+  // the approval transaction, then the app has proven that the approval tx
+  // was legitimately generated by the Minting Council.
+  verifyMcData (jsonData) {
+    try {
+      const pubKeys = jsonData.walletObj.publicKeys
+      const requiredSigners = jsonData.walletObj.requiredSigners
+      const multisigAddr = jsonData.multisigAddr
+
+      // TODO: Rather than assuming the pubkeys are accruate, the pubkeys should
+      // be retrieved from each NFT listed in the JSON data. Since the NFTs can
+      // move around, the pubkey can change. But most should resolve as long as
+      // the validation happens within a month of the approve transaction happening.
+
+      // Recreate the multisig address from the public keys
+      const msAddr = new this.bitcore.Address(pubKeys, requiredSigners).toString()
+      console.log('msAddr: ', msAddr)
+
+      if (msAddr !== multisigAddr) {
+        throw new Error('Write price validation: Calculated multisig address does not match the address from downloaded data.')
+      }
+
+      return msAddr
+    } catch (err) {
+      console.error('Error in verifyMcData(): ', err)
+      throw err
+    }
   }
 }
 
