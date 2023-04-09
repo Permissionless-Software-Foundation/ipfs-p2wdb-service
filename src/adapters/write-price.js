@@ -9,7 +9,6 @@
 
 // Global npm libraries
 const axios = require('axios')
-const bitcore = null
 const MultisigApproval = require('psf-multisig-approval')
 
 // Local libraries
@@ -27,7 +26,6 @@ class WritePrice {
     this.config = config
     this.WalletAdapter = WalletAdapter
     this.WritePriceModel = WritePriceModel
-    this.bitcore = bitcore
 
     // state
     this.currentRate = config.reqTokenQty
