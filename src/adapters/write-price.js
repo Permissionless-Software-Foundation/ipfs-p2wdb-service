@@ -3,6 +3,7 @@
   for a write to be accepted by the P2WDB.
 
   Historical prices (in PSF tokens) set by PSF Minting Council:
+  ? - 2/21/23: 0.126
   2/21/23 - current: 0.08335233
 */
 
