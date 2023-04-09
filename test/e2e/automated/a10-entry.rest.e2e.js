@@ -304,7 +304,7 @@ describe('Entry', () => {
       assert.property(result.data, 'psfCost')
 
       assert.equal(result.data.success, true)
-      assert.equal(result.data.psfCost, 0.2)
+      assert.equal(result.data.psfCost, config.reqTokenQty)
     })
   })
 
