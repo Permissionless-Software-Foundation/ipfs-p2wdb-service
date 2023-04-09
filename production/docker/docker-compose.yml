@@ -42,8 +42,8 @@ services:
     restart: always
 
   p2wdb:
-    #build: .
-    image: christroutner/p2wdb:v4.0.2
+    build: .
+    #image: christroutner/p2wdb:v4.0.2
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
