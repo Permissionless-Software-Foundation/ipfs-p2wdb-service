@@ -1,6 +1,9 @@
 /*
   This library gets the price, in PSF tokens, required to burn in order
   for a write to be accepted by the P2WDB.
+
+  Historical prices (in PSF tokens) set by PSF Minting Council:
+  2/21/23 - current: 0.08335233
 */
 
 // Global npm libraries
@@ -16,12 +19,6 @@ const WritePriceModel = require('./localdb/models/write-price')
 class WritePrice {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
-    // this.wallet = new Wallet(undefined, {
-    //   noUpdate: true,
-    //   interface: 'consumer-api',
-    //   restURL: config.consumerUrl
-    // })
-    // this.bchjs = this.wallet.bchjs
     this.wallet = undefined // placeholder
     this.bchjs = undefined // placeholder
     this.ps009 = null // placeholder
@@ -32,8 +29,8 @@ class WritePrice {
     this.bitcore = bitcore
 
     // state
-    this.currentRate = 0.2
-    this.currentRateInBch = 0.0001
+    this.currentRate = config.reqTokenQty
+    this.currentRateInBch = 0.00008544
     this.priceHistory = []
     this.filterTxids = [] // Tracks invalid approval TXs
   }
@@ -75,6 +72,8 @@ class WritePrice {
 
     // Save to state.
     this.currentRateInBch = costToUser
+
+    console.log(`Write cost in BCH: ${costToUser}`)
 
     return costToUser
   }
@@ -145,12 +144,12 @@ class WritePrice {
 
         // Get the CID from the update transaction.
         const updateObj = await this.ps009.getUpdateTx({ txid: updateTxid })
-        console.log(`updateObj: ${JSON.stringify(updateObj, null, 2)}`)
+        // console.log(`updateObj: ${JSON.stringify(updateObj, null, 2)}`)
         const { cid } = updateObj
 
         // Resolve the CID into JSON data from the IPFS gateway.
         const updateData = await this.ps009.getCidData({ cid })
-        console.log(`updateData: ${JSON.stringify(updateData, null, 2)}`)
+        // console.log(`updateData: ${JSON.stringify(updateData, null, 2)}`)
 
         // Validate the approval transaction
         const approvalIsValid = await this.ps009.validateApproval({

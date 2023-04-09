@@ -13,7 +13,7 @@ const ipfsCoordName = process.env.COORD_NAME
   ? process.env.COORD_NAME
   : 'ipfs-p2wdb-service-generic'
 
-module.exports = {
+const config = {
   // Configure TCP port.
   port: process.env.PORT || 5667,
 
@@ -78,12 +78,14 @@ module.exports = {
     ? process.env.TOKEN_ID
     : '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
 
-  // Quantity of tokens required to burn in order to write to DB.
-  // This setting is being deprecated. It is being replaced by a lookup at
-  // startup to get the price set by the PSF Minting Council.
-  reqTokenQty: process.env.REQ_TOKEN_QTY
-    ? parseInt(process.env.REQ_TOKEN_QTY)
-    : 0.01,
+  // Quantity of tokens required to burn in order to write to DB. This
+  // default value is overwritten by a lookup of the write price set by the
+  // PSF Minting Council
+  // https://psfoundation.info/governance/minting-council
+  // reqTokenQty: process.env.REQ_TOKEN_QTY
+  //   ? parseFloat(process.env.REQ_TOKEN_QTY)
+  //   : 0.08335233,
+  reqTokenQty: 0.08335233,
 
   // JSON-LD and Schema.org schema with info about this app.
   announceJsonLd: {
@@ -135,3 +137,5 @@ module.exports = {
 
   ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/'
 }
+
+module.exports = config
