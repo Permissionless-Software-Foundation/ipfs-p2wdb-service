@@ -219,53 +219,6 @@ describe('#Entry-REST-Controller', () => {
     })
   })
 
-  describe('#getPsfCostTarget', () => {
-    it('body should contain data', async () => {
-      // Mock dependencies
-      sandbox.stub(uut.useCases.entry.cost, 'getPsfCostTarget').resolves(0.133)
-
-      ctx.request.body = {
-        targetDate: '08/01/2022'
-      }
-
-      await uut.getPsfCostTarget(ctx)
-      // console.log('ctx.body: ', ctx.body)
-
-      assert.equal(ctx.body.success, true)
-    })
-
-    it('should catch and throw an error', async () => {
-      ctx.request.body = {
-        targetDate: '08/01/2022'
-      }
-
-      try {
-        // Force an error
-        sandbox
-          .stub(uut.useCases.entry.cost, 'getPsfCostTarget')
-          .rejects(new Error('test error'))
-
-        await uut.getPsfCostTarget(ctx)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'test error')
-      }
-    })
-
-    it('should throw error if targetDate is not included in body', async () => {
-      ctx.request.body = {}
-
-      try {
-        await uut.getPsfCostTarget(ctx)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'targetDate must be provided')
-      }
-    })
-  })
-
   describe('#getBchCost', () => {
     it('should throw an error if BCH payments are disabled', async () => {
       uut.config.enableBchPayment = false
