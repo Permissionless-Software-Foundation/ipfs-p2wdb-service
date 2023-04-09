@@ -32,14 +32,15 @@ class WebhookAdapter {
   // that appId is found, it will trigger a call to the webhooks URL.
   async validationSucceededEventHandler (eventData) {
     try {
-      console.log(
-        'ValidationSucceeded event triggered from withing the webhook.js file. Data: ',
-        eventData
-      )
+      // console.log(
+      //   'ValidationSucceeded event triggered from withing the webhook.js file. Data: ',
+      //   eventData
+      // )
+      console.log('ValidationSucceeded event triggered from withing the webhook.js file.')
 
       // const { txid, signature, message, data, hash } = eventData
       const { data } = eventData
-      console.log('data: ', data)
+      // console.log('data: ', data)
 
       // Attempt to parse the raw data as JSON
       let jsonData = {}
