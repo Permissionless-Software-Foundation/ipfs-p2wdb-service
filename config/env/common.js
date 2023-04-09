@@ -131,5 +131,7 @@ module.exports = {
   enableBchPayment: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
 
   // By default use the web3 Cash Stack from CashStack.info, but can overide to use web2 infra like FullStack.cash
-  useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false
+  useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false,
+
+  ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/'
 }

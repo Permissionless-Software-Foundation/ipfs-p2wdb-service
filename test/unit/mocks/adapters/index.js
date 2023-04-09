@@ -100,7 +100,15 @@ const localdb = {
 
   validatePassword: () => {
     return true
-  }
+  },
+
+  WritePriceModel: class WritePriceModel {
+    static findOne () {}
+
+    async save () {
+      return {}
+    }
+  },
 }
 
 const writePrice = {

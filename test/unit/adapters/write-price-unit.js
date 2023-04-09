@@ -21,6 +21,15 @@ describe('#write-price', () => {
     mockData = cloneDeep(mockDataLib)
 
     sandbox = sinon.createSandbox()
+
+    // Replace the database model with this mock.
+    uut.WritePriceModel = class WritePriceModel {
+      static findOne () {}
+
+      async save () {
+        return {}
+      }
+    }
   })
 
   afterEach(() => sandbox.restore())
@@ -187,6 +196,71 @@ describe('#write-price', () => {
       // console.log('result: ', result)
 
       assert.equal(result, 0.00011073)
+    })
+  })
+
+  describe('#getMcWritePrice', () => {
+    it('should validate a new approval transaction', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.ps009, 'getApprovalTx').resolves(mockData.approvalObj01)
+      sandbox.stub(uut.WritePriceModel, 'findOne').resolves(null)
+      sandbox.stub(uut.ps009, 'getUpdateTx').resolves(mockData.updateObj01)
+      sandbox.stub(uut.ps009, 'getCidData').resolves(mockData.validationData01)
+      sandbox.stub(uut.ps009, 'validateApproval').resolves(true)
+
+      const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.08335233)
+    })
+
+    it('should retrieve a previously validated approval transaction from the database', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.ps009, 'getApprovalTx').resolves(mockData.approvalObj01)
+      sandbox.stub(uut.WritePriceModel, 'findOne').resolves({
+        writePrice: 0.08335233
+      })
+
+      const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.08335233)
+    })
+
+    it('should recursivly call itself to find the next approval tx', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.ps009, 'getApprovalTx').resolves(mockData.approvalObj01)
+      sandbox.stub(uut.WritePriceModel, 'findOne').resolves(null)
+      sandbox.stub(uut.ps009, 'getUpdateTx').resolves(mockData.updateObj01)
+      sandbox.stub(uut.ps009, 'getCidData').resolves(mockData.validationData01)
+      sandbox.stub(uut.ps009, 'validateApproval')
+        .onCall(0).resolves(false)
+        .onCall(1).resolves(true)
+
+      const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.08335233)
+    })
+
+    it('should return safety price if no approval tx can be found', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.ps009, 'getApprovalTx').resolves(null)
+
+      const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.2)
+    })
+
+    it('should throw error and return safety price if wallet is not initialized', async () => {
+      // Mock dependencies and force desired code path.
+      uut.wallet = undefined
+
+      const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.2)
     })
   })
 })
