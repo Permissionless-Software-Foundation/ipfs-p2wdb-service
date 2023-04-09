@@ -93,7 +93,8 @@ class PayToWriteAccessController extends AccessController {
   }
 
   // Returns the address of the OrbitDB used as the AC.
-  // No test coverage as this is copied directly from OrbitDB ACL.
+  // This function is copied directly from OrbitDB ACL, so unit tests are
+  // superficial, for the purpose of increasing code coverage only.
   get address () {
     return this._db.address
   }
@@ -101,6 +102,7 @@ class PayToWriteAccessController extends AccessController {
   // No test coverage as this is copied directly from OrbitDB ACL.
   get capabilities () {
     if (this._db) {
+      console.log('capabilities() this._db: ', this._db)
       const capabilities = this._db.index
 
       const toSet = (e) => {
@@ -473,7 +475,8 @@ class PayToWriteAccessController extends AccessController {
 
       // Get the required burn price, based on the timestamp.
       // console.log('this._options: ', this._options)
-      const requiredPrice = this._options.writePrice.getTargetCostPsf(timestamp)
+      // const requiredPrice = this._options.writePrice.getTargetCostPsf(timestamp)
+      const requiredPrice = this._options.writePrice.currentRate
       console.log('requiredPrice: ', requiredPrice)
 
       // If the difference is above a positive threshold, then it's a burn

@@ -32,7 +32,7 @@ class WritePrice {
     this.bitcore = bitcore
 
     // state
-    this.currentRate = 0.133
+    this.currentRate = 0.2
     this.currentRateInBch = 0.0001
     this.priceHistory = []
     this.filterTxids = [] // Tracks invalid approval TXs
@@ -126,7 +126,7 @@ class WritePrice {
         address: WRITE_PRICE_ADDR,
         filterTxids: this.filterTxids
       })
-      console.log('approvalObj: ', JSON.stringify(approvalObj, null, 2))
+      // console.log('approvalObj: ', JSON.stringify(approvalObj, null, 2))
 
       // Throw an error if no approval transaction can be found in the
       // transaction history.
@@ -137,7 +137,7 @@ class WritePrice {
       const { approvalTxid, updateTxid } = approvalObj
 
       const writePriceModel = await this.WritePriceModel.findOne({ txid: approvalTxid })
-      console.log('writePriceModel: ', writePriceModel)
+      // console.log('writePriceModel: ', writePriceModel)
 
       // If this approval TX is not in the database, then validate it.
       if (!writePriceModel) {
@@ -195,6 +195,9 @@ class WritePrice {
       console.error('Error in getMcWritePrice(): ', err)
       console.log(`Using hard-coded, safety value of ${writePrice} PSF tokens per write.`)
     }
+
+    // Save the curent write price to the state.
+    this.currentRate = writePrice
 
     return writePrice
   }

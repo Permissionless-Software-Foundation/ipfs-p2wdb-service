@@ -68,7 +68,8 @@ describe('#write-price', () => {
       const result = await uut.getWriteCostInBch()
       // console.log('result: ', result)
 
-      assert.equal(result, 0.00011073)
+      // assert.equal(result, 0.00011073)
+      assert.equal(result, 0.00016651)
     })
   })
 

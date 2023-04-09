@@ -270,9 +270,7 @@ describe('#PayToWriteAccessController', () => {
           }
         }
       }
-      uut._options.writePrice = {
-        getTargetCostPsf: () => 0.133
-      }
+      uut._options.writePrice = { currentRate: 0.133 }
 
       const txId = mock.tx.txid
       const result = await uut._validateTx(txId, entry)
@@ -303,9 +301,7 @@ describe('#PayToWriteAccessController', () => {
           }
         }
       }
-      uut._options.writePrice = {
-        getTargetCostPsf: () => 0.133
-      }
+      uut._options.writePrice = { currentRate: 0.133 }
 
       const txId = mock.tx.txid
       const result = await uut._validateTx(txId, entry)
@@ -648,5 +644,38 @@ describe('#PayToWriteAccessController', () => {
 
       assert.equal(result, true)
     })
+  })
+
+  describe('#address', () => {
+    it('should get from the address property', () => {
+      uut._db = {
+        address: 'fake-addr'
+      }
+
+      assert.equal(uut.address, 'fake-addr')
+    })
+  })
+
+  describe('#capabilities', () => {
+    it('should return an empty object if db is not attached', () => {
+      const result = uut.capabilities
+      // console.log('result: ', result)
+
+      assert.isObject(result)
+    })
+
+    // it('should return capabilities', () => {
+    //   uut._db = {
+    //     index: {
+    //       a: 1
+    //     },
+    //     access: {
+    //       write: true
+    //     }
+    //   }
+    //
+    //   const result = uut.capabilities
+    //   console.log('result: ', result)
+    // })
   })
 })
