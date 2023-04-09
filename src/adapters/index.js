@@ -64,8 +64,13 @@ class Adapters {
       // Do not start these adapters if this is an e2e test.
       if (this.config.env !== 'test') {
         // Get the write price from the reference token.
-        await this.writePrice.getCostsFromToken()
-        const currentRate = this.writePrice.getCurrentCostPSF()
+        // await this.writePrice.getCostsFromToken()
+        // const currentRate = this.writePrice.getCurrentCostPSF()
+        // console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
+
+        // Get the write price set by the PSF Minting Council.
+        await this.writePrice.instanceWallet()
+        const currentRate = await this.writePrice.getMcWritePrice()
         console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
 
         // Only execute the code in this block if BCH payments are enabled.

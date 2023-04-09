@@ -31,8 +31,7 @@ describe('#adapters', () => {
       sandbox.stub(uut.fullStackJwt, 'instanceBchjs').resolves()
       sandbox.stub(uut.ipfs, 'start').resolves()
       sandbox.stub(uut.p2wdb, 'start').resolves()
-      sandbox.stub(uut.writePrice, 'getCostsFromToken').resolves()
-      sandbox.stub(uut.writePrice, 'getCurrentCostPSF').returns(0.133)
+      sandbox.stub(uut.writePrice, 'getMcWritePrice').resolves(0.2)
 
       const result = await uut.start()
 
@@ -47,8 +46,7 @@ describe('#adapters', () => {
       sandbox.stub(uut.fullStackJwt, 'instanceBchjs').resolves()
       sandbox.stub(uut.ipfs, 'start').resolves()
       sandbox.stub(uut.p2wdb, 'start').resolves()
-      sandbox.stub(uut.writePrice, 'getCostsFromToken').resolves()
-      sandbox.stub(uut.writePrice, 'getCurrentCostPSF').returns(0.133)
+      sandbox.stub(uut.writePrice, 'getMcWritePrice').resolves(0.2)
 
       // Force desired code path
       uut.config.enableBchPayment = true
@@ -66,7 +64,7 @@ describe('#adapters', () => {
         // Force an error
         uut.config.getJwtAtStartup = false
         uut.config.env = 'dev'
-        sandbox.stub(uut.writePrice, 'getCostsFromToken').rejects(new Error('test error'))
+        sandbox.stub(uut.writePrice, 'getMcWritePrice').rejects(new Error('test error'))
 
         await uut.start()
 
