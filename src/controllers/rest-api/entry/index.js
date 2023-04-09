@@ -58,7 +58,6 @@ class EntryController {
     this.router.get('/txid/:txid', this.getByTxid)
     this.router.get('/appid/:appid', this.getByAppId)
     this.router.get('/cost/psf', this.getPsfCost)
-    this.router.post('/cost/psf', this.getPsfCostTarget)
     this.router.get('/cost/bch', this.getBchCost)
     this.router.post('/write/bch', this.postBchEntry)
     this.router.get('/balance', this.getBalance)
@@ -102,11 +101,6 @@ class EntryController {
   async getPsfCost (ctx, next) {
     // await _this.validators.ensureUser(ctx, next)
     await _this.entryRESTController.getPsfCost(ctx, next)
-  }
-
-  async getPsfCostTarget (ctx, next) {
-    // await _this.validators.ensureUser(ctx, next)
-    await _this.entryRESTController.getPsfCostTarget(ctx, next)
   }
 
   async getBchCost (ctx, next) {

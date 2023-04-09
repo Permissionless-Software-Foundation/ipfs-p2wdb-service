@@ -58,98 +58,17 @@ describe('#write-price', () => {
     })
   })
 
-  describe('#getCostsFromToken', () => {
-    it('should retrieve cost history from token mutable data', async () => {
+  describe('#getWriteCostInBch', () => {
+    it('should get write cost in BCH', async () => {
       // Mock dependencies
-      sandbox.stub(uut.wallet, 'getTokenData').resolves(mockData.mockTokenData01)
-      sandbox.stub(uut.axios, 'get').resolves({ data: mockData.mutableData01 })
+      sandbox.stub(uut, 'getPsfPriceInBch').resolves(0.00075689)
+      sandbox.stub(uut.wallet, 'getBalance').resolves()
+      sandbox.stub(uut.wallet, 'listTokens').resolves()
 
-      const result = await uut.getCostsFromToken()
+      const result = await uut.getWriteCostInBch()
       // console.log('result: ', result)
 
-      assert.isArray(result)
-
-      assert.property(result[0], 'date')
-      assert.property(result[0], 'psfPerWrite')
-    })
-
-    it('should catch and throw an error', async () => {
-      try {
-        // Force and error
-        sandbox.stub(uut.wallet, 'getTokenData').rejects(new Error('test error'))
-
-        await uut.getCostsFromToken()
-
-        assert.fail('Unexpected result')
-      } catch (err) {
-        assert.include(err.message, 'Could not get P2WDB price from blockchain:')
-      }
-    })
-
-    it('should handle error retrieving data from Filecoin', async () => {
-      try {
-        // Mock dependencies
-        sandbox.stub(uut.wallet, 'getTokenData').resolves(mockData.mockTokenData01)
-        sandbox.stub(uut.axios, 'get').rejects(new Error('test error'))
-
-        await uut.getCostsFromToken()
-
-        assert.fail('Unexpected result')
-      } catch (err) {
-        assert.include(err.message, 'Could not retrieve price data from Filecoin.')
-      }
-    })
-  })
-
-  describe('#getCurrentCostPSF', () => {
-    it('should get the current cost of a write in PSF tokens', () => {
-      uut.priceHistory = mockData.mockPriceHistory01
-
-      const result = uut.getCurrentCostPSF()
-      // console.log('result: ', result)
-
-      assert.equal(result, 0.133)
-    })
-
-    it('should throw an error if priceHistory has not been initialized', () => {
-      try {
-        uut.getCurrentCostPSF()
-
-        assert.fail('Unexpected result')
-      } catch (err) {
-        assert.include(err.message, 'No price history found. Run getCostsFromToken() first.')
-      }
-    })
-  })
-
-  describe('#getTargetCostPsf', () => {
-    it('should get the current cost of a write in PSF tokens', () => {
-      uut.priceHistory = mockData.mockPriceHistory01
-
-      const result = uut.getTargetCostPsf('06/21/2022')
-      // console.log('result: ', result)
-
-      assert.equal(result, 0.126)
-    })
-
-    it('should throw an error if priceHistory has not been initialized', () => {
-      try {
-        uut.getTargetCostPsf('06/22/2022')
-
-        assert.fail('Unexpected result')
-      } catch (err) {
-        assert.include(err.message, 'No price history found. Run getCostsFromToken() first.')
-      }
-    })
-
-    it('should throw an error if no date target is provided', () => {
-      try {
-        uut.getTargetCostPsf()
-
-        assert.fail('Unexpected result')
-      } catch (err) {
-        assert.include(err.message, 'targetDate input is required.')
-      }
+      assert.equal(result, 0.00011073)
     })
   })
 
@@ -182,20 +101,6 @@ describe('#write-price', () => {
       } catch (err) {
         assert.include(err.message, 'test error')
       }
-    })
-  })
-
-  describe('#getWriteCostInBch', () => {
-    it('should get write cost in BCH', async () => {
-      // Mock dependencies
-      sandbox.stub(uut, 'getPsfPriceInBch').resolves(0.00075689)
-      sandbox.stub(uut.wallet, 'getBalance').resolves()
-      sandbox.stub(uut.wallet, 'listTokens').resolves()
-
-      const result = await uut.getWriteCostInBch()
-      // console.log('result: ', result)
-
-      assert.equal(result, 0.00011073)
     })
   })
 

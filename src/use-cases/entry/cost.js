@@ -24,13 +24,6 @@ class Cost {
     return psfCost
   }
 
-  // Get the write cost for a target date.
-  async getPsfCostTarget (targetDate) {
-    const psfCost = await this.adapters.writePrice.getTargetCostPsf(targetDate)
-
-    return psfCost
-  }
-
   // This function is called by the entry/cost/bch REST API endpoint. It
   // calculates the cost of a write in terms of BCH (plus convenience fee),
   // it generates a keypair from the HD wallet, and stores all this data

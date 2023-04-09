@@ -50,16 +50,6 @@ describe('#Cost', () => {
     })
   })
 
-  describe('#getPsfCostTarget', () => {
-    it('should get the write value for a target date', async () => {
-      const targetDate = '06/21/2022'
-
-      const result = await uut.getPsfCostTarget(targetDate)
-
-      assert.equal(result, 0.133)
-    })
-  })
-
   describe('#getBchCost', () => {
     it('should generate a new DB model and return an address and cost', async () => {
       // Mock dependencies
