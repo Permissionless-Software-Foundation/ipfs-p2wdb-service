@@ -63,9 +63,18 @@ describe('#write-price', () => {
   //   })
   // })
 
-  describe('#getMcWritePrice', () => {
+  // describe('#getMcWritePrice', () => {
+  //   it('should get tx history', async () => {
+  //     const writePrice = await uut.getMcWritePrice()
+  //     console.log('writePrice: ', writePrice)
+  //
+  //     assert.isBelow(writePrice, 0.2)
+  //   })
+  // })
+
+  describe('#getMcWritePrice02', () => {
     it('should get tx history', async () => {
-      const writePrice = await uut.getMcWritePrice()
+      const writePrice = await uut.getMcWritePrice02()
       console.log('writePrice: ', writePrice)
 
       assert.isBelow(writePrice, 0.2)
