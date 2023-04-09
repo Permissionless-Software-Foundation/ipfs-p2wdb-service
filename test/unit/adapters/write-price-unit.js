@@ -21,6 +21,15 @@ describe('#write-price', () => {
     mockData = cloneDeep(mockDataLib)
 
     sandbox = sinon.createSandbox()
+
+    // Replace the database model with this mock.
+    uut.WritePriceModel = class WritePriceModel {
+      static findOne () {}
+
+      async save () {
+        return {}
+      }
+    }
   })
 
   afterEach(() => sandbox.restore())
@@ -190,163 +199,68 @@ describe('#write-price', () => {
     })
   })
 
-  describe('#verifyMcData', () => {
-    it('should verify legitimate minting council data', () => {
-      const result = uut.verifyMcData(mockData.validationData01)
-      console.log('result: ', result)
-    })
-
-    it('should throw an error if addresses do not match', () => {
-      try {
-        // Mock data and force desired code path
-        mockData.validationData01.multisigAddr = 'bad-addr'
-
-        uut.verifyMcData(mockData.validationData01)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'Write price validation: Calculated multisig address does not match the address from downloaded data.')
-      }
-    })
-  })
-
-  describe('#validateApprovalTx', () => {
-    it('should validate a legitimate approval transaction', async () => {
+  describe('#getMcWritePrice', () => {
+    it('should validate a new approval transaction', async () => {
       // Mock dependencies and force desired code path.
-      sandbox.stub(uut.wallet, 'getTxData').resolves([mockData.validationTx01])
-      sandbox.stub(uut.axios, 'get').resolves({ data: mockData.validationData01 })
+      sandbox.stub(uut.ps009, 'getApprovalTx').resolves(mockData.approvalObj01)
+      sandbox.stub(uut.WritePriceModel, 'findOne').resolves(null)
+      sandbox.stub(uut.ps009, 'getUpdateTx').resolves(mockData.updateObj01)
+      sandbox.stub(uut.ps009, 'getCidData').resolves(mockData.validationData01)
+      sandbox.stub(uut.ps009, 'validateApproval').resolves(true)
 
-      const result = await uut.validateApprovalTx({
-        approvalTxDetails: mockData.approvalTx01,
-        updateTxid: 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
-      })
+      const result = await uut.getMcWritePrice()
       // console.log('result: ', result)
 
       assert.equal(result, 0.08335233)
     })
 
-    it('should throw an error if addresses do not match', async () => {
-      try {
-        // Mock dependencies and force desired code path.
-        mockData.approvalTx01.vin[0].address = 'bad-address'
-        sandbox.stub(uut.wallet, 'getTxData').resolves([mockData.validationTx01])
-        sandbox.stub(uut.axios, 'get').resolves({ data: mockData.validationData01 })
-
-        await uut.validateApprovalTx({
-          approvalTxDetails: mockData.approvalTx01,
-          updateTxid: 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
-        })
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'On-chain Minting Council address of')
-      }
-    })
-  })
-
-  describe('#getMcWritePrice', () => {
-    it('should detect, retrieve, and validate approval tx from blockchain', async () => {
+    it('should retrieve a previously validated approval transaction from the database', async () => {
       // Mock dependencies and force desired code path.
-      sandbox.stub(uut.wallet, 'getTransactions').resolves(
-        [{
-          height: 780917,
-          tx_hash: 'a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900'
-        }])
-      uut.WritePriceModel = class WritePriceModel {
-        static findOne () {}
-
-        async save () {
-          return {}
-        }
-      }
-      sandbox.stub(uut.WritePriceModel, 'findOne').resolves(null)
-      sandbox.stub(uut.wallet, 'getTxData').resolves([mockData.approvalTx01])
-      sandbox.stub(uut, 'validateApprovalTx').resolves(0.111)
-
-      const result = await uut.getMcWritePrice()
-
-      assert.equal(result, 0.111)
-    })
-
-    it('should retrieve previously validated approval tx from database', async () => {
-      // Mock dependencies and force desired code path.
-      sandbox.stub(uut.wallet, 'getTransactions').resolves(
-        [{
-          height: 780917,
-          tx_hash: 'a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900'
-        }])
+      sandbox.stub(uut.ps009, 'getApprovalTx').resolves(mockData.approvalObj01)
       sandbox.stub(uut.WritePriceModel, 'findOne').resolves({
-        verified: true,
-        writePrice: 0.08335233,
-        _id: '642c7f0063a0b2c4f5dc31bc',
-        txid: 'a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900',
-        isApprovalTx: true,
-        blockHeight: 780917,
-        __v: 0
+        writePrice: 0.08335233
       })
 
       const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
 
       assert.equal(result, 0.08335233)
     })
 
-    it('should return default value if approval TX can not be found', async () => {
+    it('should recursivly call itself to find the next approval tx', async () => {
       // Mock dependencies and force desired code path.
-      sandbox.stub(uut.wallet, 'getTransactions').resolves(
-        [{
-          height: 780917,
-          tx_hash: 'a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900'
-        }])
-      uut.WritePriceModel = class WritePriceModel {
-        static findOne () {}
-
-        async save () {
-          return {}
-        }
-      }
+      sandbox.stub(uut.ps009, 'getApprovalTx').resolves(mockData.approvalObj01)
       sandbox.stub(uut.WritePriceModel, 'findOne').resolves(null)
-      sandbox.stub(uut.wallet, 'getTxData').resolves([mockData.validationTx01])
-      // sandbox.stub(uut,'validateApprovalTx').resolves(0.111)
+      sandbox.stub(uut.ps009, 'getUpdateTx').resolves(mockData.updateObj01)
+      sandbox.stub(uut.ps009, 'getCidData').resolves(mockData.validationData01)
+      sandbox.stub(uut.ps009, 'validateApproval')
+        .onCall(0).resolves(false)
+        .onCall(1).resolves(true)
 
       const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.08335233)
+    })
+
+    it('should return safety price if no approval tx can be found', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.ps009, 'getApprovalTx').resolves(null)
+
+      const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
 
       assert.equal(result, 0.2)
     })
 
-    it('it should save, then skip, normal transactions', async () => {
+    it('should throw error and return safety price if wallet is not initialized', async () => {
       // Mock dependencies and force desired code path.
-      sandbox.stub(uut.wallet, 'getTransactions').resolves(
-        [{
-          height: 780917,
-          tx_hash: 'a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900'
-        }])
-      uut.WritePriceModel = class WritePriceModel {
-        static findOne () {}
-
-        async save () {
-          return {}
-        }
-      }
-      sandbox.stub(uut.WritePriceModel, 'findOne').resolves(null)
-      sandbox.stub(uut.wallet, 'getTxData').resolves([mockData.normalTx01])
-      // sandbox.stub(uut,'validateApprovalTx').resolves(0.111)
+      uut.wallet = undefined
 
       const result = await uut.getMcWritePrice()
+      // console.log('result: ', result)
 
       assert.equal(result, 0.2)
-    })
-
-    it('should catch, report, and throw errors', async () => {
-      try {
-        // Mock dependencies and force desired code path.
-        sandbox.stub(uut.wallet, 'getTransactions').rejects(new Error('test error'))
-
-        await uut.getMcWritePrice()
-
-        assert.fail('Unexpected result')
-      } catch (err) {
-        assert.include(err.message, 'test error')
-      }
     })
   })
 })

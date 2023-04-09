@@ -276,6 +276,19 @@ const normalTx01 = {
     "isValidSlp": false
   }
 
+const approvalObj01 = {
+  "approvalTxid": "a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900",
+  "updateTxid": "f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f",
+  "approvalTxDetails": approvalTx01,
+  "opReturn": "j\u0007APPROVE@f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f"
+}
+
+const updateObj01 = {
+  "cid": "bafybeib5d6s6t3tq4lhwp2ocvz7y2ws4czgkrmhlhv5y5aeyh6bqrmsxxi",
+  "ts": 1676560247168,
+  "txid": "f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f",
+  "txDetails": validationTx01
+}
 
 
 module.exports = {
@@ -285,5 +298,7 @@ module.exports = {
   validationData01,
   approvalTx01,
   validationTx01,
-  normalTx01
+  normalTx01,
+  approvalObj01,
+  updateObj01
 }

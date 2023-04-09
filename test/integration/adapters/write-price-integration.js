@@ -74,6 +74,8 @@ describe('#write-price', () => {
 
   describe('#getMcWritePrice02', () => {
     it('should get tx history', async () => {
+      await uut.instanceWallet()
+
       const writePrice = await uut.getMcWritePrice02()
       console.log('writePrice: ', writePrice)
 
