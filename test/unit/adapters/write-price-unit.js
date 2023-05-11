@@ -158,7 +158,7 @@ describe('#write-price', () => {
       const result = await uut.getMcWritePrice()
       // console.log('result: ', result)
 
-      assert.equal(result, 0.2)
+      assert.equal(result, 0.08335233)
     })
 
     it('should throw error and return safety price if wallet is not initialized', async () => {
@@ -168,7 +168,7 @@ describe('#write-price', () => {
       const result = await uut.getMcWritePrice()
       // console.log('result: ', result)
 
-      assert.equal(result, 0.2)
+      assert.equal(result, 0.08335233)
     })
   })
 })
