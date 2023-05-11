@@ -44,6 +44,8 @@ class AddEntry {
 
   async addUserEntry (rawData) {
     try {
+      console.log('addUserEntry() rawData: ', rawData)
+
       // Generate a validated entry by passing the raw data through input validation.
       const entry = _this.dbEntry.makeUserEntry(rawData)
 

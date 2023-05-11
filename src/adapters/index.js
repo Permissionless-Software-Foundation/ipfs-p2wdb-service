@@ -21,6 +21,7 @@ const EntryAdapter = require('./entry')
 const WebhookAdapter = require('./webhook')
 const WritePrice = require('./write-price')
 const Wallet = require('./wallet')
+const Ticket = require('./ticket-adapter')
 
 const config = require('../../config')
 
@@ -39,6 +40,8 @@ class Adapters {
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()
     this.wallet = new Wallet()
+    this.Ticket = Ticket
+    this.ticket = null // Placeholder
 
     // Pass the instance of write-price when instantiating the P2WDB OrbitDB.
     localConfig.writePrice = this.writePrice
@@ -79,6 +82,11 @@ class Adapters {
           // Instance the wallet.
           const walletData = await this.wallet.openWallet()
           await this.wallet.instanceWallet(walletData)
+
+          // If ticket feature is enabled, then create a ticket queue.
+          if (this.config.enablePreBurnTicket) {
+            this.ticket = new Ticket({ wallet: this.wallet.bchWallet })
+          }
         }
 
         // Start the IPFS node.

@@ -135,7 +135,10 @@ const config = {
   // By default use the web3 Cash Stack from CashStack.info, but can overide to use web2 infra like FullStack.cash
   useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false,
 
-  ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/'
+  ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/',
+
+  // Pre-burn ticket feature
+  enablePreBurnTicket: process.env.ENABLE_PRE_BURN_TICKET ? true : false
 }
 
 module.exports = config

@@ -107,7 +107,7 @@ class WritePrice {
     // This value is returned if there are any issues returning the write price.
     // It should be higher than actual fee, so that any writes will propegate to
     // the P2WDB nodes that successfully retrieved the current write price.
-    let writePrice = 0.08335233
+    let writePrice = this.config.reqTokenQty
 
     try {
       const WRITE_PRICE_ADDR = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'
