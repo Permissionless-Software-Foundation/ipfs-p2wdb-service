@@ -8,6 +8,7 @@
 const EntryUseCases = require('./entry')
 const WebhookUseCases = require('./webhook')
 const UserUseCases = require('./user')
+const TicketUseCases = require('./ticket-use-case')
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -22,19 +23,22 @@ class UseCases {
     this.entry = new EntryUseCases(localConfig)
     this.webhook = new WebhookUseCases(localConfig)
     this.user = new UserUseCases(localConfig)
+    this.ticket = new TicketUseCases(localConfig)
   }
 
   // Run any startup Use Cases at the start of the app.
   async start () {
-    // try {
-    console.log('Async Use Cases have been started.')
+    try {
+      await this.ticket.start()
 
-    return true
-    // } catch (err) {
-    //   console.error('Error in use-cases/index.js/start()')
-    //   // console.log(err)
-    //   throw err
-    // }
+      console.log('Async Use Cases have been started.')
+
+      return true
+    } catch (err) {
+      console.error('Error in use-cases/index.js/start()')
+      // console.log(err)
+      throw err
+    }
   }
 }
 

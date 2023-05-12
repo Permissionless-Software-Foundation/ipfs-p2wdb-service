@@ -138,7 +138,8 @@ const config = {
   ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/',
 
   // Pre-burn ticket feature
-  enablePreBurnTicket: process.env.ENABLE_PRE_BURN_TICKET ? true : false
+  // enablePreBurnTicket: process.env.ENABLE_PRE_BURN_TICKET ? true : false
+  enablePreBurnTicket: true
 }
 
 module.exports = config

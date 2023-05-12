@@ -40,8 +40,7 @@ class Adapters {
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()
     this.wallet = new Wallet()
-    this.Ticket = Ticket
-    this.ticket = null // Placeholder
+    this.ticket = new Ticket()
 
     // Pass the instance of write-price when instantiating the P2WDB OrbitDB.
     localConfig.writePrice = this.writePrice
@@ -85,7 +84,9 @@ class Adapters {
 
           // If ticket feature is enabled, then create a ticket queue.
           if (this.config.enablePreBurnTicket) {
-            this.ticket = new Ticket({ wallet: this.wallet.bchWallet })
+            const ticketKeyPair = await this.wallet.getKeyPair(1)
+            console.log('ticketKeyPair: ', ticketKeyPair)
+            // this.ticket = new Ticket({ wallet: this.wallet.bchWallet })
           }
         }
 
