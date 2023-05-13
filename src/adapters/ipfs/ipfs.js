@@ -55,24 +55,30 @@ class IpfsAdapter {
           }
         }
       }
+
       const ipfsOptionsExternal = {
         host: this.config.ipfsHost,
         port: this.config.ipfsApiPort,
         agent: http.Agent({ keepAlive: true, maxSockets: 2000 })
       }
       let ipfsOptions = ipfsOptionsEmbedded
+
       if (this.config.isProduction) {
         ipfsOptions = ipfsOptionsExternal
       }
+
       // Create a new IPFS node.
       this.ipfs = await this.create(ipfsOptions)
+
       // Set the 'server' profile so the node does not scan private networks.
       await this.ipfs.config.profiles.apply('server')
+
       // Debugging: Display IPFS config settings.
       // const configSettings = await this.ipfs.config.getAll()
       // console.log(`configSettings: ${JSON.stringify(configSettings, null, 2)}`)
       // Signal that this adapter is ready.
       this.isReady = true
+
       return this.ipfs
     } catch (err) {
       console.error('Error in ipfs.js/start()')

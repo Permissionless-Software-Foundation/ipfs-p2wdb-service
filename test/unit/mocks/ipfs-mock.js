@@ -11,6 +11,7 @@ class IPFS {
     }
     async start() { }
 }
+
 class MockIpfsInstance {
     constructor() {
         this.config = {
@@ -21,4 +22,5 @@ class MockIpfsInstance {
     }
     stop() { }
 }
+
 export default IPFS;
