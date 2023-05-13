@@ -1,4 +1,4 @@
-import AccessController from 'orbit-db-access-controllers/src/access-controllers/interface.js'
+import AccessController from 'orbit-db-access-controllers/interface'
 import pMapSeries from 'p-map-series'
 import path from 'path'
 import config from '../../../config/index.js'
@@ -6,7 +6,9 @@ import KeyValue from '../localdb/models/key-value.js'
 import RetryQueue from './retry-queue.js'
 import validationEvent from './validation-event.js'
 import WalletAdapter from '../wallet.js'
+
 let _this
+
 class PayToWriteAccessController extends AccessController {
   constructor (orbitdb, options) {
     super()
@@ -507,4 +509,5 @@ class PayToWriteAccessController extends AccessController {
     }
   }
 }
+
 export default PayToWriteAccessController

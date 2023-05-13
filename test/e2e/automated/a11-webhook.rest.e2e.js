@@ -1,16 +1,14 @@
+import util from 'util'
+import config from '../../../config/index.js'
+import axios from 'axios'
+import { assert } from 'chai'
+
 // e2e test for entry endpoint
-const assert = require('chai').assert
-const config = require('../../../config')
-const axios = require('axios').default
 
-const util = require('util')
 util.inspect.defaultOptions = { depth: 1 }
-
 const LOCALHOST = `http://localhost:${config.port}`
-
 describe('#Webhook', () => {
-  beforeEach(() => {})
-
+  beforeEach(() => { })
   describe('POST /webhook/ - Create Webhook', () => {
     it('should reject when data is incomplete', async () => {
       try {
@@ -19,16 +17,13 @@ describe('#Webhook', () => {
           url: `${LOCALHOST}/webhook`,
           data: {}
         }
-
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log(err)
         assert(err.response.status === 422, 'Error code 422 expected.')
       }
     })
-
     it('should reject if no url property is provided', async () => {
       try {
         const options = {
@@ -37,7 +32,6 @@ describe('#Webhook', () => {
           data: {}
         }
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log('err', err)
@@ -45,7 +39,6 @@ describe('#Webhook', () => {
         assert.include(err.response.data, 'url for webhook must be a string.')
       }
     })
-
     it('should reject if no appId property is provided', async () => {
       try {
         const options = {
@@ -56,7 +49,6 @@ describe('#Webhook', () => {
           }
         }
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log('err', err)
@@ -64,7 +56,6 @@ describe('#Webhook', () => {
         assert.include(err.response.data, 'appId for webhook must be a string.')
       }
     })
-
     it('should create webhook', async () => {
       try {
         const options = {
@@ -76,7 +67,6 @@ describe('#Webhook', () => {
           }
         }
         const result = await axios(options)
-
         assert(result.status === 200, 'Status Code 200 expected.')
         assert.isTrue(result.data.success)
         assert.isString(result.data.id)
@@ -94,15 +84,12 @@ describe('#Webhook', () => {
           url: `${LOCALHOST}/webhook`,
           data: {}
         }
-
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         assert(err.response.status === 422, 'Error code 422 expected.')
       }
     })
-
     it('should reject if no url property is provided', async () => {
       try {
         const options = {
@@ -111,14 +98,12 @@ describe('#Webhook', () => {
           data: {}
         }
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         assert.equal(err.response.status, 422)
         assert.include(err.response.data, 'url for webhook must be a string.')
       }
     })
-
     it('should reject if no appId property is provided', async () => {
       try {
         const options = {
@@ -129,7 +114,6 @@ describe('#Webhook', () => {
           }
         }
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log('err', err)
@@ -147,9 +131,7 @@ describe('#Webhook', () => {
         }
       }
       const result = await axios(options)
-
       // console.log(`result: ${util.inspect(result.data.success)}`)
-
       assert.equal(result.data.success, false)
     })
     it('should delete webhook', async () => {
@@ -163,7 +145,6 @@ describe('#Webhook', () => {
       }
       const result = await axios(options)
       // console.log(`result: ${util.inspect(result.data.success)}`)
-
       assert.equal(result.data.success, true)
     })
   })

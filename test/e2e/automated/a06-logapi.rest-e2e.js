@@ -1,28 +1,23 @@
-const config = require('../../../config')
-const assert = require('chai').assert
+import config from '../../../config/index.js'
+import { assert } from 'chai'
+import axios from 'axios'
+import sinon from 'sinon'
+import util from 'util'
 
-const axios = require('axios').default
-const sinon = require('sinon')
+import LogsController from '../../../src/controllers/rest-api/logs/controller.js'
+import { context } from '../../unit/mocks/ctx-mock.js'
 
-const util = require('util')
 util.inspect.defaultOptions = { depth: 1 }
-
 const LOCALHOST = `http://localhost:${config.port}`
-
-const LogsController = require('../../../src/controllers/rest-api/logs/controller')
-const mockContext = require('../../unit/mocks/ctx-mock').context
-
+const mockContext = { context }.context
 let sandbox
 let uut
 describe('LogsApi', () => {
   beforeEach(() => {
     uut = new LogsController()
-
     sandbox = sinon.createSandbox()
   })
-
   afterEach(() => sandbox.restore())
-
   describe('POST /logs', () => {
     it('should return false if password is not provided', async () => {
       try {
@@ -31,14 +26,12 @@ describe('LogsApi', () => {
           url: `${LOCALHOST}/logs`,
           data: {}
         }
-
         const result = await axios(options)
         assert.isFalse(result.data.success)
       } catch (err) {
         assert(false, 'Unexpected result')
       }
     })
-
     it('should return log', async () => {
       try {
         const options = {
@@ -48,9 +41,7 @@ describe('LogsApi', () => {
             password: 'test'
           }
         }
-
         const result = await axios(options)
-
         assert.isTrue(result.data.success)
         assert.isArray(result.data.data)
         assert.property(result.data.data[0], 'message')
@@ -60,14 +51,12 @@ describe('LogsApi', () => {
         assert(false, 'Unexpected result')
       }
     })
-
     it('should return false if files are not found!', async () => {
       try {
         sandbox.stub(uut.logsApiLib, 'getLogs').resolves({
           success: false,
           data: 'file does not exist'
         })
-
         const ctx = mockContext()
         ctx.request = {
           body: {
@@ -75,54 +64,43 @@ describe('LogsApi', () => {
           }
         }
         await uut.getLogs(ctx)
-
         assert.isFalse(ctx.body.success)
         assert.include(ctx.body.data, 'file does not exist')
       } catch (err) {
         assert.fail('Unexpected result')
       }
     })
-
     it('should catch and handle errors', async () => {
       try {
         // Force an error
         sandbox
           .stub(uut.logsApiLib.fs, 'existsSync')
           .throws(new Error('test error'))
-
         // Mock the context object.
         const ctx = mockContext()
-
         ctx.request = {
           body: {
             password: 'test'
           }
         }
-
         await uut.getLogs(ctx)
-
         assert.fail('Unexpected result')
       } catch (err) {
         assert.include(err.message, 'test error')
       }
     })
-
     it('should throw unhandled error', async () => {
       try {
         // Force an error
         sandbox.stub(uut.logsApiLib.fs, 'existsSync').throws(new Error())
-
         // Mock the context object.
         const ctx = mockContext()
-
         ctx.request = {
           body: {
             password: 'test'
           }
         }
-
         await uut.getLogs(ctx)
-
         assert.fail('Unexpected result')
       } catch (err) {
         assert.include(err.message, 'Unhandled error')

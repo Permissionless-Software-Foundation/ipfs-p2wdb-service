@@ -1,11 +1,14 @@
 import jsonrpc from 'jsonrpc-lite'
 import sinon from 'sinon'
 import chai from 'chai'
-import uuid from 'uuid'
+// import uuid from 'uuid'
+import { v4 as uid } from 'uuid'
+
 import Validators from '../../../../src/controllers/json-rpc/validators.js'
 import adapters from '../../mocks/adapters/index.js'
+
 const assert = chai.assert
-const { v4: uid } = uuid
+// const { v4: uid } = uuid
 // Set the environment variable to signal this is a test.
 process.env.P2W_ENV = 'test'
 describe('#validators', () => {

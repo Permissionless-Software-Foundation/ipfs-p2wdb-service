@@ -8,6 +8,11 @@ import winston from 'winston'
 import 'winston-daily-rotate-file'
 import config from '../../config/index.js'
 
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+
 class Wlogger {
   constructor (localConfig = {}) {
     this.config = config

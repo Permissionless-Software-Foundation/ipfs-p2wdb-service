@@ -1,4 +1,4 @@
-import ReadEntryMock from "./read-entry.mock";
+import ReadEntryMock from "./read-entry.mock.js";
 /*
   Mocks for the use cases.
 */

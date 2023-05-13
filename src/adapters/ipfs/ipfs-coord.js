@@ -1,8 +1,14 @@
+// Public npm libraries
 import IpfsCoord from 'ipfs-coord-esm'
 import publicIp from 'public-ip'
+import SlpWallet from 'minimal-slp-wallet'
+
+// Local libraries
 import config from '../../../config/index.js'
+
 // const JSONRPC = require('../../controllers/json-rpc/')
 let _this
+
 class IpfsCoordAdapter {
   constructor (localConfig = {}) {
     // Dependency injection.
@@ -14,13 +20,17 @@ class IpfsCoordAdapter {
     if (!this.bchjs) {
       throw new Error('Instance of bch-js must be passed when instantiating ipfs-coord.')
     }
+
     // Encapsulate dependencies
     this.IpfsCoord = IpfsCoord
     this.ipfsCoord = {}
     this.config = config
     this.publicIp = publicIp
+    this.wallet = new SlpWallet()
+
     // Properties of this class instance.
     this.isReady = false
+
     _this = this
   }
 
@@ -39,11 +49,15 @@ class IpfsCoordAdapter {
         /* exit quietly */
       }
     }
+
+    await this.wallet.walletInfoPromise
+
     const ipfsCoordOptions = {
       ipfs: this.ipfs,
       type: 'node.js',
       // type: 'browser',
-      bchjs: this.bchjs,
+      // bchjs: this.bchjs,
+      wallet: this.wallet,
       privateLog: console.log,
       isCircuitRelay: this.config.isCircuitRelay,
       circuitRelayInfo,
@@ -51,16 +65,21 @@ class IpfsCoordAdapter {
       announceJsonLd: this.config.announceJsonLd,
       debugLevel: this.config.debugLevel
     }
+
     // Production env uses external go-ipfs node.
     if (this.config.isProduction) {
       ipfsCoordOptions.nodeType = 'external'
     }
+
     this.ipfsCoord = new this.IpfsCoord(ipfsCoordOptions)
     // console.log('ipfsCoord: ', this.ipfsCoord)
+
     // Wait for the ipfs-coord library to signal that it is ready.
     await this.ipfsCoord.start()
+
     // Signal that this adapter is ready.
     this.isReady = true
+
     return this.isReady
   }
 

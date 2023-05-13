@@ -1,7 +1,14 @@
 import BchWallet from 'minimal-slp-wallet'
 import JsonFiles from './json-files.js'
 import config from '../../config/index.js'
+
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+
 const WALLET_FILE = `${__dirname.toString()}/../../wallet.json`
+
 class WalletAdapter {
   constructor (localConfig = {}) {
     // Encapsulate dependencies

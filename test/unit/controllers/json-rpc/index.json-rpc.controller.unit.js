@@ -1,7 +1,9 @@
 import chai from 'chai'
 import jsonrpc from 'jsonrpc-lite'
 import sinon from 'sinon'
-import uuid from 'uuid'
+// import uuid from 'uuid'
+import { v4 as uid } from 'uuid'
+
 import JSONRPC from '../../../../src/controllers/json-rpc/index.js'
 import adapters from '../../mocks/adapters/index.js'
 import UseCasesMock from '../../mocks/use-cases/index.js'
@@ -10,7 +12,7 @@ import UseCasesMock from '../../mocks/use-cases/index.js'
 */
 // Public npm libraries
 const assert = chai.assert
-const { v4: uid } = uuid
+// const { v4: uid } = uuid
 // Set the environment variable to signal this is a test.
 process.env.P2W_ENV = 'test'
 describe('#JSON RPC', () => {

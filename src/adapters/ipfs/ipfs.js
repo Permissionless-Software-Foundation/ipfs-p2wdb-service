@@ -1,18 +1,21 @@
-import IPFSembedded from 'ipfs'
-import IPFSexternal from 'ipfs-http-client'
+// import IPFSembedded from 'ipfs'
+import { create } from 'ipfs-http-client'
 import fs from 'fs'
 import http from 'http'
 import config from '../../../config/index.js'
+
 const IPFS_DIR = './.ipfsdata/ipfs'
+
 class IpfsAdapter {
   constructor (localConfig) {
     // Encapsulate dependencies
     this.config = config
     // Choose the IPFS constructor based on the config settings.
-    this.IPFS = IPFSembedded // default
-    if (this.config.isProduction) {
-      this.IPFS = IPFSexternal
-    }
+    // this.IPFS = IPFSembedded // default
+    // if (this.config.isProduction) {
+    // this.IPFS = IPFSexternal
+    this.create = create
+    // }
     // Properties of this class instance.
     this.isReady = false
     this.fs = fs
@@ -62,7 +65,7 @@ class IpfsAdapter {
         ipfsOptions = ipfsOptionsExternal
       }
       // Create a new IPFS node.
-      this.ipfs = await this.IPFS.create(ipfsOptions)
+      this.ipfs = await this.create(ipfsOptions)
       // Set the 'server' profile so the node does not scan private networks.
       await this.ipfs.config.profiles.apply('server')
       // Debugging: Display IPFS config settings.

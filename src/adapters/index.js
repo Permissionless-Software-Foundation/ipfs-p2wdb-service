@@ -1,4 +1,7 @@
+// Public npm libraries
 import BCHJS from '@psf/bch-js'
+
+// Local libraries
 import IPFSAdapter from './ipfs/index.js'
 import LocalDB from './localdb/index.js'
 import LogsAPI from './logapi.js'
@@ -12,6 +15,7 @@ import WebhookAdapter from './webhook/index.js'
 import WritePrice from './write-price.js'
 import Wallet from './wallet.js'
 import config from '../../config/index.js'
+
 class Adapters {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
@@ -52,6 +56,7 @@ class Adapters {
         const currentRate = await this.writePrice.getMcWritePrice()
         console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
         // await this.writePrice.getWriteCostInBch()
+
         // Only execute the code in this block if BCH payments are enabled.
         if (this.config.enableBchPayment) {
           // Retrieve the cost of a write in BCH, if that feature is enabled.
@@ -61,6 +66,7 @@ class Adapters {
           const walletData = await this.wallet.openWallet()
           await this.wallet.instanceWallet(walletData)
         }
+
         // Start the IPFS node.
         await this.ipfs.start({ bchjs: this.bchjs })
         // Start the P2WDB

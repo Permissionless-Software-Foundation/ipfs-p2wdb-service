@@ -19,6 +19,11 @@ import User from './localdb/models/users.js'
 import config from '../../config/index.js'
 import JsonFiles from './json-files.js'
 
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+
 const jsonFiles = new JsonFiles()
 const JSON_FILE = `system-user-${config.env}.json`
 const JSON_PATH = `${__dirname.toString()}/../../config/${JSON_FILE}`

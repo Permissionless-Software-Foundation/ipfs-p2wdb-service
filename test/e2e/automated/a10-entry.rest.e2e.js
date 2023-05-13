@@ -1,19 +1,16 @@
-// e2e test for entry endpoint
-const assert = require('chai').assert
-const config = require('../../../config')
-const axios = require('axios').default
-const sinon = require('sinon')
+import util from 'util'
+import config from '../../../config/index.js'
+import axios from 'axios'
+import sinon from 'sinon'
+import { assert } from 'chai'
 
-const util = require('util')
+import EntryController from '../../../src/controllers/rest-api/entry/controller.js'
+import Adapters from '../../../src/adapters/index.js'
+import UseCases from '../../../src/use-cases/index.js'
+
 util.inspect.defaultOptions = { depth: 1 }
-
 const LOCALHOST = `http://localhost:${config.port}`
-
-const EntryController = require('../../../src/controllers/rest-api/entry/controller')
-const Adapters = require('../../../src/adapters')
 const adapters = new Adapters()
-const UseCases = require('../../../src/use-cases/')
-
 let uut
 let sandbox
 const context = {
@@ -21,23 +18,18 @@ const context = {
   txid: 'myTxId',
   appId: 'myAppId'
 }
-
 describe('Entry', () => {
   beforeEach(() => {
     const useCases = new UseCases({ adapters })
     uut = new EntryController({ adapters, useCases })
-
     sandbox = sinon.createSandbox()
   })
-
   afterEach(() => sandbox.restore())
-
   after(async () => {
     // Remove the added entry from db
     const result = await adapters.entry.KeyValue.findOne({ key: context.txid })
     await result.remove()
   })
-
   describe('POST /entry/write - Create Entry', () => {
     it('should reject when data is incomplete', async () => {
       try {
@@ -46,16 +38,13 @@ describe('Entry', () => {
           url: `${LOCALHOST}/entry/write`,
           data: {}
         }
-
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log(err)
         assert(err.response.status === 422, 'Error code 422 expected.')
       }
     })
-
     it('should reject if no txid property is provided', async () => {
       try {
         const options = {
@@ -64,18 +53,13 @@ describe('Entry', () => {
           data: {}
         }
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log('err', err)
         assert.equal(err.response.status, 422)
-        assert.include(
-          err.response.data,
-          'TXID must be a string containing a transaction ID of proof-of-burn.'
-        )
+        assert.include(err.response.data, 'TXID must be a string containing a transaction ID of proof-of-burn.')
       }
     })
-
     it('should reject if no data property is provided', async () => {
       try {
         const options = {
@@ -86,7 +70,6 @@ describe('Entry', () => {
           }
         }
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log('err', err)
@@ -94,23 +77,19 @@ describe('Entry', () => {
         assert.include(err.response.data, 'Entry requires an data property.')
       }
     })
-
     it('should create entry', async () => {
       try {
         // Mock to ignore orbit db
         // add this entry directly to the mongodb
-
         const fkFn = async (entryObj) => {
           const entry = new adapters.entry.KeyValue(entryObj)
           entry.hash = context.hash
           await entry.save()
           return entry.hash
         }
-
         sandbox
           .stub(uut.useCases.entry.addEntry.p2wdbAdapter, 'insert')
           .callsFake(fkFn)
-
         const options = {
           method: 'post',
           url: `${LOCALHOST}/entry/write`,
@@ -123,7 +102,6 @@ describe('Entry', () => {
           }
         }
         const result = await axios(options)
-
         assert(result.status === 200, 'Status Code 200 expected.')
         assert.isTrue(result.data.success)
         assert.isString(result.data.hash)
@@ -133,7 +111,6 @@ describe('Entry', () => {
       }
     })
   })
-
   describe('GET /entry/all', () => {
     it('should fetch all', async () => {
       const options = {
@@ -142,13 +119,10 @@ describe('Entry', () => {
       }
       const result = await axios(options)
       // console.log('result.data: ', result.data)
-
       assert.property(result.data, 'success')
       assert.equal(result.data.success, true)
-
       assert.isArray(result.data.data)
     })
-
     // it('should return a 422 http status if biz-logic throws an error', async () => {
     //   try {
     //     // Force an error
@@ -173,7 +147,6 @@ describe('Entry', () => {
     //     assert.equal(err.response.data, 'test error')
     //   }
     // })
-
     it('should return a 404 if page is not specified', async () => {
       try {
         const options = {
@@ -181,14 +154,12 @@ describe('Entry', () => {
           url: `${LOCALHOST}/entry/all`
         }
         await axios(options)
-
         assert.fail('Unexpected code path!')
       } catch (err) {
         assert.equal(err.response.status, 404)
       }
     })
   })
-
   describe('GET /entry/hash/:hash', () => {
     it("should throw 404 if hash doesn't exist", async () => {
       try {
@@ -197,13 +168,11 @@ describe('Entry', () => {
           url: `${LOCALHOST}/entry/hash/5fa4bd7ee1828f5f4d8ed004`
         }
         await axios(options)
-
         assert.equal(true, false, 'Unexpected behavior')
       } catch (err) {
         assert.equal(err.response.status, 404)
       }
     })
-
     it('should fetch by hash', async () => {
       const options = {
         method: 'GET',
@@ -211,7 +180,6 @@ describe('Entry', () => {
       }
       const result = await axios(options)
       const entry = result.data
-
       assert.isObject(entry)
       assert.isTrue(entry.success)
       assert.property(entry.data, 'isValid')
@@ -230,13 +198,11 @@ describe('Entry', () => {
           url: `${LOCALHOST}/entry/txid/5fa4bd7ee1828f5f4d8ed004`
         }
         await axios(options)
-
         assert.equal(true, false, 'Unexpected behavior')
       } catch (err) {
         assert.equal(err.response.status, 404)
       }
     })
-
     it('should fetch by txid', async () => {
       const options = {
         method: 'GET',
@@ -244,7 +210,6 @@ describe('Entry', () => {
       }
       const result = await axios(options)
       const entry = result.data
-
       assert.isObject(entry)
       assert.isTrue(entry.success)
       assert.property(entry.data, 'isValid')
@@ -255,7 +220,6 @@ describe('Entry', () => {
       assert.property(entry.data, 'value')
     })
   })
-
   describe('GET /entry/appid/:appid', () => {
     it("should return empty array if appId doesn't exist", async () => {
       const options = {
@@ -268,7 +232,6 @@ describe('Entry', () => {
       assert.isArray(entries)
       assert.equal(entries.length, 0)
     })
-
     it('should fetch by appId', async () => {
       const options = {
         method: 'GET',
@@ -277,10 +240,8 @@ describe('Entry', () => {
       const result = await axios(options)
       const entries = result.data.data
       const entry = entries[0]
-
       assert.isTrue(result.data.success)
       assert.isArray(entries)
-
       assert.isObject(entry)
       assert.property(entry, 'isValid')
       assert.property(entry, 'appId')
@@ -290,7 +251,6 @@ describe('Entry', () => {
       assert.property(entry, 'value')
     })
   })
-
   describe('GET /entry/cost/psf', () => {
     it('should return the current PSF cost for a write', async () => {
       const options = {
@@ -299,15 +259,12 @@ describe('Entry', () => {
       }
       const result = await axios(options)
       // console.log('result.data: ', result.data)
-
       assert.property(result.data, 'success')
       assert.property(result.data, 'psfCost')
-
       assert.equal(result.data.success, true)
       assert.equal(result.data.psfCost, config.reqTokenQty)
     })
   })
-
   describe('POST /write/bch - Try to write using BCH', () => {
     it('should reject when bch writes are not enabled', async () => {
       try {
@@ -316,9 +273,7 @@ describe('Entry', () => {
           url: `${LOCALHOST}/entry/write/bch`,
           data: {}
         }
-
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log(err)
@@ -326,12 +281,10 @@ describe('Entry', () => {
         const statusIs422 = status === 422
         const statusIs501 = status === 501
         const statusIs422Or501 = statusIs422 || statusIs501
-
         assert.equal(statusIs422Or501, true)
       }
     })
   })
-
   describe('GET /cost/bch - Get cost for a write in BCH', () => {
     it('should reject when bch writes are not enabled', async () => {
       try {
@@ -340,9 +293,7 @@ describe('Entry', () => {
           url: `${LOCALHOST}/entry/cost/bch`,
           data: {}
         }
-
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log(err)
@@ -350,12 +301,10 @@ describe('Entry', () => {
         const statusIs422 = status === 422
         const statusIs501 = status === 501
         const statusIs422Or501 = statusIs422 || statusIs501
-
         assert.equal(statusIs422Or501, true)
       }
     })
   })
-
   describe('GET /balance - Get balance of wallet', () => {
     it('should reject when bch writes are not enabled', async () => {
       try {
@@ -364,9 +313,7 @@ describe('Entry', () => {
           url: `${LOCALHOST}/entry/balance`,
           data: {}
         }
-
         await axios(options)
-
         assert(false, 'Unexpected result')
       } catch (err) {
         // console.log(err)
@@ -374,7 +321,6 @@ describe('Entry', () => {
         const statusIs422 = status === 422
         const statusIs501 = status === 501
         const statusIs422Or501 = statusIs422 || statusIs501
-
         assert.equal(statusIs422Or501, true)
       }
     })

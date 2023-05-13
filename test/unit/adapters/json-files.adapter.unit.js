@@ -1,9 +1,15 @@
-import chai from 'chai'
+import { assert } from 'chai'
 import fs from 'fs'
 import sinon from 'sinon'
 import util from 'util'
+
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+
 import JsonFiles from '../../../src/adapters/json-files.js'
-const assert = chai.assert
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+// const assert = chai.assert
 util.inspect.defaultOptions = { depth: 1 }
 const JSON_FILE = 'test-json-file.json'
 const JSON_PATH = `${__dirname.toString()}/${JSON_FILE}`

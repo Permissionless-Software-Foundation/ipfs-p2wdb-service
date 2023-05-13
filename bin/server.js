@@ -1,3 +1,4 @@
+// Public npm libraries
 import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'
 import convert from 'koa-convert'
@@ -8,11 +9,15 @@ import passport from 'koa-passport'
 import mount from 'koa-mount'
 import serve from 'koa-static'
 import cors from 'kcors'
+
+// Local libraries
 import config from '../config/index.js'
 import AdminLib from '../src/adapters/admin.js'
 import errorMiddleware from '../src/controllers/rest-api/middleware/error.js'
 import { wlogger } from '../src/adapters/wlogger.js'
 import Controllers from '../src/controllers/index.js'
+import { applyPassportMods } from '../config/passport.js'
+
 class Server {
   constructor () {
     // Encapsulate dependencies
@@ -48,10 +53,12 @@ class Server {
       app.use(mount('/', serve(`${process.cwd()}/docs`)))
       // Mount the page for displaying logs.
       app.use(mount('/logs', serve(`${process.cwd()}/config/logs`)))
+
       // User Authentication
-      require('../config/passport')
+      applyPassportMods(passport)
       app.use(passport.initialize())
       app.use(passport.session())
+
       // Enable CORS for testing
       // THIS IS A SECURITY RISK. COMMENT OUT FOR PRODUCTION
       // Dev Note: This line must come BEFORE controllers.attachRESTControllers()
