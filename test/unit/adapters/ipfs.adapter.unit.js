@@ -52,10 +52,12 @@ describe('#IPFS-adapter', () => {
       assert.equal(uut.isReady, true)
       assert.property(result, 'config')
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
-        sandbox.stub(uut.IPFS, 'create').rejects(new Error('test error'))
+        sandbox.stub(uut, 'create').rejects(new Error('test error'))
+
         await uut.start()
         assert.fail('Unexpected code path.')
       } catch (err) {
@@ -64,6 +66,7 @@ describe('#IPFS-adapter', () => {
       }
     })
   })
+
   describe('#stop', () => {
     it('should stop the IPFS node', async () => {
       // Mock dependencies

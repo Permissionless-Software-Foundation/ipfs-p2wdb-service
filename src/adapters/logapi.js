@@ -1,7 +1,14 @@
 import lineReader from 'line-reader'
 import fs from 'fs'
 import config from '../../config/index.js'
+
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+
 let _this
+
 class LogsApi {
   constructor () {
     _this = this
@@ -15,6 +22,7 @@ class LogsApi {
       // console.log('entering getLogs()')
       _this.password = password
       // console.log(`password: ${password}`)
+
       // Password matches the password set in the config file.
       if (password === _this.config.logPass) {
         // Generate the full path and file name for the current log file.

@@ -7,15 +7,15 @@
   "scripts": {
     "start": "node index.js",
     "test": "npm run test:all",
-    "test:all": "export P2W_ENV=test && nyc --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/e2e/automated",
+    "test:all": "export P2W_ENV=test && c8 --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/e2e/automated",
     "test:unit": "export P2W_ENV=test && mocha --exit --timeout 15000 --recursive test/unit/",
     "test:e2e:auto": "export P2W_ENV=test && mocha --exit --timeout 15000 test/e2e/automated/",
     "test:integration": "mocha --exit --timeout 15000 --recursive test/integration/",
     "test:temp": "export P2W_ENV=test && mocha --exit --timeout 15000 -g '#rate-limit' test/unit/json-rpc/",
     "lint": "standard --env mocha --fix",
     "docs": "./node_modules/.bin/apidoc -i src/ -o docs",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "coverage:report": "export P2W_ENV=test && nyc --reporter=html mocha --exit --timeout 15000 --recursive test/unit/ test/e2e/automated/"
+    "coverage": "c8 report --reporter=text-lcov | coveralls",
+    "coverage:report": "export P2W_ENV=test && c8 --reporter=html mocha --exit --timeout 15000 --recursive test/unit/ test/e2e/automated/"
   },
   "author": "Chris Troutner <chris.troutner@gmail.com>",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "bcryptjs": "2.4.3",
     "glob": "7.1.6",
     "ipfs": "0.62.3",
-    "ipfs-coord-esm": "9.1.6",
+    "ipfs-coord-esm": "9.1.9",
     "ipfs-http-client": "58.0.0",
     "jsonrpc-lite": "2.2.0",
     "jsonwebtoken": "8.5.1",
@@ -61,6 +61,7 @@
   },
   "devDependencies": {
     "apidoc": "0.51.1",
+    "c8": "7.13.0",
     "chai": "4.3.0",
     "coveralls": "3.1.0",
     "eslint": "7.19.0",
@@ -72,7 +73,6 @@
     "husky": "4.3.8",
     "lodash.clonedeep": "4.5.0",
     "mocha": "10.0.0",
-    "nyc": "15.1.0",
     "semantic-release": "19.0.3",
     "sinon": "9.2.4",
     "standard": "16.0.3",

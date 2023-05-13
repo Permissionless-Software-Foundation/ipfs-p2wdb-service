@@ -7,6 +7,11 @@ import util from 'util'
 import LogsController from '../../../src/controllers/rest-api/logs/controller.js'
 import { context } from '../../unit/mocks/ctx-mock.js'
 
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+// import * as url from 'url'
+// const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+
 util.inspect.defaultOptions = { depth: 1 }
 const LOCALHOST = `http://localhost:${config.port}`
 const mockContext = { context }.context
