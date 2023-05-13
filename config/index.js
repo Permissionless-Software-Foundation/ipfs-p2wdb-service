@@ -10,7 +10,7 @@ console.log(`Loading config for this environment: ${env}`)
 let config = development
 if (env === 'test') {
   config = test
-} else if (env === 'prod') {
+} else if (env === 'production') {
   config = production
 }
 
