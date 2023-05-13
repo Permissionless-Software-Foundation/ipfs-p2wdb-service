@@ -1,56 +1,35 @@
-/*
-  Koa router and controller for REST API endpoints concerned with the Entry
-  entity.
-*/
-
-// Public npm libraries.
-const Router = require('koa-router')
-const cors = require('kcors')
-
-// Load the REST API Controllers.
-const EntryRESTControllerLib = require('./controller')
+import Router from 'koa-router'
+import cors from 'kcors'
+import EntryRESTControllerLib from './controller.js'
 // const Validators = require('../middleware/validators')
-
 let _this
-
 class EntryController {
   constructor (localConfig = {}) {
     // Dependency Injection.
     this.adapters = localConfig.adapters
     if (!this.adapters) {
-      throw new Error(
-        'Instance of Adapters library required when instantiating Entry REST Controller.'
-      )
+      throw new Error('Instance of Adapters library required when instantiating Entry REST Controller.')
     }
     this.useCases = localConfig.useCases
     if (!this.useCases) {
-      throw new Error(
-        'Instance of Use Cases library required when instantiating Entry REST Controller.'
-      )
+      throw new Error('Instance of Use Cases library required when instantiating Entry REST Controller.')
     }
-
     const dependencies = {
       adapters: this.adapters,
       useCases: this.useCases
     }
-
     // Encapsulate dependencies.
     this.entryRESTController = new EntryRESTControllerLib(dependencies)
-
     // Instantiate the router.
     const baseUrl = '/entry'
     this.router = new Router({ prefix: baseUrl })
-
     _this = this
   }
 
   attach (app) {
     if (!app) {
-      throw new Error(
-        'Must pass app object when attached REST API controllers.'
-      )
+      throw new Error('Must pass app object when attached REST API controllers.')
     }
-
     // Define the routes and attach the controller.
     this.router.post('/write', this.postEntry)
     this.router.get('/all/:page', this.readAllEntries)
@@ -61,7 +40,6 @@ class EntryController {
     this.router.get('/cost/bch', this.getBchCost)
     this.router.post('/write/bch', this.postBchEntry)
     this.router.get('/balance', this.getBalance)
-
     // Attach the Controller routes to the Koa app.
     app.use(cors({ origin: '*' }))
     app.use(this.router.routes())
@@ -113,5 +91,4 @@ class EntryController {
     await _this.entryRESTController.getBalance(ctx, next)
   }
 }
-
-module.exports = EntryController
+export default EntryController

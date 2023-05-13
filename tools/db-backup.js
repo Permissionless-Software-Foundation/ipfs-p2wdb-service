@@ -1,15 +1,9 @@
-/*
- Backup tool for P2WDB
-*/
-const axios = require('axios')
-const fs = require('fs')
+import axios from 'axios'
+import fs from 'fs'
 // Customize these constants for your migration.
-
 // Entry endpoint
 const SERVER = 'http://localhost:5001/'
-
 const path = 'backup/' // backup folder path
-
 const maxEntreis = 100 // max entries per file
 // retrieves every record in the database
 // and writes them to .json files in the backup/ folder.
@@ -18,7 +12,6 @@ async function start () {
     console.log('Start!')
     // Creates the backup directory if it doesn't exist
     createBackupDir(path)
-
     let fileData = [] // Entries array that will be writen in the json
     let page = 0 // number of pages to search
     let i = 0 // first index of the json file
@@ -29,10 +22,8 @@ async function start () {
       console.log('Fetch page', page)
       const result = await axios.get(`${SERVER}entry/all/${page}`)
       data = result.data.data
-
       // concatenates the entries
       fileData = [...fileData, ...data]
-
       // Write the json file when we have 100 entries
       // or when there are no more entries left
       if (fileData.length >= maxEntreis || !data.length) {
@@ -45,7 +36,6 @@ async function start () {
       page++
     } while (data.length)
     // console.log('data: ', data)
-
     console.log('Success!')
   } catch (err) {
     console.log('Error in start(): ', err.message)
@@ -65,7 +55,6 @@ function createBackupDir (path) {
     throw error
   }
 }
-
 // Writes out a JSON file of any object passed to the function.
 function writeJSON (obj, fileName) {
   return new Promise(function (resolve, reject) {
@@ -77,7 +66,6 @@ function writeJSON (obj, fileName) {
         throw new Error('fileName property must be a string')
       }
       const fileStr = JSON.stringify(obj, null, 2)
-
       fs.writeFile(fileName, fileStr, function (err) {
         if (err) {
           console.error('Error while trying to write file: ')
@@ -93,5 +81,4 @@ function writeJSON (obj, fileName) {
     }
   })
 }
-
 start()

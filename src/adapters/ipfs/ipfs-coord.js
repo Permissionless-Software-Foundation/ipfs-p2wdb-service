@@ -1,17 +1,12 @@
-/*
-  Clean Architecture Adapter for ipfs-coord.
-  This library deals with ipfs-coord library so that the apps business logic
-  doesn't need to have any specific knowledge of the library.
-*/
-
-// Global npm libraries
-const IpfsCoord = require('ipfs-coord')
-const publicIp = require('public-ip')
+// Public npm libraries
+import IpfsCoord from 'ipfs-coord-esm'
+import publicIp from 'public-ip'
+import SlpWallet from 'minimal-slp-wallet'
 
 // Local libraries
-const config = require('../../../config')
-// const JSONRPC = require('../../controllers/json-rpc/')
+import config from '../../../config/index.js'
 
+// const JSONRPC = require('../../controllers/json-rpc/')
 let _this
 
 class IpfsCoordAdapter {
@@ -19,15 +14,11 @@ class IpfsCoordAdapter {
     // Dependency injection.
     this.ipfs = localConfig.ipfs
     if (!this.ipfs) {
-      throw new Error(
-        'Instance of IPFS must be passed when instantiating ipfs-coord.'
-      )
+      throw new Error('Instance of IPFS must be passed when instantiating ipfs-coord.')
     }
     this.bchjs = localConfig.bchjs
     if (!this.bchjs) {
-      throw new Error(
-        'Instance of bch-js must be passed when instantiating ipfs-coord.'
-      )
+      throw new Error('Instance of bch-js must be passed when instantiating ipfs-coord.')
     }
 
     // Encapsulate dependencies
@@ -35,6 +26,7 @@ class IpfsCoordAdapter {
     this.ipfsCoord = {}
     this.config = config
     this.publicIp = publicIp
+    this.wallet = new SlpWallet()
 
     // Properties of this class instance.
     this.isReady = false
@@ -44,16 +36,13 @@ class IpfsCoordAdapter {
 
   async start () {
     const circuitRelayInfo = {}
-
     // If configured as a Circuit Relay, get the public IP addresses for this node.
     if (this.config.isCircuitRelay) {
       try {
         const ip4 = await this.publicIp.v4()
         // const ip6 = await publicIp.v6()
-
         circuitRelayInfo.ip4 = ip4
         circuitRelayInfo.tcpPort = this.config.ipfsTcpPort
-
         // Domain used by browser-based secure websocket connections.
         circuitRelayInfo.crDomain = this.config.crDomain
       } catch (err) {
@@ -61,12 +50,15 @@ class IpfsCoordAdapter {
       }
     }
 
+    await this.wallet.walletInfoPromise
+
     const ipfsCoordOptions = {
       ipfs: this.ipfs,
       type: 'node.js',
       // type: 'browser',
-      bchjs: this.bchjs,
-      privateLog: console.log, // Default to console.log
+      // bchjs: this.bchjs,
+      wallet: this.wallet,
+      privateLog: console.log,
       isCircuitRelay: this.config.isCircuitRelay,
       circuitRelayInfo,
       apiInfo: this.config.apiInfo,
@@ -105,12 +97,7 @@ class IpfsCoordAdapter {
 
   // Subscribe to the chat pubsub channel
   async subscribeToChat () {
-    await this.ipfsCoord.adapters.pubsub.subscribeToPubsubChannel(
-      this.config.chatPubSubChan,
-      console.log,
-      this.ipfsCoord.thisNode
-    )
+    await this.ipfsCoord.adapters.pubsub.subscribeToPubsubChannel(this.config.chatPubSubChan, console.log, this.ipfsCoord.thisNode)
   }
 }
-
-module.exports = IpfsCoordAdapter
+export default IpfsCoordAdapter

@@ -1,3 +1,6 @@
+import IpfsAdapters from '../ipfs/index.js'
+import OribitAdapter from '../orbit/index.js'
+import KeyValue from '../localdb/models/key-value.js'
 /*
   Adapter for the pay-to-write database (P2WDB).
   This library provides high-level abstraction for interacting with the P2WDB,
@@ -11,16 +14,9 @@
     need to be started.
   - An isReady flag can be checked to see if any dependency is in a ready state.
 */
-
 // Customizable constants.
 const ENTRIES_PER_PAGE = 20
-
-const IpfsAdapters = require('../ipfs')
-const OribitAdapter = require('../orbit')
-const KeyValue = require('../localdb/models/key-value')
-
 let _this
-
 class P2WDB {
   constructor (localConfig = {}) {
     // console.log('p2wdb localConfig: ', localConfig)
@@ -29,14 +25,12 @@ class P2WDB {
     if (!this.writePrice) {
       throw new Error('Pass instance of writePrice when instantiating P2WDB adapter library.')
     }
-
     // Encapsulate dependencies
     this.ipfsAdapters = new IpfsAdapters()
     this.KeyValue = KeyValue
     this.OribitAdapter = OribitAdapter
     // Properties of this class instance.
     this.isReady = false
-
     _this = this
   }
 
@@ -44,19 +38,12 @@ class P2WDB {
   async start (localConfig = {}) {
     try {
       const { ipfs, bchjs } = localConfig
-
       if (!ipfs) {
-        throw new Error(
-          'Must past instance of IPFS when instantiating P2WDB adapter.'
-        )
+        throw new Error('Must past instance of IPFS when instantiating P2WDB adapter.')
       }
-
       if (!bchjs) {
-        throw new Error(
-          'Must past instance of bchjs when instantiating P2WDB adapter.'
-        )
+        throw new Error('Must past instance of bchjs when instantiating P2WDB adapter.')
       }
-
       // Start the P2WDB OrbitDB.
       this.orbit = new this.OribitAdapter({
         ipfs,
@@ -64,11 +51,8 @@ class P2WDB {
       })
       await this.orbit.start(bchjs)
       console.log('OrbitDB Adapter is ready. P2WDB is ready.')
-
       this.isReady = true
-
       console.log('The P2WDB is ready to use.')
-
       return this.isReady
     } catch (err) {
       console.error('Error in adapters/p2wdb/index.js/start()')
@@ -81,13 +65,10 @@ class P2WDB {
   async insert (entry) {
     try {
       console.log('insert entry: ', entry)
-
       // console.log('_this.orbit.db: ', this.orbit.db)
-
       // Add the entry to the Oribit DB.
       const hash = await this.orbit.db.put(entry.key, entry.value)
       console.log('hash: ', hash)
-
       return hash
     } catch (err) {
       console.error('Error in p2wdb.js/insert()')
@@ -101,15 +82,13 @@ class P2WDB {
       // Pull data from MongoDB.
       // Get all entries in the database.
       const data = await this.KeyValue.find({})
-        // Sort entries so newest entries show first.
+      // Sort entries so newest entries show first.
         .sort('-createdAt')
-        // Skip to the start of the selected page.
+      // Skip to the start of the selected page.
         .skip(page * ENTRIES_PER_PAGE)
-        // Only return 20 results.
+      // Only return 20 results.
         .limit(ENTRIES_PER_PAGE)
-
       // console.log('data: ', data)
-
       return data
     } catch (err) {
       console.error('Error in p2wdb.js/readAll()')
@@ -122,19 +101,16 @@ class P2WDB {
     try {
       // console.log('appId: ', appId)
       // const data = _this.orbit.db.get(txid)
-
       // Return empty array if appId is not defined.
-      if (!appId) return []
-
+      if (!appId) { return [] }
       // Get paginated results from the database.
       const data = await this.KeyValue.find({ appId })
-        // Sort entries so newest entries show first.
+      // Sort entries so newest entries show first.
         .sort('-createdAt')
-        // Skip to the start of the selected page.
+      // Skip to the start of the selected page.
         .skip(page * ENTRIES_PER_PAGE)
-        // Only return 20 results.
+      // Only return 20 results.
         .limit(ENTRIES_PER_PAGE)
-
       return data
     } catch (err) {
       console.error('Error in p2wdb.js/readByAppId()')
@@ -145,16 +121,13 @@ class P2WDB {
   async readByHash (hash) {
     try {
       console.log('hash: ', hash)
-
       // Note: No good way listed in API reference for getting entry by hash from
       // OrbitDB directly.
       // https://github.com/orbitdb/orbit-db/blob/main/API.md
       // const data = _this.orbit.db.get(hash)
-
       // Get an entry from MongoDB.
       const data = await _this.KeyValue.findOne({ hash })
       // console.log('data: ', data)
-
       return data
     } catch (err) {
       console.error('Error in p2wdb.js/readByHash()')
@@ -166,11 +139,9 @@ class P2WDB {
     try {
       console.log('txid: ', txid)
       // const data = _this.orbit.db.get(txid)
-
       // Find the data in the local database
       const data = await _this.KeyValue.findOne({ key: txid })
       // console.log('data: ', data)
-
       return data
     } catch (err) {
       console.error('Error in p2wdb.js/readByTxid()')
@@ -178,5 +149,4 @@ class P2WDB {
     }
   }
 }
-
-module.exports = P2WDB
+export default P2WDB

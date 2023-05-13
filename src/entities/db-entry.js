@@ -2,33 +2,19 @@
   This is the Class Library for the Database Entry Entitity. This is a top-level
   entity as per the Clean Architecture pattern.
 */
-
 class DBEntry {
   // constructor (localConfig) {}
-
   // Make a new P2WDB Entry based on data passed by a user, from the one of
   // the interfaces.
-  makeUserEntry ({
-    hash,
-    txid,
-    data,
-    signature,
-    message,
-    appId,
-    isValid = false
-  } = {}) {
+  makeUserEntry ({ hash, txid, data, signature, message, appId, isValid = false } = {}) {
     // Input validation.
     if (!txid || typeof txid !== 'string') {
-      throw new Error(
-        'TXID must be a string containing a transaction ID of proof-of-burn.'
-      )
+      throw new Error('TXID must be a string containing a transaction ID of proof-of-burn.')
     }
     if (!data) {
       throw new Error('Entry requires an data property.')
     }
-
     const now = new Date()
-
     const key = txid
     const value = {
       message,
@@ -36,9 +22,7 @@ class DBEntry {
       data,
       timestamp: now.getTime()
     }
-
     const createdAt = now.getTime()
-
     const entry = {
       hash,
       key,
@@ -47,7 +31,6 @@ class DBEntry {
       isValid,
       createdAt
     }
-
     return entry
   }
 
@@ -62,14 +45,11 @@ class DBEntry {
       signature,
       data
     }
-
     // It's assumed this entry is valid, since this method should only be
     // triggered by the 'ValidationSucceeded' event.
     const isValid = true
-
     const now = new Date()
     const createdAt = now.getTime()
-
     const entry = {
       hash,
       key,
@@ -78,9 +58,7 @@ class DBEntry {
       isValid,
       createdAt
     }
-
     return entry
   }
 }
-
-module.exports = DBEntry
+export default DBEntry

@@ -1,13 +1,12 @@
+import chai from 'chai'
+import sinon from 'sinon'
+import IPFSLib from '../../../src/adapters/ipfs/ipfs.js'
+// import IPFSMock from '../mocks/ipfs-mock.js'
+import config from '../../../config/index.js'
 /*
   Unit tests for the IPFS Adapter.
 */
-
-const assert = require('chai').assert
-const sinon = require('sinon')
-const IPFSLib = require('../../../src/adapters/ipfs/ipfs')
-const IPFSMock = require('../mocks/ipfs-mock')
-const config = require('../../../config')
-
+const assert = chai.assert
 // config.isProduction =  true;
 describe('#IPFS-adapter', () => {
   let uut
@@ -15,7 +14,6 @@ describe('#IPFS-adapter', () => {
 
   beforeEach(() => {
     uut = new IPFSLib()
-
     sandbox = sinon.createSandbox()
   })
 
@@ -44,35 +42,46 @@ describe('#IPFS-adapter', () => {
   describe('#start', () => {
     it('should return a promise that resolves into an instance of IPFS.', async () => {
       // Mock dependencies.
-      uut.IPFS = IPFSMock
+      sandbox.stub(uut, 'create').resolves({
+        config: {
+          profiles: {
+            apply: () => {}
+          }
+        }
+      })
 
       const result = await uut.start()
       // console.log('result: ', result)
 
       assert.equal(uut.isReady, true)
-
       assert.property(result, 'config')
     })
 
     it('should return a promise that resolves into an instance of IPFS in production mode.', async () => {
       // Mock dependencies.
-      uut.IPFS = IPFSMock
+      // uut.IPFS = IPFSMock
+      sandbox.stub(uut, 'create').resolves({
+        config: {
+          profiles: {
+            apply: () => {}
+          }
+        }
+      })
+
       uut.config.isProduction = true
       const result = await uut.start()
       // console.log('result: ', result)
 
       assert.equal(uut.isReady, true)
-
       assert.property(result, 'config')
     })
 
     it('should catch and throw an error', async () => {
       try {
         // Force an error
-        sandbox.stub(uut.IPFS, 'create').rejects(new Error('test error'))
+        sandbox.stub(uut, 'create').rejects(new Error('test error'))
 
         await uut.start()
-
         assert.fail('Unexpected code path.')
       } catch (err) {
         // console.log(err)
@@ -88,31 +97,28 @@ describe('#IPFS-adapter', () => {
         stop: () => {
         }
       }
-
       const result = await uut.stop()
-
       assert.equal(result, true)
     })
   })
-
-// describe('#rmBlocksDir', () => {
-//   it('should delete the /blocks directory', () => {
-//     const result = uut.rmBlocksDir()
-//
-//     assert.equal(result, true)
-//   })
-//
-//   it('should catch and throw an error', () => {
-//     try {
-//       // Force an error
-//       sandbox.stub(uut.fs, 'rmdirSync').throws(new Error('test error'))
-//
-//       uut.rmBlocksDir()
-//
-//       assert.fail('Unexpected code path')
-//     } catch (err) {
-//       assert.equal(err.message, 'test error')
-//     }
-//   })
-// })
+  // describe('#rmBlocksDir', () => {
+  //   it('should delete the /blocks directory', () => {
+  //     const result = uut.rmBlocksDir()
+  //
+  //     assert.equal(result, true)
+  //   })
+  //
+  //   it('should catch and throw an error', () => {
+  //     try {
+  //       // Force an error
+  //       sandbox.stub(uut.fs, 'rmdirSync').throws(new Error('test error'))
+  //
+  //       uut.rmBlocksDir()
+  //
+  //       assert.fail('Unexpected code path')
+  //     } catch (err) {
+  //       assert.equal(err.message, 'test error')
+  //     }
+  //   })
+  // })
 })

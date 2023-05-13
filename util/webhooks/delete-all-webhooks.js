@@ -1,13 +1,6 @@
-const mongoose = require('mongoose')
-
-// Force test environment
-// make sure environment variable is set before this file gets called.
-// see test script in package.json.
-// process.env.KOA_ENV = 'test'
-const config = require('../../config')
-
-const Webhook = require('../../src/adapters/localdb/models/webhook')
-
+import mongoose from 'mongoose'
+import config from '../../config/index.js'
+import Webhook from '../../src/adapters/localdb/models/webhook.js'
 async function deleteWebhook () {
   // Connect to the Mongo Database.
   mongoose.Promise = global.Promise
@@ -16,18 +9,14 @@ async function deleteWebhook () {
     useUnifiedTopology: true,
     useNewUrlParser: true
   })
-
   // Get all the users in the DB.
   const webhook = await Webhook.find({})
   // console.log(`users: ${JSON.stringify(users, null, 2)}`)
-
   // Delete each user.
   for (let i = 0; i < webhook.length; i++) {
     const thisWebhook = webhook[i]
     await thisWebhook.remove()
   }
-
   mongoose.connection.close()
 }
-
 deleteWebhook()

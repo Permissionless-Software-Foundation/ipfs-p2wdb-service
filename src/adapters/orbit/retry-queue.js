@@ -1,3 +1,5 @@
+import pQueue from 'p-queue'
+import pRetry from 'p-retry'
 /*
   This library leverages the p-retry and p-queue libraries, to create a
   validation queue with automatic retry.
@@ -8,27 +10,18 @@
 
   pay-to-write-access-controller.js depends on this library.
 */
-
-const PQueue = require('p-queue').default
-const pRetry = require('p-retry')
-
+const PQueue = pQueue.default
 let _this
-
 class RetryQueue {
   constructor (localConfig = {}) {
     if (!localConfig.bchjs) {
-      throw new Error(
-        'Must pass instance of bch-js when instantiating RetryQueue Class.'
-      )
+      throw new Error('Must pass instance of bch-js when instantiating RetryQueue Class.')
     }
     this.bchjs = localConfig.bchjs
-
     // Encapsulate dependencies
     this.validationQueue = new PQueue({ concurrency: 1 })
     this.pRetry = pRetry
-
     this.attempts = 5
-
     _this = this
   }
 
@@ -36,17 +29,13 @@ class RetryQueue {
   async addToQueue (funcHandle, inputObj) {
     try {
       // console.log('addToQueue inputObj: ', inputObj)
-
       if (!funcHandle) {
         throw new Error('function handler is required')
       }
       if (!inputObj) {
         throw new Error('input object is required')
       }
-
-      const returnVal = await _this.validationQueue.add(() =>
-        _this.retryWrapper(funcHandle, inputObj)
-      )
+      const returnVal = await _this.validationQueue.add(() => _this.retryWrapper(funcHandle, inputObj))
       return returnVal
     } catch (err) {
       console.error('Error in addToQueue(): ', err)
@@ -60,7 +49,6 @@ class RetryQueue {
   async retryWrapper (funcHandle, inputObj) {
     try {
       // console.log('retryWrapper inputObj: ', inputObj)
-
       if (!funcHandle) {
         throw new Error('function handler is required')
       }
@@ -68,19 +56,14 @@ class RetryQueue {
         throw new Error('input object is required')
       }
       console.log('Entering retryWrapper()')
-
       // Add artificial delay to prevent 429 errors.
       await this.bchjs.Util.sleep(2000)
-
-      return this.pRetry(
-        async () => {
-          return await funcHandle(inputObj)
-        },
-        {
-          onFailedAttempt: _this.handleValidationError,
-          retries: this.attempts // Retry 5 times
-        }
-      )
+      return this.pRetry(async () => {
+        return await funcHandle(inputObj)
+      }, {
+        onFailedAttempt: _this.handleValidationError,
+        retries: this.attempts // Retry 5 times
+      })
     } catch (err) {
       console.error('Error in retryWrapper: ', err)
       throw err
@@ -102,5 +85,4 @@ class RetryQueue {
     }
   }
 }
-
-module.exports = RetryQueue
+export default RetryQueue

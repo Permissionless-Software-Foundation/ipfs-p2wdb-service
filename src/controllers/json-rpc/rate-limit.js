@@ -1,23 +1,20 @@
+import koa2Ratelimit from 'koa2-ratelimit'
 /*
   Rate limit
 */
 /* eslint no-useless-catch: 0 */
-
 // Local libraries
-const RateLimitLib = require('koa2-ratelimit').RateLimit
-
+const RateLimitLib = koa2Ratelimit.RateLimit
 class RateLimit {
   constructor (options) {
     // Encapsulate dependencies
     this.RateLimitLib = RateLimitLib
-
     // Set default rate limit options.
     this.defaultOptions = {
       interval: { min: 1 },
       max: 60,
       onLimitReached: this.onLimitReached
     }
-
     // ctx obj
     this.context = {
       state: {
@@ -27,14 +24,12 @@ class RateLimit {
         ip: ''
       },
       user: '',
-      set: () => {}
+      set: () => { }
     }
-
     // console.log(
     //   `this.defaultOptions: ${JSON.stringify(this.defaultOptions, null, 2)}`
     // )
     // console.log(`options: ${JSON.stringify(options, null, 2)}`)
-
     // Set rate limit settings. Default values are overwritten if user passes
     // in an options object.
     this.rateLimitOptions = Object.assign({}, this.defaultOptions, options)
@@ -63,15 +58,13 @@ class RateLimit {
       if (!from || typeof from !== 'string') {
         throw new Error('from must be a string')
       }
-
       // Set context.limiter
       // This overrides the default koa behavior and adapts the rate limiter
       // to work with the JSON RPC over IPFS.
       this.context.state.user = from
       this.context.request.ip = from
       this.context.user = from
-
-      await this.rateLimit(this.context, () => {})
+      await this.rateLimit(this.context, () => { })
       return true
     } catch (error) {
       console.error('Error in rate-limit.js/limiter()')
@@ -79,5 +72,4 @@ class RateLimit {
     }
   }
 }
-
-module.exports = RateLimit
+export default RateLimit

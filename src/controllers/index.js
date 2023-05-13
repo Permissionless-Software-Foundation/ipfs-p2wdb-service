@@ -1,25 +1,10 @@
-/*
-  This is a top-level library that encapsulates all the additional Controllers.
-  The concept of Controllers comes from Clean Architecture:
-  https://troutsblog.com/blog/clean-architecture
-*/
-
-// Public npm libraries.
-
-// Load the Clean Architecture Adapters library
-const Adapters = require('../adapters')
-const validationEvent = require('../adapters/orbit/validation-event')
-
-// Load the Clean Architecture Use Case libraries.
-const UseCases = require('../use-cases')
-
-// Load the Controller libraries
-const JSONRPC = require('./json-rpc')
-const RESTControllers = require('./rest-api')
-const TimerControllers = require('./timer-controllers.js')
-
+import Adapters from '../adapters/index.js'
+import validationEvent from '../adapters/orbit/validation-event.js'
+import UseCases from '../use-cases/index.js'
+import JSONRPC from './json-rpc/index.js'
+import RESTControllers from './rest-api/index.js'
+import TimerControllers from './timer-controllers.js'
 let _this
-
 class Controllers {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
@@ -29,14 +14,9 @@ class Controllers {
       adapters: this.adapters,
       useCases: this.useCases
     })
-
     // Attach the event handler to the event.
     // This event is responsible for adding validated entries to MongoDB.
-    validationEvent.on(
-      'ValidationSucceeded',
-      this.validationSucceededEventHandler
-    )
-
+    validationEvent.on('ValidationSucceeded', this.validationSucceededEventHandler)
     _this = this
   }
 
@@ -57,7 +37,6 @@ class Controllers {
       adapters: this.adapters,
       useCases: this.useCases
     })
-
     // Attach the REST API Controllers associated with the boilerplate code to the Koa app.
     restControllers.attachRESTControllers(app)
   }
@@ -66,7 +45,6 @@ class Controllers {
   async attachControllers (app) {
     // RPC controllers
     this.attachRPCControllers()
-
     // Add any additional controllers here.
   }
 
@@ -76,11 +54,8 @@ class Controllers {
       adapters: this.adapters,
       useCases: this.useCases
     })
-
     // Attach the input of the JSON RPC router to the output of ipfs-coord.
-    this.adapters.ipfs.ipfsCoordAdapter.attachRPCRouter(
-      jsonRpcController.router
-    )
+    this.adapters.ipfs.ipfsCoordAdapter.attachRPCRouter(jsonRpcController.router)
   }
 
   // Event handler that is triggered when a new entry is added to the P2WDB
@@ -91,16 +66,11 @@ class Controllers {
       //   'ValidationSucceeded event triggering addPeerEntry() with this data: ',
       //   data
       // )
-
       await _this.useCases.entry.addEntry.addPeerEntry(data)
     } catch (err) {
-      console.error(
-        'Error trying to process peer data with addPeerEntry(): ',
-        err
-      )
+      console.error('Error trying to process peer data with addPeerEntry(): ', err)
       // Do not throw an error. This is a top-level function.
     }
   }
 }
-
-module.exports = Controllers
+export default Controllers

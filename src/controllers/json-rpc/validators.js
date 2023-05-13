@@ -1,25 +1,13 @@
-/*
-  Validators for the JSON RPC
-*/
-/* eslint no-useless-catch: 0 */
-
-// Public npm libraries
-const jwt = require('jsonwebtoken')
-
-// Local libraries
-const config = require('../../../config')
+import jwt from 'jsonwebtoken'
+import config from '../../../config/index.js'
 // const UserModel = require('../../adapters/localdb/models/users')
-
 class Validators {
   constructor (localConfig = {}) {
     // Dependency Injection.
     this.adapters = localConfig.adapters
     if (!this.adapters) {
-      throw new Error(
-        'Instance of Adapters library required when instantiating JSON RPC Validators library.'
-      )
+      throw new Error('Instance of Adapters library required when instantiating JSON RPC Validators library.')
     }
-
     // Encapsulate dependencies
     this.config = config
     this.jwt = jwt
@@ -31,18 +19,14 @@ class Validators {
   async ensureUser (rpcData) {
     try {
       // console.log('rpcData: ', rpcData)
-
       const apiToken = rpcData.payload.params.apiToken
-      if (!apiToken) throw new Error('apiToken JWT required as a parameter')
-
+      if (!apiToken) { throw new Error('apiToken JWT required as a parameter') }
       const decoded = this.jwt.verify(apiToken, this.config.token)
-
       const user = await this.UserModel.findById(decoded.id, '-password')
-      if (!user) throw new Error('User not found!')
-
+      if (!user) { throw new Error('User not found!') }
       return user
     } catch (err) {
-      // console.error('Error in ensureUser()')
+      console.error('Error in ensureUser()')
       throw err
     }
   }
@@ -54,43 +38,31 @@ class Validators {
   async ensureTargetUserOrAdmin (rpcData) {
     try {
       // console.log('rpcData: ', rpcData)
-
       // Ensure the JWT is passed in.
       const apiToken = rpcData.payload.params.apiToken
-      if (!apiToken) throw new Error('apiToken JWT required as a parameter')
-
+      if (!apiToken) { throw new Error('apiToken JWT required as a parameter') }
       // Ensure a target user ID is provided.
       const targetUserId = rpcData.payload.params.userId
-      if (!targetUserId) throw new Error('userId must be specified')
-
+      if (!targetUserId) { throw new Error('userId must be specified') }
       // Decode the JWT token.
       const decoded = this.jwt.verify(apiToken, this.config.token)
-
       // Get the user described by the JWT token.
       const user = await this.UserModel.findById(decoded.id, '-password')
-      if (!user) throw new Error('User not found!')
-
+      if (!user) { throw new Error('User not found!') }
       // If this current user is an admin, then quietly exit.
-      if (user.type === 'admin') return true
-
+      if (user.type === 'admin') { return true }
       // Throw an error if the JWT token does not match the targeted user.
       if (user._id.toString() !== targetUserId) {
         throw new Error('User is neither admin nor target user.')
       }
-
       // Get the user model for the targeted User
-      const targetedUser = await this.UserModel.findById(
-        targetUserId,
-        '-password'
-      )
-
+      const targetedUser = await this.UserModel.findById(targetUserId, '-password')
       // Return the user model.
       return targetedUser
     } catch (error) {
-      // console.error('Error in ensureUser()')
+      console.error('Error in ensureTargetUserOrAdmin()')
       throw error
     }
   }
 }
-
-module.exports = Validators
+export default Validators

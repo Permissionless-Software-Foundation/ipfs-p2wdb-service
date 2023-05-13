@@ -1,26 +1,17 @@
-/*
-  Unit tests for the retry-queue library.
-*/
-
-const sinon = require('sinon')
-const assert = require('chai').assert
-const BCHJS = require('@psf/bch-js')
-
-const RetryQueue = require('../../../../src/adapters/orbit/retry-queue')
-
+import sinon from 'sinon'
+import chai from 'chai'
+import BCHJS from '@psf/bch-js'
+import RetryQueue from '../../../../src/adapters/orbit/retry-queue.js'
+const assert = chai.assert
 const bchjs = new BCHJS()
 let uut
 let sandbox
-
 describe('#retry-queue.js', () => {
   beforeEach(() => {
     uut = new RetryQueue({ bchjs })
-
     sandbox = sinon.createSandbox()
   })
-
   afterEach(() => sandbox.restore())
-
   describe('#constructor', () => {
     it('should throw an error if instance of bchjs is not provided', () => {
       try {
@@ -32,7 +23,6 @@ describe('#retry-queue.js', () => {
       }
     })
   })
-
   describe('#_retryWrapper', () => {
     it('should throw an error if function handler is not provided', async () => {
       try {
@@ -56,18 +46,14 @@ describe('#retry-queue.js', () => {
       const inputTest = 'test'
       // func mock to execute into the retry wrapper
       const funcHandle = sinon.spy()
-
       await uut.retryWrapper(funcHandle, inputTest)
-
       assert.equal(inputTest, funcHandle.getCall(0).args[0])
       assert.equal(funcHandle.callCount, 1)
     })
-
     it('should call handleValidationError() when p-retry error is thrown', async () => {
       try {
         // Mock for ignore sleep time
         sandbox.stub(uut.bchjs.Util, 'sleep').resolves({})
-
         const inputTest = 'test'
         const funcHandle = () => {
           throw new Error('test error')
@@ -79,21 +65,17 @@ describe('#retry-queue.js', () => {
         assert.include(err.message, 'test error')
       }
     })
-
     it('should retry the specific number of times before giving up', async () => {
       // Mock for ignore sleep time
       sandbox.stub(uut.bchjs.Util, 'sleep').resolves({})
-
       const inputTest = 'test'
       const funcHandle = () => {
         throw new Error('test error')
       }
       // func handler
       const spy = sinon.spy(funcHandle)
-
       // p-retry attempts
       const attempts = 1
-
       try {
         uut.attempts = attempts
         await uut.retryWrapper(spy, inputTest)
@@ -103,7 +85,6 @@ describe('#retry-queue.js', () => {
       }
     })
   })
-
   describe('#addToQueue', () => {
     it('should throw an error if function handler is not provided', async () => {
       try {
@@ -127,19 +108,15 @@ describe('#retry-queue.js', () => {
       const inputTest = 'test'
       // func mock to execute into the retry wrapper
       const funcHandle = sinon.spy()
-
       await uut.addToQueue(funcHandle, inputTest)
       assert.equal(inputTest, funcHandle.getCall(0).args[0])
       assert.equal(funcHandle.callCount, 1)
     })
-
     it('should catch and throw an error', async () => {
       try {
         // Mock for ignore sleep time
         sandbox.stub(uut.bchjs.Util, 'sleep').resolves({})
-
         const inputTest = 'test'
-
         const funcHandle = () => {
           throw new Error('test error')
         }
@@ -151,7 +128,6 @@ describe('#retry-queue.js', () => {
       }
     })
   })
-
   describe('#handleValidationError', () => {
     it('should catch and throw an error', async () => {
       try {
