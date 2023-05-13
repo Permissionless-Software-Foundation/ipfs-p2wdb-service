@@ -1,11 +1,9 @@
-const passport = require('koa-passport')
-const User = require('../src/adapters/localdb/models/users')
-const Strategy = require('passport-local')
-
+import passport from 'koa-passport'
+import User from '../src/adapters/localdb/models/users.js'
+import Strategy from 'passport-local'
 passport.serializeUser((user, done) => {
   done(null, user.id)
 })
-
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id, '-password')
@@ -14,32 +12,21 @@ passport.deserializeUser(async (id, done) => {
     done(err)
   }
 })
-
-passport.use(
-  'local',
-  new Strategy(
-    {
-      usernameField: 'email',
-      passwordField: 'password'
-    },
-    passportCallback
-  )
-)
-
+passport.use('local', new Strategy({
+  usernameField: 'email',
+  passwordField: 'password'
+}, passportCallback))
 async function passportCallback (email, password, done) {
   try {
     const user = await User.findOne({ email })
     if (!user) {
       return done(null, false)
     }
-
     try {
       const isMatch = await user.validatePassword(password)
-
       if (!isMatch) {
         return done(null, false)
       }
-
       done(null, user)
     } catch (err) {
       done(err)
@@ -48,6 +35,9 @@ async function passportCallback (email, password, done) {
     return done(err)
   }
 }
-
-// For testing
-module.exports = { passport, passportCallback }
+export { passport }
+export { passportCallback }
+export default {
+  passport,
+  passportCallback
+}

@@ -1,20 +1,13 @@
-/*
-  REST API validator middleware.
-*/
-
-const User = require('../../../adapters/localdb/models/users')
-const config = require('../../../../config')
-const jwt = require('jsonwebtoken')
-const { wlogger } = require('../../../adapters/wlogger')
-
+import User from '../../../adapters/localdb/models/users.js'
+import config from '../../../../config/index.js'
+import jwt from 'jsonwebtoken'
+import { wlogger } from '../../../adapters/wlogger.js'
 let _this
-
 class Validators {
   constructor () {
     this.User = User
     this.jwt = jwt
     this.config = config
-
     _this = this
   }
 
@@ -22,12 +15,10 @@ class Validators {
     try {
       // console.log(`getToken: ${typeof (getToken)}`)
       const token = _this.getToken(ctx)
-
       if (!token) {
         // console.log(`Err: Token not provided.`)
         ctx.throw(401)
       }
-
       let decoded = null
       try {
         // console.log(`token: ${JSON.stringify(token, null, 2)}`)
@@ -37,13 +28,11 @@ class Validators {
         // console.log(`Err: Token could not be decoded: ${err}`)
         ctx.throw(401)
       }
-
       ctx.state.user = await _this.User.findById(decoded.id, '-password')
       if (!ctx.state.user) {
         // console.log(`Err: Could not find user.`)
         ctx.throw(401)
       }
-
       // return next()
       return true
     } catch (error) {
@@ -57,12 +46,10 @@ class Validators {
     try {
       // console.log(`getToken: ${typeof (getToken)}`)
       const token = _this.getToken(ctx)
-
       if (!token) {
         // console.log(`Err: Token not provided.`)
         ctx.throw(401)
       }
-
       let decoded = null
       try {
         // console.log(`token: ${JSON.stringify(token, null, 2)}`)
@@ -72,17 +59,14 @@ class Validators {
         // console.log(`Err: Token could not be decoded: ${err}`)
         ctx.throw(401)
       }
-
       ctx.state.user = await _this.User.findById(decoded.id, '-password')
       if (!ctx.state.user) {
         // console.log(`Err: Could not find user.`)
         ctx.throw(401)
       }
-
       if (ctx.state.user.type !== 'admin') {
         ctx.throw(401, 'not admin')
       }
-
       // return next()
       return true
     } catch (error) {
@@ -98,16 +82,13 @@ class Validators {
     try {
       // console.log(`getToken: ${typeof (getToken)}`)
       const token = _this.getToken(ctx)
-
       if (!token) {
         // console.log(`Err: Token not provided.`)
         ctx.throw(401)
       }
-
       // The user ID targeted in this API call.
       const targetId = ctx.params.id
       // console.log(`targetId: ${JSON.stringify(targetId, null, 2)}`)
-
       let decoded = null
       try {
         // console.log(`token: ${JSON.stringify(token, null, 2)}`)
@@ -117,22 +98,16 @@ class Validators {
         // console.log(`Err: Token could not be decoded: ${err}`)
         ctx.throw(401)
       }
-
       ctx.state.user = await _this.User.findById(decoded.id, '-password')
       if (!ctx.state.user) {
         // console.log(`Err: Could not find user.`)
         ctx.throw(401)
       }
       // console.log('ctx.state.user: ', ctx.state.user)
-
       // console.log(`ctx.state.user: ${JSON.stringify(ctx.state.user, null, 2)}`)
       // Ensure the calling user and the target user are the same.
-
       if (ctx.state.user._id.toString() !== targetId.toString()) {
-        wlogger.verbose(
-          `Calling user and target user do not match! Calling user: ${ctx.state.user._id}, Target user: ${targetId}`
-        )
-
+        wlogger.verbose(`Calling user and target user do not match! Calling user: ${ctx.state.user._id}, Target user: ${targetId}`)
         // If they don't match, then the calling user better be an admin.
         if (ctx.state.user.type !== 'admin') {
           ctx.throw(401, 'not admin')
@@ -140,7 +115,6 @@ class Validators {
           wlogger.verbose("It's ok. The user is an admin.")
         }
       }
-
       // return next()
       return true
     } catch (error) {
@@ -165,5 +139,4 @@ class Validators {
     return null
   }
 }
-
-module.exports = Validators
+export default Validators

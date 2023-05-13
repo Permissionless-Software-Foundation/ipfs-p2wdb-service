@@ -1,26 +1,19 @@
+import chai from 'chai'
+import sinon from 'sinon'
+import Webhook from '../../../src/entities/webhook.js'
 /*
   Unit tests for the P2WDB Entry entity library.
 */
-
-const assert = require('chai').assert
-const sinon = require('sinon')
-
-const Webhook = require('../../../src/entities/webhook')
-
+const assert = chai.assert
 let sandbox
 let uut
-
 describe('#Webhook', () => {
-  before(async () => {})
-
+  before(async () => { })
   beforeEach(() => {
     uut = new Webhook()
-
     sandbox = sinon.createSandbox()
   })
-
   afterEach(() => sandbox.restore())
-
   describe('#validate', () => {
     it('should throw an error if url is not provided', () => {
       try {
@@ -29,7 +22,6 @@ describe('#Webhook', () => {
         assert.include(err.message, 'url for webhook must be a string.')
       }
     })
-
     it('should throw an error if appId is not provided', () => {
       try {
         uut.validate({ url: 'test' })
@@ -37,16 +29,13 @@ describe('#Webhook', () => {
         assert.include(err.message, 'appId for webhook must be a string.')
       }
     })
-
     it('should return a Webhook object', () => {
       const inputData = {
         url: 'http://test.com',
         appId: 'someapp'
       }
-
       const entry = uut.validate(inputData)
       // console.log('entry: ', entry)
-
       assert.property(entry, 'url')
       assert.equal(entry.url, inputData.url)
     })

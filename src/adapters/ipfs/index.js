@@ -1,12 +1,6 @@
-/*
-  top-level IPFS library that combines the individual IPFS-based libraries.
-*/
-
-// Local libraries
-const IpfsAdapter = require('./ipfs')
-const IpfsCoordAdapter = require('./ipfs-coord')
-const config = require('../../../config')
-
+import IpfsAdapter from './ipfs.js'
+import IpfsCoordAdapter from './ipfs-coord.js'
+import config from '../../../config/index.js'
 class IPFS {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
@@ -14,9 +8,7 @@ class IPFS {
     this.IpfsCoordAdapter = IpfsCoordAdapter
     this.process = process
     this.config = config
-
     this.ipfsCoordAdapter = {} // placeholder
-
     // Properties of this class instance.
     this.isReady = false
   }
@@ -27,18 +19,13 @@ class IPFS {
     try {
       const bchjs = localConfig.bchjs
       if (!bchjs) {
-        throw new Error(
-          'Instance of bch-js must be passed when instantiating IPFS adapter.'
-        )
+        throw new Error('Instance of bch-js must be passed when instantiating IPFS adapter.')
       }
-
       // Start IPFS
       await this.ipfsAdapter.start()
       console.log('IPFS is ready.')
-
       // this.ipfs is a Promise that will resolve into an instance of an IPFS node.
       this.ipfs = this.ipfsAdapter.ipfs
-
       // Start ipfs-coord
       this.ipfsCoordAdapter = new this.IpfsCoordAdapter({
         ipfs: this.ipfs,
@@ -48,23 +35,18 @@ class IPFS {
       })
       await this.ipfsCoordAdapter.start()
       console.log('ipfs-coord is ready.')
-
       // Subscribe to the chat pubsub channel
       await this.ipfsCoordAdapter.subscribeToChat()
-
       return true
     } catch (err) {
       console.error('Error in adapters/ipfs/index.js/start()', err)
-
       // If error is due to a lock file issue. Kill the process, so that
       // Docker or pm2 has a chance to restart the service.
       if (err.message.includes('Lock already being held')) {
         this.process.exit(1)
       }
-
       throw err
     }
   }
 }
-
-module.exports = IPFS
+export default IPFS

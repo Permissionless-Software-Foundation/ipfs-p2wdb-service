@@ -1,15 +1,13 @@
 /*
   A utility file for reading and writing JSON files.
 */
-'use strict'
-const fs = require('fs')
+
+import fs from 'fs'
 
 let _this
-
 class JsonFiles {
   constructor () {
     this.fs = fs
-
     _this = this
   }
 
@@ -25,7 +23,6 @@ class JsonFiles {
           throw new Error('fileName property must be a string')
         }
         const fileStr = JSON.stringify(obj, null, 2)
-
         _this.fs.writeFile(fileName, fileStr, function (err) {
           if (err) {
             console.error('Error while trying to write file: ')
@@ -48,7 +45,6 @@ class JsonFiles {
         if (!fileName || typeof fileName !== 'string') {
           throw new Error('fileName property must be a string')
         }
-
         _this.fs.readFile(fileName, (err, data) => {
           if (err) {
             if (err.code === 'ENOENT') {
@@ -56,13 +52,10 @@ class JsonFiles {
             } else {
               console.log(`err: ${JSON.stringify(err, null, 2)}`)
             }
-
             // throw err
             return reject(err)
           }
-
           const obj = JSON.parse(data)
-
           return resolve(obj)
         })
       } catch (err) {
@@ -72,5 +65,4 @@ class JsonFiles {
     })
   }
 }
-
-module.exports = JsonFiles
+export default JsonFiles

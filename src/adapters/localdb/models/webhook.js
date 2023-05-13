@@ -1,12 +1,6 @@
-/*
-  MongoDB model for a webhook.
-*/
-
-const mongoose = require('mongoose')
-
+import mongoose from 'mongoose'
 const Webhook = new mongoose.Schema({
   url: { type: String, required: true },
   appId: { type: String, required: true }
 })
-
-module.exports = mongoose.model('webhook', Webhook)
+export default mongoose.model('webhook', Webhook)

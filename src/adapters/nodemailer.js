@@ -2,20 +2,15 @@
   A library for controlling the sending of email.
 */
 
-'use strict'
-const nodemailer = require('nodemailer')
-
-const config = require('../../config')
-
-const { wlogger } = require('./wlogger')
+import nodemailer from 'nodemailer'
+import config from '../../config/index.js'
+import { wlogger } from './wlogger.js'
 
 let _this
-
 class NodeMailer {
   constructor () {
     this.nodemailer = nodemailer
     this.config = config
-
     _this = this
     _this.transporter = _this.createTransporter()
   }
@@ -25,9 +20,9 @@ class NodeMailer {
     const transporter = _this.nodemailer.createTransport({
       host: _this.config.emailServer,
       port: 587,
-      secure: false, // true for 465, false for other ports
+      secure: false,
       auth: {
-        user: _this.config.emailUser, // generated ethereal user
+        user: _this.config.emailUser,
         pass: _this.config.emailPassword // generated ethereal password
       }
     })
@@ -41,38 +36,30 @@ class NodeMailer {
       if (!data.email || typeof data.email !== 'string') {
         throw new Error("Property 'email' must be a string!")
       }
-
       if (!data.to || !Array.isArray(data.to)) {
         throw new Error("Property 'to' must be a array!")
       }
-
       await _this.validateEmailArray(data.to)
-
       if (!data.formMessage || typeof data.formMessage !== 'string') {
         throw new Error("Property 'formMessage' must be a string!")
       }
-
       if (!data.subject || typeof data.subject !== 'string') {
         throw new Error("Property 'subject' must be a string!")
       }
-
       // Use the provided html or use a default html generated from the input data
-
       const html = data.htmlData || _this.getHtmlFromObject(data)
       const sendObj = {
         // from: `${data.email}`, // sender address
         from: data.email,
-        to: data.to, // list of receivers
+        to: data.to,
         // subject: `Pearson ${subject}`, // Subject line
         subject: data.subject,
         // html: '<b>This is a test email</b>' // html body
         html
       }
-
       // send mail with defined transport object
       const info = await _this.transporter.sendMail(sendObj)
       console.log('Message sent: %s', info.messageId)
-
       return info
     } catch (err) {
       wlogger.error('Error in lib/nodemailer.js/sendEmail()')
@@ -89,7 +76,6 @@ class NodeMailer {
       if (!emailList.length > 0) {
         throw new Error("Property 'emailList' cant be empty!")
       }
-
       return true
     } catch (err) {
       wlogger.error('Error in lib/nodemailer.js/validateEmailArray()')
@@ -109,39 +95,31 @@ class NodeMailer {
       if (!objectData.formMessage) {
         throw new Error("Property 'formMessage' must be a string!")
       }
-
       const obj = {}
       Object.assign(obj, objectData)
-
       // neccesary data
       const msg = obj.formMessage.replace(/(\r\n|\n|\r)/g, '<br />')
       const now = new Date()
       const subject = obj.subject
-
       // Delete unneccesary data if it exist
       delete obj.to
       delete obj.subject
       delete obj.from
       delete obj.emailList
       delete obj.formMessage
-
       const bodyJson = obj
       bodyJson.message = msg
-
       // Html body
       let htmlBody = ''
-
       // maps the object and converts it into html format
       Object.keys(bodyJson).forEach(function (key) {
         htmlBody += `${key}: ${bodyJson[key]}<br/>`
       })
-
       const defaultHtmlData = `<h3>${subject}:</h3>
        <p>
          time: ${now.toLocaleString()}<br/>
          ${htmlBody}
        </p>`
-
       return defaultHtmlData
     } catch (error) {
       wlogger.error('Error in lib/nodemailer.js/getHtmlFromObject()')
@@ -149,5 +127,4 @@ class NodeMailer {
     }
   }
 }
-
-module.exports = NodeMailer
+export default NodeMailer

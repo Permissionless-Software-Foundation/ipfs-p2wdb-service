@@ -1,38 +1,26 @@
-/*
-  Unit tests for the localdb adapter library.
-*/
-
-const sinon = require('sinon')
-const assert = require('chai').assert
-const mongoose = require('mongoose')
-
-const config = require('../../../config')
-const Entry = require('../../../src/adapters/entry')
-
+import sinon from 'sinon'
+import chai from 'chai'
+import mongoose from 'mongoose'
+import config from '../../../config/index.js'
+import Entry from '../../../src/adapters/entry/index.js'
+const assert = chai.assert
 let uut
 let sandbox
-
 describe('#entry', () => {
   before(async () => {
     // Connect to the Mongo Database.
     console.log(`Connecting to database: ${config.database}`)
     mongoose.Promise = global.Promise
     mongoose.set('useCreateIndex', true) // Stop deprecation warning.
-
-    await mongoose.connect(
-      config.database,
-      {
-        useUnifiedTopology: true,
-        useNewUrlParser: true
-      }
-    )
+    await mongoose.connect(config.database, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true
+    })
   })
   beforeEach(() => {
     uut = new Entry()
-
     sandbox = sinon.createSandbox()
   })
-
   afterEach(() => sandbox.restore())
   after(() => {
     mongoose.connection.close()
@@ -48,7 +36,6 @@ describe('#entry', () => {
       const result = await uut.insert(entry)
       assert.isString(result)
     })
-
     it('should throw error if entry is not provided', async () => {
       try {
         await uut.insert()
@@ -59,7 +46,7 @@ describe('#entry', () => {
     })
     it('should throw error if entry does not has the key property', async () => {
       try {
-        const entry = { }
+        const entry = {}
         await uut.insert(entry)
         assert.fail('unexpected code path')
       } catch (err) {
@@ -73,13 +60,11 @@ describe('#entry', () => {
       const result = await uut.doesEntryExist(entry)
       assert.isFalse(result)
     })
-
     it('should return true if entry is already in the database.', async () => {
       const entry = { key: 'txid' }
       const result = await uut.doesEntryExist(entry)
       assert.isTrue(result)
     })
-
     it('should throw error if entry is not provided', async () => {
       try {
         await uut.doesEntryExist()
@@ -88,10 +73,9 @@ describe('#entry', () => {
         assert.include(err.message, 'entry object is required')
       }
     })
-
     it('should throw error if entry does not has the key property', async () => {
       try {
-        const entry = { }
+        const entry = {}
         await uut.doesEntryExist(entry)
         assert.fail('unexpected code path')
       } catch (err) {
