@@ -1,7 +1,6 @@
 /*
   User Entity
 */
-
 class User {
   validate ({ name, email, password } = {}) {
     // Input Validation
@@ -14,11 +13,8 @@ class User {
     if (!name || typeof name !== 'string') {
       throw new Error("Property 'name' must be a string!")
     }
-
     const userData = { name, email, password }
-
     return userData
   }
 }
-
-module.exports = User
+export default User

@@ -1,11 +1,5 @@
-/*
-  This library encapsulates code concerned with MongoDB and Mongoose models.
-*/
-
-// Load Mongoose models.
-const Users = require('./models/users')
-const BchPayment = require('./models/bch-payment')
-
+import Users from './models/users.js'
+import BchPayment from './models/bch-payment.js'
 class LocalDB {
   constructor () {
     // Encapsulate dependencies
@@ -13,5 +7,4 @@ class LocalDB {
     this.BchPayment = BchPayment
   }
 }
-
-module.exports = LocalDB
+export default LocalDB

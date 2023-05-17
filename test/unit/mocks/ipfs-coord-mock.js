@@ -1,15 +1,11 @@
 /*
   Mocks for the ipfs-coord library
 */
-
 class IPFSCoord {
-  async isReady () {
-    return true
-  }
-
-  async start () {}
-
-  async subscribeToChat () {}
+    async isReady() {
+        return true;
+    }
+    async start() { }
+    async subscribeToChat() { }
 }
-
-module.exports = IPFSCoord
+export default IPFSCoord;

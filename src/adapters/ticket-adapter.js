@@ -3,10 +3,10 @@
 */
 
 // Public npm libraries
-const BchWallet = require('minimal-slp-wallet')
+import BchWallet from 'minimal-slp-wallet'
 
 // Local libraries
-const config = require('../../config')
+import config from '../../config/index.js'
 
 class TicketAdapter {
   constructor (localConfig = {}) {
@@ -61,4 +61,6 @@ class TicketAdapter {
   }
 }
 
-module.exports = TicketAdapter
+// module.exports = TicketAdapter
+
+export default TicketAdapter

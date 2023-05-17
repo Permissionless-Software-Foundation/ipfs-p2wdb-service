@@ -1,7 +1,6 @@
 /*
   Webhook Entity
 */
-
 class Webhook {
   validate ({ url, appId } = {}) {
     // Input validation.
@@ -11,11 +10,8 @@ class Webhook {
     if (!appId || typeof appId !== 'string') {
       throw new Error('appId for webhook must be a string.')
     }
-
     const webhookData = { url, appId }
-
     return webhookData
   }
 }
-
-module.exports = Webhook
+export default Webhook

@@ -3,18 +3,17 @@
 */
 
 // Global npm libraries
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai'
+import sinon from 'sinon'
 
 // Local libraries
-const Adapters = require('../../../src/adapters')
+import Adapters from '../../../src/adapters/index.js'
 
 describe('#adapters', () => {
   let uut, sandbox
 
   beforeEach(() => {
     uut = new Adapters()
-
     sandbox = sinon.createSandbox()
   })
 
@@ -32,9 +31,7 @@ describe('#adapters', () => {
       sandbox.stub(uut.ipfs, 'start').resolves()
       sandbox.stub(uut.p2wdb, 'start').resolves()
       sandbox.stub(uut.writePrice, 'getMcWritePrice').resolves(0.2)
-
       const result = await uut.start()
-
       assert.equal(result, true)
     })
 
@@ -53,6 +50,7 @@ describe('#adapters', () => {
       sandbox.stub(uut.writePrice, 'getWriteCostInBch').resolves(0.00001)
       sandbox.stub(uut.wallet, 'openWallet').resolves()
       sandbox.stub(uut.wallet, 'instanceWallet').resolves()
+      sandbox.stub(uut.wallet, 'getKeyPair').resolves({})
 
       const result = await uut.start()
 
@@ -65,9 +63,7 @@ describe('#adapters', () => {
         uut.config.getJwtAtStartup = false
         uut.config.env = 'dev'
         sandbox.stub(uut.writePrice, 'getMcWritePrice').rejects(new Error('test error'))
-
         await uut.start()
-
         assert.fail('Unexpected result')
       } catch (err) {
         // console.log('err: ', err)

@@ -1,55 +1,39 @@
+import chai from 'chai'
+import sinon from 'sinon'
+import Cost from '../../../../src/use-cases/entry/cost.js'
+import adaptersMock from '../../mocks/adapters/index.js'
 /*
   Unit tests for the P2WDB Cost Use Cases
 */
-
-const assert = require('chai').assert
-const sinon = require('sinon')
-
-const Cost = require('../../../../src/use-cases/entry/cost')
-
-// Mocks
-const adaptersMock = require('../../mocks/adapters')
-
+const assert = chai.assert
 let sandbox
 let uut
-
 describe('#Cost', () => {
-  before(async () => {})
-
+  before(async () => { })
   beforeEach(() => {
     uut = new Cost({
       adapters: adaptersMock
     })
-
     sandbox = sinon.createSandbox()
   })
-
   afterEach(() => sandbox.restore())
-
   describe('#constructor', () => {
     it('should throw an error if adapters instance is not included', () => {
       try {
         uut = new Cost()
-
         assert.fail('Unexpected code path')
       } catch (err) {
-        assert.include(
-          err.message,
-          'Instance of adapters must be passed in when instantiating Cost Use Cases library.'
-        )
+        assert.include(err.message, 'Instance of adapters must be passed in when instantiating Cost Use Cases library.')
       }
     })
   })
-
   describe('#getPsfCost', () => {
     it('should get the current write cost in PSF tokens', () => {
       const result = uut.getPsfCost()
       // console.log('result: ', result)
-
       assert.equal(result, 0.133)
     })
   })
-
   describe('#getBchCost', () => {
     it('should generate a new DB model and return an address and cost', async () => {
       // Mock dependencies
@@ -58,10 +42,8 @@ describe('#Cost', () => {
         cashAddress: 'testAddr',
         hdIndex: 2
       })
-
       const result = await uut.getBchCost()
       // console.log('result: ', result)
-
       assert.equal(result.bchCost, 0.0001)
       assert.equal(result.address, 'testAddr')
     })

@@ -13,20 +13,22 @@
   in the Adapter directory.
 */
 
-'use strict'
-const axios = require('axios').default
-const mongoose = require('mongoose')
-const User = require('../adapters/localdb/models/users')
-const config = require('../../config')
-const JsonFiles = require('../adapters/json-files')
-const jsonFiles = new JsonFiles()
+import axios from 'axios'
+import mongoose from 'mongoose'
+import User from './localdb/models/users.js'
+import config from '../../config/index.js'
+import JsonFiles from './json-files.js'
 
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+
+const jsonFiles = new JsonFiles()
 const JSON_FILE = `system-user-${config.env}.json`
 const JSON_PATH = `${__dirname.toString()}/../../config/${JSON_FILE}`
-
 const LOCALHOST = `http://localhost:${config.port}`
 const context = {}
-
 let _this
 class Admin {
   constructor () {
@@ -35,7 +37,6 @@ class Admin {
     this.config = config
     this.jsonFiles = jsonFiles
     this.context = context
-
     _this = this
   }
 
@@ -46,7 +47,6 @@ class Admin {
     // Create the system user.
     try {
       context.password = _this._randomString(20)
-
       const options = {
         method: 'POST',
         url: `${LOCALHOST}/users`,
@@ -60,29 +60,21 @@ class Admin {
       }
       const result = await _this.axios.request(options)
       // console.log('admin.data: ', result.data)
-
       context.email = result.data.user.email
       context.id = result.data.user._id
       context.token = result.data.token
-
       // Get the mongoDB entry
       const user = await _this.User.findById(context.id)
-
       // Change the user type to admin
       user.type = 'admin'
       // console.log(`user created: ${JSON.stringify(user, null, 2)}`)
-
       // Save the user model.
       await user.save()
-
       // console.log(`admin user created: ${JSON.stringify(result.body, null, 2)}`)
       // console.log(`with password: ${context.password}`)
-
       // Write out the system user information to a JSON file that external
       // applications like the Task Manager and the test scripts can access.
-
       await jsonFiles.writeJSON(context, JSON_PATH)
-
       return context
     } catch (err) {
       // Handle existing system user.
@@ -90,13 +82,10 @@ class Admin {
         try {
           // Delete the existing user
           await _this.deleteExistingSystemUser()
-
           // Call this function again.
           return _this.createSystemUser()
         } catch (err2) {
-          console.error(
-            'Error in admin.js/createSystemUser() while trying generate new system user.'
-          )
+          console.error('Error in admin.js/createSystemUser() while trying generate new system user.')
           // process.end(1)
           throw err2
         }
@@ -112,12 +101,10 @@ class Admin {
     try {
       mongoose.Promise = global.Promise
       mongoose.set('useCreateIndex', true) // Stop deprecation warning.
-
       await mongoose.connect(config.database, {
         useNewUrlParser: true,
         useUnifiedTopology: true
       })
-
       await _this.User.deleteOne({ email: 'system@system.com' })
     } catch (err) {
       console.log('Error in admin.js/deleteExistingSystemUser()')
@@ -128,12 +115,10 @@ class Admin {
   async loginAdmin () {
     // console.log(`loginAdmin() running.`)
     let existingUser
-
     try {
       // Read the exising file
       existingUser = await _this.jsonFiles.readJSON(JSON_PATH)
       // console.log(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
-
       // Log in as the user.
       const options = {
         method: 'POST',
@@ -151,22 +136,18 @@ class Admin {
       return result
     } catch (err) {
       console.error('Error in admin.js/loginAdmin().')
-
       // console.error(`existingUser: ${JSON.stringify(existingUser, null, 2)}`)
-
       throw err
     }
   }
 
   _randomString (length) {
     let text = ''
-    const possible =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     for (let i = 0; i < length; i++) {
       text += possible.charAt(Math.floor(Math.random() * possible.length))
     }
     return text
   }
 }
-
-module.exports = Admin
+export default Admin

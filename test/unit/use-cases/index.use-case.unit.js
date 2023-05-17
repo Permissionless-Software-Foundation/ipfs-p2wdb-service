@@ -3,15 +3,12 @@
 */
 
 // Public npm libraries
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai'
+import sinon from 'sinon'
 
-// Local support libraries
-// const testUtils = require('../../utils/test-utils')
-
-// Unit under test (uut)
-const UseCases = require('../../../src/use-cases')
-const adapters = require('../mocks/adapters')
+// Local libraries
+import UseCases from '../../../src/use-cases/index.js'
+import adapters from '../mocks/adapters/index.js'
 
 describe('#use-cases', () => {
   let uut
@@ -24,7 +21,6 @@ describe('#use-cases', () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
-
     uut = new UseCases({ adapters })
   })
 
@@ -34,22 +30,19 @@ describe('#use-cases', () => {
     it('should throw an error if adapters are not passed in', () => {
       try {
         uut = new UseCases()
-
         assert.fail('Unexpected code path')
-
         // This is here to prevent the linter from complaining.
         assert.isOk(uut)
       } catch (err) {
-        assert.include(
-          err.message,
-          'Instance of adapters must be passed in when instantiating Use Cases library.'
-        )
+        assert.include(err.message, 'Instance of adapters must be passed in when instantiating Use Cases library.')
       }
     })
   })
 
   describe('#start', () => {
     it('should initialize async use cases', async () => {
+      sandbox.stub(uut.ticket, 'start').resolves()
+
       const result = await uut.start()
 
       assert.equal(result, true)

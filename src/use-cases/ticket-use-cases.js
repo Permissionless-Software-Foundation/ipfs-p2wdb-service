@@ -12,7 +12,7 @@
 // Set the maximum number of tickets that are held in the queue.
 // const MAX_TICKETS = 2
 
-class TickeUseCases {
+class TicketUseCases {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
     this.adapters = localConfig.adapters
@@ -38,9 +38,9 @@ class TickeUseCases {
       console.log('Ticket Use Cases have started.')
 
       // Create a wallet based on the keypair from HD index 1
-      const keyPair = await this.adapters.wallet.getKeyPair(1)
-      this.wallet = await this.adapters.ticket.instanceTicketWallet(keyPair)
-      console.log(`Ticket USE Case this.wallet.walletInfo: ${JSON.stringify(this.wallet.walletInfo, null, 2)}`)
+      // const keyPair = await this.adapters.wallet.getKeyPair(1)
+      // this.wallet = await this.adapters.ticket.instanceTicketWallet(keyPair)
+      // console.log(`Ticket USE Case this.wallet.walletInfo: ${JSON.stringify(this.wallet.walletInfo, null, 2)}`)
 
       // Check that the wallet has a balance of BCH and PSF tokens.
 
@@ -54,4 +54,5 @@ class TickeUseCases {
   }
 }
 
-module.exports = TickeUseCases
+// module.exports = TickeUseCases
+export default TicketUseCases

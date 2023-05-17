@@ -1,12 +1,10 @@
-/*
-  These are the environment settings for the TEST environment.
-  This is the environment run with `npm start` if KOA_ENV=test.
-  This is the environment run by the test suite.
-*/
-
-module.exports = {
-  session: 'secret-boilerplate-token',
-  token: 'secret-jwt-token',
-  database: 'mongodb://localhost:27017/p2wdb-service-test',
-  env: 'test'
+export const session = 'secret-boilerplate-token'
+export const token = 'secret-jwt-token'
+export const database = 'mongodb://localhost:27017/p2wdb-service-test'
+export const env = 'test'
+export default {
+  session,
+  token,
+  database,
+  env
 }
