@@ -1,29 +1,37 @@
-import { assert } from 'chai'
-import axios from 'axios'
-import config from '../../../config/index.js'
-import Server from '../../../bin/server.js'
-import testUtils from '../../utils/test-utils.js'
-import AdminLib from '../../../src/adapters/admin.js'
 /*
   End-to-end tests for /auth endpoints.
 
   This test sets up the environment for other e2e tests.
 */
-// Public npm libraries
+
+// npm libraries
+import { assert } from 'chai'
+import axios from 'axios'
+
+// Local libraries
+import config from '../../../config/index.js'
+import Server from '../../../bin/server.js'
+import testUtils from '../../utils/test-utils.js'
+import AdminLib from '../../../src/adapters/admin.js'
+
 const adminLib = new AdminLib()
 // const request = supertest.agent(app.listen())
 const context = {}
 const LOCALHOST = `http://localhost:${config.port}`
+
 describe('Auth', () => {
   before(async () => {
     process.env.TEST_TYPE = 'e2e'
     const app = new Server()
+
     // This should be the first instruction. It starts the REST API server.
     await app.startServer()
+
     // Stop the IPFS node for the rest of the e2e tests.
     // await app.controllers.adapters.ipfs.stop()
     // Delete all previous users in the database.
     await testUtils.deleteAllUsers()
+
     // Create a new admin user.
     await adminLib.createSystemUser()
     const userObj = {
@@ -31,11 +39,14 @@ describe('Auth', () => {
       password: 'pass',
       name: 'test'
     }
+
     const testUser = await testUtils.createUser(userObj)
+
     // console.log('TestUser: ', testUser)
     context.user = testUser.user
     context.token = testUser.token
   })
+
   describe('POST /auth', () => {
     it('should throw 401 if credentials are incorrect', async () => {
       try {
@@ -55,6 +66,7 @@ describe('Auth', () => {
         assert(err.response.status === 401, 'Error code 401 expected.')
       }
     })
+
     it('should throw 401 if email is wrong format', async () => {
       try {
         const options = {

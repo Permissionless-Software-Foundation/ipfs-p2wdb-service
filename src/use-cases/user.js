@@ -1,12 +1,20 @@
+/*
+  Use Case library for Users.
+*/
+
+// Local libraries
 import UserEntity from '../entities/user.js'
 import { wlogger } from '../adapters/wlogger.js'
+
 class UserLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
+
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error('Instance of adapters must be passed in when instantiating User Use Cases library.')
     }
+
     // Encapsulate dependencies
     this.UserEntity = new UserEntity()
     this.UserModel = this.adapters.localdb.Users

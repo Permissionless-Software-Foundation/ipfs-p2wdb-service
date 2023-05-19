@@ -5,10 +5,12 @@
   https://troutsblog.com/blog/clean-architecture
 */
 
+// Local libraries
 import EntryUseCases from './entry/index.js'
 import WebhookUseCases from './webhook/index.js'
 import UserUseCases from './user.js'
 import TicketUseCases from './ticket-use-cases.js'
+import config from '../../config/index.js'
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -22,12 +24,18 @@ class UseCases {
     this.webhook = new WebhookUseCases(localConfig)
     this.user = new UserUseCases(localConfig)
     this.ticket = new TicketUseCases(localConfig)
+
+    // Encapsulate dependencies
+    this.config = config
   }
 
   // Run any startup Use Cases at the start of the app.
   async start () {
     try {
-      await this.ticket.start()
+      // Start the Ticket use case library if it is enabled in the config.
+      if (this.config.enablePreBurnTicket && this.config.env !== 'test') {
+        await this.ticket.start()
+      }
 
       console.log('Async Use Cases have been started.')
 

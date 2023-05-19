@@ -94,8 +94,6 @@ class WritePrice {
     // It should be higher than actual fee, so that any writes will propegate to
     // the P2WDB nodes that successfully retrieved the current write price.
     let writePrice = this.config.reqTokenQty
-    console.log(`defautl writePrice: ${writePrice}`)
-    console.log('this.config: ', this.config)
 
     try {
       const WRITE_PRICE_ADDR = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'

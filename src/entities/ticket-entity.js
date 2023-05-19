@@ -6,10 +6,10 @@ class Ticket {
   constructor (inObj = {}) {
     const { txid, signature, message } = inObj
 
-    this.txid = txid
     if (txid.length !== 64) {
       throw new Error('txid must be 64 characters long')
     }
+    this.txid = txid
 
     if (!signature) {
       throw new Error('signature must be included')
@@ -23,4 +23,5 @@ class Ticket {
   }
 }
 
-module.exports = Ticket
+// module.exports = Ticket
+export default Ticket

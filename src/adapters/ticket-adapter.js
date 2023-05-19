@@ -4,6 +4,7 @@
 
 // Public npm libraries
 import BchWallet from 'minimal-slp-wallet'
+import { Write } from 'p2wdb'
 
 // Local libraries
 import config from '../../config/index.js'
@@ -19,6 +20,34 @@ class TicketAdapter {
     this.config = config
     this.BchWallet = BchWallet
     this.wallet = null // placeholder
+    this.Write = Write
+  }
+
+  // Create a new ticket.
+  async createTicket (inObj = {}) {
+    try {
+      if (!this.wallet) {
+        throw new Error('Wallet must be instantiated before creating tickets.')
+      }
+
+      const { TicketModel } = inObj
+
+      // Instantiate the write library.
+      const write = new this.Write({ bchWallet: this.wallet })
+
+      // Create a ticket.
+      const ticket = await write.createTicket()
+      console.log(`ticket: ${JSON.stringify(ticket, null, 2)}`)
+
+      // Save the ticket to the database.
+      const newTicket = new TicketModel(ticket)
+      await newTicket.save()
+
+      return ticket
+    } catch (err) {
+      console.error('Error in ticket-adapter.js/createTicket()')
+      throw err
+    }
   }
 
   // Instance the wallet that will be used to generate tickets. This is the
