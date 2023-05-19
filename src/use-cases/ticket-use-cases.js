@@ -63,18 +63,29 @@ class TicketUseCases {
         throw new Error(`Can not start pre-burn ticket feature. Insufficient PSF token balance in ticket wallet. Must have at least ${MIN_PSF_TOKENS} PSF tokens. Send more than ${MIN_PSF_TOKENS} PSF tokens to ${this.wallet.walletInfo.slpAddress}, or disable ticket feature in config, to resolve this error.`)
       }
 
-      // Load all tickets from the database.
-      const tickets = await this.TicketModel.find({})
-      console.log(`Existing database tickets: ${JSON.stringify(tickets, null, 2)}`)
+      const ticketCnt = await this.getTicketCount()
 
-      // Create more tickets if there are less than the maximum allowed, make more.
-      if (tickets.length < MAX_TICKETS) {
-        await this.adapters.ticket.createTicket({ TicketModel: this.TicketModel })
+      // Create more tickets if there are less than the maximum allowed.
+      if (ticketCnt < MAX_TICKETS) {
+        const cntDiff = MAX_TICKETS - ticketCnt
+        for (let i = 0; i < cntDiff; i++) {
+          await this.adapters.ticket.createTicket({ TicketModel: this.TicketModel })
+        }
       }
     } catch (err) {
       console.error('Error in ticket-use-cases.js/start()')
       throw err
     }
+  }
+
+  // This function returns a number representing the number of tickets
+  // in the database.
+  async getTicketCount () {
+    // Load all tickets from the database.
+    const tickets = await this.TicketModel.find({})
+    // console.log(`Existing database tickets: ${JSON.stringify(tickets, null, 2)}`)
+
+    return tickets.length
   }
 }
 
