@@ -6,6 +6,9 @@ class Ticket {
   constructor (inObj = {}) {
     const { txid, signature, message } = inObj
 
+    if (typeof txid !== 'string') {
+      throw new Error('txid must be a string')
+    }
     if (txid.length !== 64) {
       throw new Error('txid must be 64 characters long')
     }
