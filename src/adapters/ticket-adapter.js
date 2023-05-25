@@ -23,33 +23,6 @@ class TicketAdapter {
     this.Write = Write
   }
 
-  // Create a new ticket.
-  async createTicket (inObj = {}) {
-    try {
-      if (!this.wallet) {
-        throw new Error('Wallet must be instantiated before creating tickets.')
-      }
-
-      const { TicketModel } = inObj
-
-      // Instantiate the write library.
-      const write = new this.Write({ bchWallet: this.wallet })
-
-      // Create a ticket.
-      const ticket = await write.createTicket()
-      console.log(`ticket: ${JSON.stringify(ticket, null, 2)}`)
-
-      // Save the ticket to the database.
-      const newTicket = new TicketModel(ticket)
-      await newTicket.save()
-
-      return ticket
-    } catch (err) {
-      console.error('Error in ticket-adapter.js/createTicket()')
-      throw err
-    }
-  }
-
   // Instance the wallet that will be used to generate tickets. This is the
   // 1-index of the HD wallet.
   async instanceTicketWallet (keyPair = {}) {
@@ -87,6 +60,33 @@ class TicketAdapter {
     const wallet = new this.BchWallet(wif, config)
     await wallet.initialize()
     return wallet
+  }
+
+  // Create a new ticket.
+  async createTicket (inObj = {}) {
+    try {
+      if (!this.wallet) {
+        throw new Error('Wallet must be instantiated before creating tickets.')
+      }
+
+      const { TicketModel } = inObj
+
+      // Instantiate the write library.
+      const write = new this.Write({ bchWallet: this.wallet })
+
+      // Create a ticket.
+      const ticket = await write.createTicket()
+      // console.log(`ticket: ${JSON.stringify(ticket, null, 2)}`)
+
+      // Save the ticket to the database.
+      const newTicket = new TicketModel(ticket)
+      await newTicket.save()
+
+      return ticket
+    } catch (err) {
+      console.error('Error in ticket-adapter.js/createTicket()')
+      throw err
+    }
   }
 }
 

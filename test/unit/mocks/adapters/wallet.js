@@ -1,4 +1,5 @@
 import BCHJS from "@psf/bch-js";
+
 const mockWallet = {
     mnemonic: 'course abstract aerobic deer try switch turtle diet fence affair butter top',
     privateKey: 'L5D2UAam8tvo3uii5kpgaGyjvVMimdrXu8nWGQSQjuuAix6ji1YQ',
@@ -10,10 +11,12 @@ const mockWallet = {
     hdPath: "m/44'/245'/0'/0/0",
     nextAddress: 1
 };
+
 class MockBchWallet {
     constructor() {
         this.walletInfoPromise = true;
         this.walletInfo = mockWallet;
+        this.initialize = async () => {}
         this.bchjs = new BCHJS();
         this.burnTokens = async () => {
             return { success: true, txid: 'txid' };
@@ -135,8 +138,11 @@ class MockBchWallet {
         }
     }
 }
+
 export { MockBchWallet };
+
 export { mockWallet };
+
 export default {
     MockBchWallet,
     mockWallet
