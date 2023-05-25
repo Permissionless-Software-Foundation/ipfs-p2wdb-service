@@ -47,7 +47,7 @@ class TicketUseCases {
       // Create a wallet based on the keypair from HD index 1
       const keyPair = await this.adapters.wallet.getKeyPair(1)
       this.wallet = await this.adapters.ticket.instanceTicketWallet(keyPair)
-      console.log(`Ticket USE Case this.wallet.walletInfo: ${JSON.stringify(this.wallet.walletInfo, null, 2)}`)
+      // console.log(`Ticket USE Case this.wallet.walletInfo: ${JSON.stringify(this.wallet.walletInfo, null, 2)}`)
 
       // Check that the wallet has a balance of BCH.
       const bchBalance = await this.wallet.getBalance()
@@ -72,6 +72,8 @@ class TicketUseCases {
           await this.adapters.ticket.createTicket({ TicketModel: this.TicketModel })
         }
       }
+
+      return true
     } catch (err) {
       console.error('Error in ticket-use-cases.js/start()')
       throw err

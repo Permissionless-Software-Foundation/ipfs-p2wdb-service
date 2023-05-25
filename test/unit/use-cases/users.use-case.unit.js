@@ -1,27 +1,34 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import UserLib from '../../../src/use-cases/user.js'
-import adapters from '../mocks/adapters/index.js'
 /*
   Unit tests for the src/lib/users.js business logic library.
 
   TODO: verify that an admin can change the type of a user
 */
+
 // Public npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+// Local libraries
+import UserLib from '../../../src/use-cases/user.js'
+import adapters from '../mocks/adapters/index.js'
+
 describe('#users-use-case', () => {
   let uut
   let sandbox
   let testUser = {}
+
   before(async () => {
     // Delete all previous users in the database.
     // await testUtils.deleteAllUsers()
   })
+
   beforeEach(() => {
     sandbox = sinon.createSandbox()
     uut = new UserLib({ adapters })
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#constructor', () => {
     it('should throw an error if adapters are not passed in', () => {
       try {
@@ -32,6 +39,7 @@ describe('#users-use-case', () => {
       }
     })
   })
+
   describe('#createUser', () => {
     it('should throw an error if no input is given', async () => {
       try {
@@ -43,6 +51,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, "Property 'email' must be a string!")
       }
     })
+
     it('should throw an error if email is not provided', async () => {
       try {
         await uut.createUser({})
@@ -51,6 +60,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, "Property 'email' must be a string!")
       }
     })
+
     it('should throw an error if password is not provided', async () => {
       try {
         const usrObj = {
@@ -62,6 +72,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, "Property 'password' must be a string!")
       }
     })
+
     it('should throw an error if name is not provided', async () => {
       try {
         const usrObj = {
@@ -74,6 +85,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, "Property 'name' must be a string!")
       }
     })
+
     it('should catch and throw DB errors', async () => {
       try {
         // Force an error with the database.
@@ -89,6 +101,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, 'test error')
       }
     })
+
     it('should create a new user in the DB', async () => {
       // Note: The user created in this test is used by the getUser, update,
       // and delete tests.
@@ -112,12 +125,14 @@ describe('#users-use-case', () => {
       assert.include(token, '123')
     })
   })
+
   describe('#getAllUsers', () => {
     it('should return all users from the database', async () => {
       await uut.getAllUsers()
       // console.log(`users: ${JSON.stringify(users, null, 2)}`)
       // assert.isArray(users)
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error.
@@ -129,6 +144,7 @@ describe('#users-use-case', () => {
       }
     })
   })
+
   describe('#getUser', () => {
     it('should throw 422 if no id given.', async () => {
       try {
@@ -140,6 +156,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, 'Unprocessable Entity')
       }
     })
+
     it('should throw 422 for malformed id', async () => {
       try {
         // Force an error.
@@ -155,6 +172,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, 'Unprocessable Entity')
       }
     })
+
     it('should throw 404 if user is not found', async () => {
       try {
         const params = { id: '5fa4bd7ee1828f5f4d3ed004' }
@@ -166,6 +184,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, 'User not found')
       }
     })
+
     it('should return the user model', async () => {
       sandbox.stub(uut.UserModel, 'findById').resolves({ _id: 'abc123' })
       const params = { id: testUser._id }
@@ -181,6 +200,7 @@ describe('#users-use-case', () => {
       // assert.property(result, 'name')
     })
   })
+
   describe('#updateUser', () => {
     it('should throw an error if no input is given', async () => {
       try {

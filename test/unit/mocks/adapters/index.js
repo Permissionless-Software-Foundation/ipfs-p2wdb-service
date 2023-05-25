@@ -1,4 +1,5 @@
 import BchWallet from "minimal-slp-wallet";
+
 class IpfsAdapter {
     constructor() {
         this.ipfs = {
@@ -8,6 +9,7 @@ class IpfsAdapter {
         };
     }
 }
+
 class IpfsCoordAdapter {
     constructor() {
         this.ipfsCoord = {
@@ -19,11 +21,13 @@ class IpfsCoordAdapter {
         };
     }
 }
+
 const ipfs = {
     ipfsAdapter: new IpfsAdapter(),
     ipfsCoordAdapter: new IpfsCoordAdapter()
 };
 ipfs.ipfs = ipfs.ipfsAdapter.ipfs;
+
 const p2wdb = {
     ipfsAdapters: {
         ipfsCoordAdapter: {
@@ -37,6 +41,7 @@ const p2wdb = {
         }
     }
 };
+
 const entry = {
     readEntry: {
         readAllEntries: () => { }
@@ -44,10 +49,12 @@ const entry = {
     doesEntryExist: async () => { },
     insert: async () => { }
 };
+
 const webhook = {
     addWebhook: async () => { },
     deleteWebhook: async () => { }
 };
+
 const localdb = {
     Users: class Users {
         static findById() { }
@@ -89,11 +96,13 @@ const localdb = {
         }
     },
 };
+
 const writePrice = {
     currentRate: 0.133,
     getTargetCostPsf: () => 0.133,
     getWriteCostInBch: async () => { }
 };
+
 const wallet = {
     getKeyPair: async () => { },
     bchWallet: {
@@ -104,15 +113,18 @@ const wallet = {
     },
     BchWallet: BchWallet,
     optimize: async () => { },
-    getBalance: async () => { }
+    getBalance: async () => { },
+    getTokenBalance: async () => { },
+    walletInfo: {
+      cashAddress: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu'
+    }
 };
-export { ipfs };
-export { localdb };
-export { p2wdb };
-export { entry };
-export { webhook };
-export { writePrice };
-export { wallet };
+
+const ticket = {
+  instanceTicketWallet: async () => wallet,
+  createTicket: async () => {},
+}
+
 export default {
     ipfs,
     localdb,
@@ -120,5 +132,6 @@ export default {
     entry,
     webhook,
     writePrice,
-    wallet
+    wallet,
+    ticket
 };
