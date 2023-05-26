@@ -200,7 +200,7 @@ class AddEntry {
       const tickets = await this.adapters.localdb.Tickets.find({})
 
       // Throw error if there are no tickets.
-      if(!tickets.length) {
+      if (!tickets.length) {
         throw new Error('No pre-burned tickets available.')
       }
 

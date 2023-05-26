@@ -10,7 +10,7 @@ class ContactRouter {
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error('Instance of Adapters library required when instantiating Contact REST Controller.')
-    }        
+    }
     this.useCases = localConfig.useCases
     if (!this.useCases) {
       throw new Error('Instance of Use Cases library required when instantiating Contact REST Controller.')
@@ -41,20 +41,20 @@ class ContactRouter {
     // Define the routes and attach the controller.
     this.router.post('/email', this.contactRESTController.email)
     this.router.get('/allowlist', this.getAllowList)
-    
+
     // Attach the Controller routes to the Koa app.
     app.use(this.router.routes())
     app.use(this.router.allowedMethods())
   }
 
   // Temporary prototype code to test an idea around bandwidth limiting IPFS peers.
-  getAllowList(ctx) {
+  getAllowList (ctx) {
     try {
       const allowList = this.adapters.ipfs.ipfsCoord.adapters.ipfs.ipfs.config.get('Swarm.ResourceMgr.Allowlist')
       console.log('allowList: ', allowList)
 
       ctx.body = allowList
-    } catch(err) {
+    } catch (err) {
       ctx.throw(422, err.message)
     }
   }

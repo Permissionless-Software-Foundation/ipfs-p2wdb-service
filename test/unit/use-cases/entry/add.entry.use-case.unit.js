@@ -3,7 +3,7 @@
 */
 
 // Global npm libraries
-import {assert} from 'chai'
+import { assert } from 'chai'
 import sinon from 'sinon'
 import BchWallet from 'minimal-slp-wallet'
 import clone from 'lodash.clonedeep'
@@ -283,31 +283,31 @@ describe('#AddEntry', () => {
       sandbox.stub(uut.adapters.localdb.Tickets, 'find').resolves([{
         txid: 'fake-txid',
         signature: 'fake-sig',
-        message: 'fake-message',
+        message: 'fake-message'
       }])
 
       // Mock BCH wallet
       const tempWallet = new BchWallet()
       await tempWallet.walletInfoPromise
-      
+
       sandbox.stub(tempWallet, 'initialize').resolves()
       sandbox.stub(tempWallet, 'sendAll').resolves('fake-txid')
       sandbox.stub(uut, '_createTempWallet').resolves(tempWallet)
-      
+
       // Mock the P2WDB library
       uut.Write = class Write {
         async postEntry () { return 'fake-hash' }
       }
-      
+
       const data = {
         address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
         data: 'fake-data',
         appId: 'fake-appId'
       }
-      
+
       const result = await uut.addTicketEntry(data)
       console.log('result: ', result)
-      
+
       assert.equal(result, 'fake-hash')
     })
 
