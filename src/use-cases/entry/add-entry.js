@@ -198,6 +198,12 @@ class AddEntry {
 
       // Get a ticket from the database.
       const tickets = await this.adapters.localdb.Tickets.find({})
+
+      // Throw error if there are no tickets.
+      if(!tickets.length) {
+        throw new Error('No pre-burned tickets available.')
+      }
+
       const ticket = tickets[0]
 
       // Write an entry to this P2WDB, using a pre-burned ticket.
