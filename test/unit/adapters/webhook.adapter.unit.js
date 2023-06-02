@@ -1,5 +1,5 @@
 import sinon from 'sinon'
-import {assert} from 'chai'
+import { assert } from 'chai'
 
 import WebhookAdapter from '../../../src/adapters/webhook/index.js'
 
@@ -11,9 +11,9 @@ describe('#WebhookAdapter', () => {
     uut = new WebhookAdapter()
     sandbox = sinon.createSandbox()
   })
-  
+
   afterEach(() => sandbox.restore())
-  
+
   describe('#validationSucceededEventHandler', () => {
     it('should exit quietly if data can not be parsed into JSON', async () => {
       const eventData = {
@@ -25,7 +25,7 @@ describe('#WebhookAdapter', () => {
       // is working properly.
       assert.equal(1, 1)
     })
-  
+
     it('should exit quietly if data does not contain an appID', async () => {
       const eventData = {
         data: '{"title":"83214","sourceUrl":"69834"}'
@@ -36,7 +36,7 @@ describe('#WebhookAdapter', () => {
       // is working properly.
       assert.equal(1, 1)
     })
-  
+
     it('should trigger a webhook if one exists in the database with a matching appID', async () => {
       const eventData = {
         data: '{"appId":"test","title":"83214","sourceUrl":"69834"}'
@@ -52,7 +52,7 @@ describe('#WebhookAdapter', () => {
       // is working properly.
       assert.equal(1, 1)
     })
-  
+
     it('should report but not throw an error', async () => {
       await uut.validationSucceededEventHandler()
       // Not throwing an error is a pass.
@@ -61,12 +61,12 @@ describe('#WebhookAdapter', () => {
       assert.equal(1, 1)
     })
   })
-  
+
   describe('#triggerWebhook', () => {
     it('should trigger a webhook given an array of matches', async () => {
       // Mock axios so it doesn't make any real network calls.
       sandbox.stub(uut.axios, 'post').resolves({})
-      
+
       const matches = [{ url: 'http://test.com', appId: 'test' }]
 
       const result = await uut.triggerWebhook(matches)
@@ -77,7 +77,7 @@ describe('#WebhookAdapter', () => {
     it('should quietly exit on errors', async () => {
       // Force an error
       sandbox.stub(uut.axios, 'post').rejects(new Error('test error'))
-      
+
       const matches = [{ url: 'http://test.com', appId: 'test' }]
 
       const result = await uut.triggerWebhook(matches)
@@ -85,7 +85,7 @@ describe('#WebhookAdapter', () => {
       assert.equal(result, true)
     })
   })
-  
+
   describe('#addWebhook', async () => {
     it('should add new webhook model to the database', async () => {
       // Mock database dependencies.
@@ -99,7 +99,7 @@ describe('#WebhookAdapter', () => {
       assert.equal(result, '123')
     })
   })
-  
+
   describe('#deleteWebhook', () => {
     it('should delete the entry from the database, if it exists', async () => {
       // Mock database dependencies.
@@ -111,7 +111,7 @@ describe('#WebhookAdapter', () => {
       const result = await uut.deleteWebhook(data)
       assert.equal(result, true)
     })
-  
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
@@ -127,7 +127,7 @@ describe('#WebhookAdapter', () => {
         assert.include(err.message, 'test error')
       }
     })
-  
+
     it('should exit quietly if there is no match', async () => {
       // Mock database dependencies.
       uut.WebhookModel = WebhookModelMock
