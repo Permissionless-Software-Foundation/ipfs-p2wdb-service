@@ -1,8 +1,11 @@
-import ReadEntryMock from "./read-entry.mock.js";
 /*
   Mocks for the use cases.
 */
+
+import ReadEntryMock from "./read-entry.mock.js";
+
 /* eslint-disable */
+
 class UserUseCaseMock {
     async createUser(userObj) {
         return {};
@@ -25,6 +28,7 @@ class UserUseCaseMock {
         };
     }
 }
+
 class UseCasesMock {
     constuctor(localConfig = {}) {
         // this.entry = {
@@ -54,7 +58,8 @@ class UseCasesMock {
             addUserEntry: () => {
                 return 'hash';
             },
-            addBchEntry: async () => { }
+            addBchEntry: async () => { },
+            addTicketEntry: async () => {}
         },
         cost: {
             getPsfCost: async () => { },
@@ -63,4 +68,5 @@ class UseCasesMock {
         }
     };
 }
+
 export default UseCasesMock;

@@ -14,12 +14,15 @@ class EntryController {
     if (!this.useCases) {
       throw new Error('Instance of Use Cases library required when instantiating Entry REST Controller.')
     }
+
     const dependencies = {
       adapters: this.adapters,
       useCases: this.useCases
     }
+
     // Encapsulate dependencies.
     this.entryRESTController = new EntryRESTControllerLib(dependencies)
+
     // Instantiate the router.
     const baseUrl = '/entry'
     this.router = new Router({ prefix: baseUrl })
@@ -62,6 +65,8 @@ class EntryController {
   async postTicketEntry (ctx, next) {
     // await _this.validators.ensureUser(ctx, next)
     await _this.entryRESTController.postTicketEntry(ctx, next)
+
+    return true
   }
 
   async readAllEntries (ctx, next) {

@@ -1,18 +1,23 @@
-import chai from 'chai'
+/*
+  Unit tests for the REST API handler for the /users endpoints.
+*/
+
+// Public npm libraries
+import { assert } from 'chai'
 import sinon from 'sinon'
+
+// Local libraries
 import adapters from '../../../mocks/adapters/index.js'
 import UseCasesMock from '../../../mocks/use-cases/index.js'
 import EntryController from '../../../../../src/controllers/rest-api/entry/controller.js'
 import { context } from '../../../mocks/ctx-mock.js'
-/*
-  Unit tests for the REST API handler for the /users endpoints.
-*/
-// Public npm libraries
-const assert = chai.assert
+
 let uut
 let sandbox
 let ctx
+
 const mockContext = { context }.context
+
 describe('#Entry-REST-Controller', () => {
   // const testUser = {}
   beforeEach(() => {
@@ -22,7 +27,9 @@ describe('#Entry-REST-Controller', () => {
     // Mock the context object.
     ctx = mockContext()
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#constructor', () => {
     it('should throw an error if adapters are not passed in', () => {
       try {
@@ -32,6 +39,7 @@ describe('#Entry-REST-Controller', () => {
         assert.include(err.message, 'Instance of Adapters library required when instantiating /entry REST Controller.')
       }
     })
+
     it('should throw an error if useCases are not passed in', () => {
       try {
         uut = new EntryController({ adapters })
@@ -41,6 +49,7 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#POST /entry', () => {
     it('should return 422 status on biz logic error', async () => {
       try {
@@ -52,6 +61,7 @@ describe('#Entry-REST-Controller', () => {
         assert.include(err.message, 'Cannot read')
       }
     })
+
     it('should return 200 status on success', async () => {
       ctx.request.body = {
         txid: 'txid',
@@ -65,6 +75,7 @@ describe('#Entry-REST-Controller', () => {
       assert.equal(ctx.response.body.success, true)
     })
   })
+
   describe('#getAll', () => {
     it('body should contain data', async () => {
       await uut.getAll(ctx)
@@ -73,6 +84,7 @@ describe('#Entry-REST-Controller', () => {
       assert.property(ctx.body.data, 'key1')
       assert.equal(ctx.body.data.key1, 'value1')
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
@@ -87,6 +99,7 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#getByHash', () => {
     it('body should contain data', async () => {
       ctx.params.hash = 'test'
@@ -94,6 +107,7 @@ describe('#Entry-REST-Controller', () => {
       // console.log('ctx.body: ', ctx.body)
       assert.equal(ctx.body.success, true)
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
@@ -108,6 +122,7 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#getByTxid', () => {
     it('body should contain data', async () => {
       ctx.params.txid = 'test'
@@ -115,6 +130,7 @@ describe('#Entry-REST-Controller', () => {
       // console.log('ctx.body: ', ctx.body)
       assert.equal(ctx.body.success, true)
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
@@ -129,6 +145,7 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#getByAppId', () => {
     it('body should contain data', async () => {
       ctx.params.appid = 'test'
@@ -136,6 +153,7 @@ describe('#Entry-REST-Controller', () => {
       // console.log('ctx.body: ', ctx.body)
       assert.equal(ctx.body.success, true)
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
@@ -150,12 +168,14 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#getPsfCost', () => {
     it('body should contain data', async () => {
       await uut.getPsfCost(ctx)
       // console.log('ctx.body: ', ctx.body)
       assert.equal(ctx.body.success, true)
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
@@ -169,6 +189,7 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#getBchCost', () => {
     it('should throw an error if BCH payments are disabled', async () => {
       uut.config.enableBchPayment = false
@@ -179,6 +200,7 @@ describe('#Entry-REST-Controller', () => {
         assert.include(err.message, 'BCH payments are not enabled in this instance of P2WDB.')
       }
     })
+
     it('should return a BCH address and payment amount', async () => {
       uut.config.enableBchPayment = true
       // Mock dependencies
@@ -191,6 +213,7 @@ describe('#Entry-REST-Controller', () => {
       assert.equal(ctx.body.bchCost, 0.0001)
       assert.equal(ctx.body.address, 'bitcoincash:qqsrke9lh257tqen99dkyy2emh4uty0vky9y0z0lsr')
     })
+
     it('should catch and throw errors when retrieving BCH cost', async () => {
       uut.config.enableBchPayment = true
       try {
@@ -202,6 +225,7 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#postBchEntry', () => {
     it('should throw an error if BCH payments are disabled', async () => {
       uut.config.enableBchPayment = false
@@ -212,6 +236,7 @@ describe('#Entry-REST-Controller', () => {
         assert.include(err.message, 'BCH payments are not enabled in this instance of P2WDB.')
       }
     })
+
     it('should write an entry paid in BCH', async () => {
       uut.config.enableBchPayment = true
       // Mock dependencies
@@ -220,6 +245,7 @@ describe('#Entry-REST-Controller', () => {
       await uut.postBchEntry(ctx)
       assert.equal(ctx.body.hash, 'fake-hash')
     })
+
     it('should catch and throw errors when retrieving BCH cost', async () => {
       uut.config.enableBchPayment = true
       try {
@@ -232,6 +258,7 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#getBalance', () => {
     it('should throw an error if BCH payments are disabled', async () => {
       uut.config.enableBchPayment = false
@@ -242,6 +269,7 @@ describe('#Entry-REST-Controller', () => {
         assert.include(err.message, 'BCH payments are not enabled in this instance of P2WDB.')
       }
     })
+
     it('should get the balances of the wallet', async () => {
       uut.config.enableBchPayment = true
       // Mock dependencies and force desired code path
@@ -250,6 +278,7 @@ describe('#Entry-REST-Controller', () => {
       await uut.getBalance(ctx)
       assert.equal(ctx.body.success, true)
     })
+
     it('should catch and throw errors when retrieving BCH cost', async () => {
       uut.config.enableBchPayment = true
       try {
@@ -261,6 +290,7 @@ describe('#Entry-REST-Controller', () => {
       }
     })
   })
+
   describe('#handleError', () => {
     it('should include error message', () => {
       try {
@@ -273,6 +303,7 @@ describe('#Entry-REST-Controller', () => {
         assert.include(err.message, 'test message')
       }
     })
+
     it('should still throw error if there is no message', () => {
       try {
         const err = {
@@ -282,6 +313,33 @@ describe('#Entry-REST-Controller', () => {
       } catch (err) {
         assert.include(err.message, 'Not Found')
       }
+    })
+  })
+
+  describe('#postTicketEntry', () => {
+    it('should throw an error if BCH payments are disabled', async () => {
+      uut.config.enableBchPayment = false
+      try {
+        await uut.postTicketEntry(ctx)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'BCH payments are not enabled in this instance of P2WDB.')
+      }
+    })
+
+    it('should write an entry paid in BCH', async () => {
+      uut.config.enableBchPayment = true
+
+      // Mock dependencies
+      sandbox.stub(uut.useCases.entry.addEntry, 'addTicketEntry').resolves({ hash: 'fake-hash', proofOfBurn: 'fake-txid' })
+
+      ctx.request.body = {}
+
+      await uut.postTicketEntry(ctx)
+
+      assert.equal(ctx.body.hash, 'fake-hash')
+      assert.equal(ctx.body.proofOfBurn, 'fake-txid')
     })
   })
 })

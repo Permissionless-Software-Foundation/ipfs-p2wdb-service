@@ -1,17 +1,17 @@
-import chai from 'chai'
+/*
+  Unit tests for the REST API handler for the /entry endpoints.
+*/
+
+// Public npm libraries
+import { assert } from 'chai'
 import sinon from 'sinon'
 import adapters from '../../../mocks/adapters/index.js'
 import UseCasesMock from '../../../mocks/use-cases/index.js'
 import EntryRouter from '../../../../../src/controllers/rest-api/entry/index.js'
-/*
-  Unit tests for the REST API handler for the /entry endpoints.
-*/
-// Public npm libraries
-const assert = chai.assert
+
 let uut
 let sandbox
-// let ctx
-// const mockContext = require('../../../../unit/mocks/ctx-mock').context
+
 describe('#Entry-REST-Router', () => {
   // const testUser = {}
   beforeEach(() => {
@@ -21,7 +21,9 @@ describe('#Entry-REST-Router', () => {
     // Mock the context object.
     // ctx = mockContext()
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#constructor', () => {
     it('should throw an error if adapters are not passed in', () => {
       try {
@@ -31,6 +33,7 @@ describe('#Entry-REST-Router', () => {
         assert.include(err.message, 'Instance of Adapters library required when instantiating Entry REST Controller.')
       }
     })
+
     it('should throw an error if useCases are not passed in', () => {
       try {
         uut = new EntryRouter({ adapters })
@@ -40,6 +43,7 @@ describe('#Entry-REST-Router', () => {
       }
     })
   })
+
   describe('#attach', () => {
     it('should throw an error if app is not passed in.', () => {
       try {
@@ -48,6 +52,17 @@ describe('#Entry-REST-Router', () => {
       } catch (err) {
         assert.include(err.message, 'Must pass app object when attached REST API controllers.')
       }
+    })
+  })
+
+  describe('#postTicketEntry', () => {
+    it('should route to the controller', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.entryRESTController, 'postTicketEntry').resolves()
+
+      const result = await uut.postTicketEntry()
+
+      assert.equal(result, true)
     })
   })
 })
