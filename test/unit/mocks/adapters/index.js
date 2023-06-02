@@ -103,6 +103,9 @@ const localdb = {
         async remove() {
             return {}
         }
+        static async deleteOne() {
+            return {}
+        }
     }
 };
 

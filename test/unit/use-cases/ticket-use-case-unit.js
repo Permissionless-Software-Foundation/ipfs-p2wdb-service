@@ -38,6 +38,85 @@ describe('#TicketUseCases', () => {
     })
   })
 
+  describe('#getTicketCount', () => {
+    it('should return the number of tickets in the database', async () => {
+      // Mock dependencies and force desired code path.
+      uut.TicketModel = ModelMock
+
+      const result = await uut.getTicketCount()
+      // console.log('result: ', result)
+
+      assert.isNumber(result)
+    })
+  })
+
+  describe('#manageTicketQueue', () => {
+    it('should return true after successfully managing the ticket queue', async () => {
+      // Mock dependencies and force desired code path.
+      uut.wallet = await adapters.ticket.instanceTicketWallet()
+      sandbox.stub(uut.adapters.wallet, 'getBalance').resolves(100000)
+      sandbox.stub(uut.adapters.wallet, 'getTokenBalance').resolves(100)
+      sandbox.stub(uut, 'getTicketCount').resolves(0)
+      uut.MAX_TICKETS = 0
+
+      const result = await uut.manageTicketQueue()
+
+      assert.equal(result, true)
+    })
+
+    it('should validate any existing tickets', async () => {
+      // This test simulates a consumed ticket, and the ability for the
+      // function to detect it, delete it, and create a new one.
+
+      // Mock dependencies and force desired code path.
+      uut.wallet = await adapters.ticket.instanceTicketWallet()
+      sandbox.stub(uut.adapters.wallet, 'getBalance').resolves(100000)
+      sandbox.stub(uut.adapters.wallet, 'getTokenBalance').resolves(100)
+      sandbox.stub(uut, 'getTicketCount').resolves(1)
+      sandbox.stub(uut.TicketModel, 'find').resolves([{ txid: 'fake-txid' }])
+      sandbox.stub(uut.readEntry, 'readByTxid').resolves({})
+      uut.MAX_TICKETS = 0
+
+      const result = await uut.manageTicketQueue()
+
+      assert.equal(result, true)
+    })
+
+    it('should skip any unused tickets', async () => {
+      // This test simulates a consumed ticket, and the ability for the
+      // function to detect it, delete it, and create a new one.
+
+      // Mock dependencies and force desired code path.
+      uut.wallet = await adapters.ticket.instanceTicketWallet()
+      sandbox.stub(uut.adapters.wallet, 'getBalance').resolves(100000)
+      sandbox.stub(uut.adapters.wallet, 'getTokenBalance').resolves(100)
+      sandbox.stub(uut, 'getTicketCount').resolves(1)
+      sandbox.stub(uut.TicketModel, 'find').resolves([{ txid: 'fake-txid' }])
+      sandbox.stub(uut.readEntry, 'readByTxid').rejects(new Error('not found'))
+      uut.MAX_TICKETS = 0
+
+      const result = await uut.manageTicketQueue()
+
+      assert.equal(result, true)
+    })
+
+    it('should create new tickets until queue is full', async () => {
+      // This test simulates the ability for the function to create new tickets
+
+      // Mock dependencies and force desired code path.
+      uut.wallet = await adapters.ticket.instanceTicketWallet()
+      sandbox.stub(uut.adapters.wallet, 'getBalance').resolves(100000)
+      sandbox.stub(uut.adapters.wallet, 'getTokenBalance').resolves(100)
+      sandbox.stub(uut, 'getTicketCount').resolves(0)
+      uut.MAX_TICKETS = 1
+      sandbox.stub(uut.adapters.ticket, 'createTicket').resolves({})
+
+      const result = await uut.manageTicketQueue()
+
+      assert.equal(result, true)
+    })
+  })
+
   describe('#start', () => {
     it('should start the ticket queue', async () => {
       // Mock dependencies and force desired code path.
@@ -89,18 +168,6 @@ describe('#TicketUseCases', () => {
       } catch (err) {
         assert.include(err.message, 'Insufficient PSF token balance in ticket wallet.')
       }
-    })
-  })
-
-  describe('#getTicketCount', () => {
-    it('should return the number of tickets in the database', async () => {
-      // Mock dependencies and force desired code path.
-      uut.TicketModel = ModelMock
-
-      const result = await uut.getTicketCount()
-      // console.log('result: ', result)
-
-      assert.isNumber(result)
     })
   })
 })

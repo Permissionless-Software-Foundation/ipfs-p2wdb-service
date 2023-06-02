@@ -36,6 +36,9 @@ class TicketUseCases {
     this.TicketModel = this.adapters.localdb.Tickets
     this.readEntry = new ReadEntry({ p2wdbAdapter: this.adapters.p2wdb })
     this.retryQueue = new RetryQueue()
+    this.MAX_TICKETS = MAX_TICKETS
+    this.MIN_SATS = MIN_SATS
+    this.MIN_PSF_TOKENS = MIN_PSF_TOKENS
 
     // State
     this.state = {
@@ -55,7 +58,6 @@ class TicketUseCases {
 
       // Create a wallet based on the keypair from HD index 1
       const keyPair = await this.adapters.wallet.getKeyPair(1)
-      // this.wallet = await this.adapters.ticket.instanceTicketWallet(keyPair)
       this.wallet = await this.retryQueue.addToQueue(this.adapters.ticket.instanceTicketWallet, keyPair)
       // console.log(`Ticket USE Case this.wallet.walletInfo: ${JSON.stringify(this.wallet.walletInfo, null, 2)}`)
 
@@ -76,14 +78,14 @@ class TicketUseCases {
       // Check that the wallet has a balance of BCH.
       const bchBalance = await this.retryQueue.addToQueue(this.wallet.getBalance, {})
       console.log(`bchBalance: ${JSON.stringify(bchBalance, null, 2)}`)
-      if (bchBalance < MIN_SATS) {
+      if (bchBalance < this.MIN_SATS) {
         throw new Error(`Can not generate pre-burn tickets. Insufficient BCH balance in ticket wallet. Must have at least ${MIN_SATS} satoshis. Send more than ${MIN_SATS} to ${this.wallet.walletInfo.cashAddress}, or disable ticket feature in config, to resolve this error.`)
       }
 
       // Check that the wallet has a balance of PSF tokens.
       const tokenBalance = await this.retryQueue.addToQueue(this.wallet.getTokenBalance, { tokenId: TOKEN_ID })
       console.log(`tokenBalance: ${JSON.stringify(tokenBalance, null, 2)}`)
-      if (tokenBalance < MIN_PSF_TOKENS) {
+      if (tokenBalance < this.MIN_PSF_TOKENS) {
         throw new Error(`Can not generate pre-burn tickets. Insufficient PSF token balance in ticket wallet. Must have at least ${MIN_PSF_TOKENS} PSF tokens. Send more than ${MIN_PSF_TOKENS} PSF tokens to ${this.wallet.walletInfo.slpAddress}, or disable ticket feature in config, to resolve this error.`)
       }
 
@@ -99,12 +101,10 @@ class TicketUseCases {
             const result = await this.readEntry.readByTxid(ticket.txid)
             console.log('Ticket result: ', result)
 
-            if (result) {
-              console.log(`Ticket ${ticket.txid} has already been consumed. Deleting this ticket from the database.`)
+            console.log(`Ticket ${ticket.txid} has already been consumed. Deleting this ticket from the database.`)
 
-              // The ticket has been consumed, so remove it from the database.
-              await this.TicketModel.deleteOne({ txid: ticket.txid })
-            }
+            // The ticket has been consumed, so remove it from the database.
+            await this.TicketModel.deleteOne({ txid: ticket.txid })
           } catch (err) {
             // Throwing an error here is a good thing. It means the ticket is
             // unused and still valid.
@@ -116,12 +116,14 @@ class TicketUseCases {
       ticketCnt = await this.getTicketCount()
 
       // Create more tickets if there are less than the maximum allowed.
-      if (ticketCnt < MAX_TICKETS) {
-        const cntDiff = MAX_TICKETS - ticketCnt
+      if (ticketCnt < this.MAX_TICKETS) {
+        const cntDiff = this.MAX_TICKETS - ticketCnt
         for (let i = 0; i < cntDiff; i++) {
           await this.adapters.ticket.createTicket({ TicketModel: this.TicketModel })
         }
       }
+
+      return true
     } catch (err) {
       console.error('Error in manageTicketQueue()')
       throw err
