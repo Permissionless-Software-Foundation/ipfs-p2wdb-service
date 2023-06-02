@@ -25,6 +25,7 @@
   },
   "repository": "Permissionless-Software-Foundation/ipfs-p2wdb-service",
   "dependencies": {
+    "@chris.troutner/retry-queue": "1.0.8",
     "@psf/bch-js": "6.7.3",
     "axios": "0.27.2",
     "bcryptjs": "2.4.3",
@@ -47,7 +48,7 @@
     "koa-static": "5.0.0",
     "koa2-ratelimit": "0.9.1",
     "line-reader": "0.4.0",
-    "minimal-slp-wallet": "5.9.1",
+    "minimal-slp-wallet": "5.10.0",
     "mongoose": "5.13.14",
     "node-fetch": "npm:@achingbrain/node-fetch@2.6.7",
     "nodemailer": "6.7.5",

@@ -244,8 +244,14 @@ class AddEntry {
 
       // Delete the BCH payment database model.
       await bchPayment.remove()
+      console.log('ticket: ', ticket)
+      // Delete the ticket from the database.
+      await ticket.remove()
 
-      return hash
+      return {
+        hash,
+        proofOfBurn: ticket.txid
+      }
     } catch (err) {
       console.error('Error in use-cases/entry/add-entry.js/addTicketEntry(): ', err)
       throw err

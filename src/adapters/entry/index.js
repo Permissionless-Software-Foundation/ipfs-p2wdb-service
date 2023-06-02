@@ -1,4 +1,5 @@
 import KeyValue from '../localdb/models/key-value.js'
+
 class EntryAdapter {
   constructor (localConfig = {}) {
     // Encapsulate dependencies.

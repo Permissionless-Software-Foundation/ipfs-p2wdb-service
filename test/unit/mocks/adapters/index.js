@@ -95,6 +95,15 @@ const localdb = {
             return {};
         }
     },
+    Tickets: class Tickets {
+        static find() { }
+        async save() {
+            return {};
+        }
+        async remove() {
+            return {}
+        }
+    }
 };
 
 const writePrice = {

@@ -593,11 +593,12 @@ class EntryRESTControllerLib {
       console.log(`body data: ${JSON.stringify(writeObj, null, 2)}`)
 
       // const hash = await this.addEntry.addUserEntry(writeObj)
-      const hash = await this.useCases.entry.addEntry.addTicketEntry(writeObj)
+      const { hash, proofOfBurn } = await this.useCases.entry.addEntry.addTicketEntry(writeObj)
 
       ctx.body = {
         success: true,
-        hash
+        hash,
+        proofOfBurn
       }
     } catch (err) {
       // console.log('Error in post-entry.js/restController(): ', err)

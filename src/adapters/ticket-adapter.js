@@ -21,6 +21,11 @@ class TicketAdapter {
     this.BchWallet = BchWallet
     this.wallet = null // placeholder
     this.Write = Write
+
+    // Bind 'this' object to all subfunctions.
+    this.instanceTicketWallet = this.instanceTicketWallet.bind(this)
+    this.createTicket = this.createTicket.bind(this)
+    this._instanceWallet = this._instanceWallet.bind(this)
   }
 
   // Instance the wallet that will be used to generate tickets. This is the
@@ -74,13 +79,17 @@ class TicketAdapter {
       // Instantiate the write library.
       const write = new this.Write({ bchWallet: this.wallet })
 
+      console.log('Creating new pre-burn ticket...')
+
       // Create a ticket.
       const ticket = await write.createTicket()
-      // console.log(`ticket: ${JSON.stringify(ticket, null, 2)}`)
+      console.log(`ticket: ${JSON.stringify(ticket, null, 2)}`)
 
       // Save the ticket to the database.
       const newTicket = new TicketModel(ticket)
       await newTicket.save()
+
+      console.log(`...new pre-burn ticket created with TXID: ${ticket.txid}`)
 
       return ticket
     } catch (err) {

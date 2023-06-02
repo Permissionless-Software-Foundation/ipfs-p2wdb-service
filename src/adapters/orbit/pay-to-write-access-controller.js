@@ -36,6 +36,7 @@ class PayToWriteAccessController extends AccessController {
     this.validationEvent = validationEvent
     // this.webhook = new Webhook()
     // this.initialize()
+
     _this = this
   }
 
@@ -363,7 +364,8 @@ class PayToWriteAccessController extends AccessController {
       // const txData = await this.bchjs.PsfSlpIndexer.tx(txid)
       let txData = await this.wallet.getTxData([txid])
       txData = txData[0]
-      // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
+      console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
+
       const isValidSLPTx = txData.isValidSlp
       // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
       console.log(`Reviewing TXID: ${txid}`)

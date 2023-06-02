@@ -1,6 +1,7 @@
 import AddEntry from './add-entry.js'
 import ReadEntry from './read-entry.js'
 import Cost from './cost.js'
+
 class EntryUseCases {
   constructor (localConfig = {}) {
     this.adapters = localConfig.adapters

@@ -25,8 +25,10 @@ describe('#AddEntry', () => {
     //   entryAdapter: adaptersMock.entry
     // })
     // console.log('adaptersMock: ', adaptersMock)
+
     const adapters = clone(adaptersMock)
     // console.log('adapters: ', adapters)
+
     uut = new AddEntry({ adapters })
     rawData = {
       hash: 'zdpuAuxCW346zUG71Aai21Y31EJ1XNxcjXV5rz93DxftKnpjn',
@@ -283,7 +285,8 @@ describe('#AddEntry', () => {
       sandbox.stub(uut.adapters.localdb.Tickets, 'find').resolves([{
         txid: 'fake-txid',
         signature: 'fake-sig',
-        message: 'fake-message'
+        message: 'fake-message',
+        remove: async () => {}
       }])
 
       // Mock BCH wallet
@@ -293,6 +296,7 @@ describe('#AddEntry', () => {
       sandbox.stub(tempWallet, 'initialize').resolves()
       sandbox.stub(tempWallet, 'sendAll').resolves('fake-txid')
       sandbox.stub(uut, '_createTempWallet').resolves(tempWallet)
+      sandbox.stub(uut.axios, 'post').resolves('fake-hash')
 
       // Mock the P2WDB library
       uut.Write = class Write {
@@ -308,7 +312,8 @@ describe('#AddEntry', () => {
       const result = await uut.addTicketEntry(data)
       console.log('result: ', result)
 
-      assert.equal(result, 'fake-hash')
+      assert.property(result, 'hash')
+      assert.property(result, 'proofOfBurn')
     })
 
     // it('should throw an error if BCH address is not found in the database', async () => {

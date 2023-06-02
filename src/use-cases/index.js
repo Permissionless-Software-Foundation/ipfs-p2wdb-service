@@ -34,7 +34,9 @@ class UseCases {
     try {
       // Start the Ticket use case library if it is enabled in the config.
       if (this.config.enablePreBurnTicket && this.config.env !== 'test') {
-        await this.ticket.start()
+        // Start the pre-burn ticket feature. Do not await, since we do not
+        // want this to block startup of the server.
+        this.ticket.start()
       }
 
       console.log('Async Use Cases have been started.')

@@ -41,6 +41,7 @@ describe('#TicketUseCases', () => {
   describe('#start', () => {
     it('should start the ticket queue', async () => {
       // Mock dependencies and force desired code path.
+      sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({})
       sandbox.stub(uut, 'getTicketCount').resolves(0)
 
       const result = await uut.start()
@@ -65,6 +66,7 @@ describe('#TicketUseCases', () => {
     it('should throw an error if ticket wallet does not have enough BCH', async () => {
       try {
         // Force an error
+        sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({})
         sandbox.stub(uut.adapters.wallet, 'getBalance').resolves(0)
 
         await uut.start()
@@ -78,6 +80,7 @@ describe('#TicketUseCases', () => {
     it('should throw an error if ticket wallet does not have enough PSF tokens', async () => {
       try {
         // Force an error
+        sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({})
         sandbox.stub(uut.adapters.wallet, 'getTokenBalance').resolves(0)
 
         await uut.start()
