@@ -1,4 +1,3 @@
-
 /*
   This is a top-level library that encapsulates all the additional Use Cases.
   The concept of Use Cases comes from Clean Architecture:

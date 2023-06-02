@@ -40,7 +40,10 @@ describe('#use-cases', () => {
   })
 
   describe('#start', () => {
-    it('should initialize async use cases', async () => {
+    it('should start the pre-burn ticket feature if it is configured', async () => {
+      uut.config.enablePreBurnTicket = true
+      uut.config.env = 'not-test'
+
       sandbox.stub(uut.ticket, 'start').resolves()
 
       const result = await uut.start()
@@ -48,9 +51,30 @@ describe('#use-cases', () => {
       assert.equal(result, true)
     })
 
-    // it('should catch and throw errors', async () => {
-    //   // Force an error
-    //   sandbox.stub()
-    // })
+    it('should catch and throw errors', async () => {
+      uut.config.enablePreBurnTicket = true
+      uut.config.env = 'not-test'
+
+      try {
+        sandbox.stub(uut.ticket, 'start').throws(new Error('test error'))
+
+        await uut.start()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+
+    it('should initialize async use cases', async () => {
+      uut.config.enablePreBurnTicket = false
+      uut.config.env = 'test'
+
+      sandbox.stub(uut.ticket, 'start').resolves()
+
+      const result = await uut.start()
+
+      assert.equal(result, true)
+    })
   })
 })
