@@ -46,12 +46,14 @@ class UseCasesMock {
         // this.user = new UserUseCaseMock(localConfig)
     }
     user = new UserUseCaseMock();
+
     webhook = {
         addWebhook: {
             addNewWebhook: async () => { }
         },
         remove: async () => { }
     };
+
     entry = {
         readEntry: new ReadEntryMock(),
         addEntry: {
@@ -67,6 +69,10 @@ class UseCasesMock {
             getBchCost: async () => { }
         }
     };
+
+    ticket = {
+      manageTicketQueue: async () => { }
+    }
 }
 
 export default UseCasesMock;

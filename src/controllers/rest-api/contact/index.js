@@ -30,7 +30,7 @@ class ContactRouter {
 
     // Bind the 'this' object to all subfunctions.
     this.attach = this.attach.bind(this)
-    this.getAllowList = this.getAllowList.bind(this)
+    // this.getAllowList = this.getAllowList.bind(this)
   }
 
   attach (app) {
@@ -40,7 +40,7 @@ class ContactRouter {
 
     // Define the routes and attach the controller.
     this.router.post('/email', this.contactRESTController.email)
-    this.router.get('/allowlist', this.getAllowList)
+    // this.router.get('/allowlist', this.getAllowList)
 
     // Attach the Controller routes to the Koa app.
     app.use(this.router.routes())
@@ -48,15 +48,15 @@ class ContactRouter {
   }
 
   // Temporary prototype code to test an idea around bandwidth limiting IPFS peers.
-  getAllowList (ctx) {
-    try {
-      const allowList = this.adapters.ipfs.ipfsCoord.adapters.ipfs.ipfs.config.get('Swarm.ResourceMgr.Allowlist')
-      console.log('allowList: ', allowList)
+  // getAllowList (ctx) {
+  //   try {
+  //     const allowList = this.adapters.ipfs.ipfsCoord.adapters.ipfs.ipfs.config.get('Swarm.ResourceMgr.Allowlist')
+  //     console.log('allowList: ', allowList)
 
-      ctx.body = allowList
-    } catch (err) {
-      ctx.throw(422, err.message)
-    }
-  }
+  //     ctx.body = allowList
+  //   } catch (err) {
+  //     ctx.throw(422, err.message)
+  //   }
+  // }
 }
 export default ContactRouter
