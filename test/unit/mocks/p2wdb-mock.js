@@ -20,5 +20,15 @@ class P2WDB {
     async readByAppId() {
         return { data: 'some data' };
     }
+
+    async createTicket() {
+        return { 
+            txid: 'fake-txid',
+            signature: 'fake-signature',
+            message: 'fake-message',
+            timestamp: 'fake-timestamp',
+            localTimeStamp: 'fake-localTimeStamp'
+        };
+    }
 }
 export default P2WDB;

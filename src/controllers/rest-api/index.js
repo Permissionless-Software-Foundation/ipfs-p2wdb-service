@@ -4,6 +4,7 @@ import ContactRESTController from './contact/index.js'
 import LogsRESTController from './logs/index.js'
 import EntryRESTController from './entry/index.js'
 import WebhookRESTController from './webhook/index.js'
+
 class RESTControllers {
   constructor (localConfig = {}) {
     // Dependency Injection.

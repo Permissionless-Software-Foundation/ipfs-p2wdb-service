@@ -14,4 +14,6 @@ if (env === 'test') {
   config = production
 }
 
+config.env = env
+
 export default Object.assign({}, common, config)

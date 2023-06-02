@@ -6,6 +6,7 @@ import ContactLib from '../../../adapters/contact.js'
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 const contactLib = new ContactLib()
 let _this
+
 class ContactController {
   constructor () {
     _this = this

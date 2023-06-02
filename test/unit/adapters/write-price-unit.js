@@ -112,6 +112,7 @@ describe('#write-price', () => {
       // console.log('result: ', result)
       assert.equal(result, 0.08335233)
     })
+
     it('should return safety price if no approval tx can be found', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.ps009, 'getApprovalTx').resolves(null)
@@ -119,6 +120,7 @@ describe('#write-price', () => {
       // console.log('result: ', result)
       assert.equal(result, 0.08335233)
     })
+
     it('should throw error and return safety price if wallet is not initialized', async () => {
       // Mock dependencies and force desired code path.
       uut.wallet = undefined

@@ -1,27 +1,34 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import BchWallet from 'minimal-slp-wallet'
-import clone from 'lodash.clonedeep'
-import AddEntry from '../../../../src/use-cases/entry/add-entry.js'
-import adaptersMock from '../../mocks/adapters/index.js'
 /*
   Unit tests for the P2WDB Add Entry Use Cases
 */
+
 // Global npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+import BchWallet from 'minimal-slp-wallet'
+import clone from 'lodash.clonedeep'
+
+// Local libraries
+import AddEntry from '../../../../src/use-cases/entry/add-entry.js'
+import adaptersMock from '../../mocks/adapters/index.js'
+
 let sandbox
 let uut
 let rawData
+
 describe('#AddEntry', () => {
   before(async () => { })
+
   beforeEach(() => {
     // uut = new AddEntry({
     //   p2wdbAdapter: adaptersMock.p2wdb,
     //   entryAdapter: adaptersMock.entry
     // })
     // console.log('adaptersMock: ', adaptersMock)
+
     const adapters = clone(adaptersMock)
     // console.log('adapters: ', adapters)
+
     uut = new AddEntry({ adapters })
     rawData = {
       hash: 'zdpuAuxCW346zUG71Aai21Y31EJ1XNxcjXV5rz93DxftKnpjn',
@@ -32,7 +39,9 @@ describe('#AddEntry', () => {
     }
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#constructor', () => {
     it('should throw an error if adapters instance is not included', () => {
       try {
@@ -42,6 +51,7 @@ describe('#AddEntry', () => {
         assert.include(err.message, 'Instance of adapters must be passed in when instantiating Entry Use Cases library.')
       }
     })
+
     it('should throw an error if p2wdb instance is not included', () => {
       try {
         const adapters = clone(adaptersMock)
@@ -52,6 +62,7 @@ describe('#AddEntry', () => {
         assert.include(err.message, 'p2wdb adapter instance must be included when instantiating AddEntry')
       }
     })
+
     it('should throw an error if entry adapter instance is not included', () => {
       try {
         const adapters = clone(adaptersMock)
@@ -63,6 +74,7 @@ describe('#AddEntry', () => {
       }
     })
   })
+
   describe('#addUserEntry', () => {
     it('should throw an error if entry already exists in the database.', async () => {
       try {
@@ -74,6 +86,7 @@ describe('#AddEntry', () => {
         assert.include(err.message, 'Entry already exists in the database.')
       }
     })
+
     it('should add an entry to the P2WDB', async () => {
       // Mock dependencies
       // console.log('uut.entryAdapter: ', uut.entryAdapter)
@@ -83,6 +96,7 @@ describe('#AddEntry', () => {
       assert.equal(result, 'test-hash')
     })
   })
+
   describe('#addPeerEntry', () => {
     it('should throw an error if entry already exists in the database.', async () => {
       try {
@@ -94,6 +108,7 @@ describe('#AddEntry', () => {
         assert.include(err.message, 'Entry already exists in the database.')
       }
     })
+
     it('should add an entry to the P2WDB', async () => {
       // Mock dependencies
       sandbox.stub(uut.entryAdapter, 'doesEntryExist').resolves(false)
@@ -101,6 +116,7 @@ describe('#AddEntry', () => {
       assert.equal(result, true)
     })
   })
+
   describe('#_extractAppId', () => {
     it('should extract appId from data', () => {
       // Create test data for input.
@@ -114,6 +130,7 @@ describe('#AddEntry', () => {
       // console.log('result: ', result)
       assert.equal(result.appId, 'test')
     })
+
     it('should exit quietly when there is an error, and returns input data.', () => {
       // Create test data for input.
       let peerData = {
@@ -127,6 +144,7 @@ describe('#AddEntry', () => {
       assert.include(result, 'test')
     })
   })
+
   describe('#addBchEntry', () => {
     it('should write an entry to the P2WDB', async () => {
       // Mock dependencies
@@ -164,6 +182,7 @@ describe('#AddEntry', () => {
       // console.log('result: ', result)
       assert.equal(result, 'fake-hash')
     })
+
     it('should throw an error if BCH address is not found in the database', async () => {
       try {
         // Force desired code path
@@ -179,6 +198,7 @@ describe('#AddEntry', () => {
         assert.include(err.message, 'Payment model not found. Call POST /entry/cost/bch first to get a BCH payment address.')
       }
     })
+
     it('should throw an error if BCH payment has not been made', async () => {
       try {
         // Force desired code path
@@ -203,6 +223,7 @@ describe('#AddEntry', () => {
         assert.include(err.message, 'which is less than the required fee of')
       }
     })
+
     it('should throw an error issue with database lookup of address', async () => {
       try {
         // Force desired code path
@@ -233,12 +254,182 @@ describe('#AddEntry', () => {
       }
     })
   })
+
   describe('#_createTempWallet', () => {
     it('should create a wallet given a WIF', async () => {
       const wif = 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS'
       const result = await uut._createTempWallet(wif)
       // console.log('result: ', result)
       assert.equal(result.walletInfo.privateKey, wif)
+    })
+  })
+
+  describe('#addTicketEntry', () => {
+    it('should write an entry to the P2WDB', async () => {
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+        _id: '63054bb29ebc5f612533845a',
+        address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+        hdIndex: '5',
+        timeCreated: '2022-08-23T21:50:42.253Z',
+        bchCost: '0.00011073',
+        __v: 0,
+        remove: async () => { }
+      })
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(11073)
+      sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
+        cashAddress: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+        wif: 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS',
+        hdIndex: '6'
+      })
+      sandbox.stub(uut.adapters.localdb.Tickets, 'find').resolves([{
+        txid: 'fake-txid',
+        signature: 'fake-sig',
+        message: 'fake-message',
+        remove: async () => {}
+      }])
+
+      // Mock BCH wallet
+      const tempWallet = new BchWallet()
+      await tempWallet.walletInfoPromise
+
+      sandbox.stub(tempWallet, 'initialize').resolves()
+      sandbox.stub(tempWallet, 'sendAll').resolves('fake-txid')
+      sandbox.stub(uut, '_createTempWallet').resolves(tempWallet)
+      sandbox.stub(uut.axios, 'post').resolves('fake-hash')
+
+      // Mock the P2WDB library
+      uut.Write = class Write {
+        async postEntry () { return 'fake-hash' }
+      }
+
+      const data = {
+        address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+        data: 'fake-data',
+        appId: 'fake-appId'
+      }
+
+      const result = await uut.addTicketEntry(data)
+      console.log('result: ', result)
+
+      assert.property(result, 'hash')
+      assert.property(result, 'proofOfBurn')
+    })
+
+    it('should throw an error if BCH address is not found in the database', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves(null)
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+        await uut.addTicketEntry(data)
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Payment model not found. Call POST /entry/cost/bch first to get a BCH payment address.')
+      }
+    })
+
+    it('should throw an error if BCH payment has not been made', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+          _id: '63054bb29ebc5f612533845a',
+          address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+          hdIndex: '5',
+          timeCreated: '2022-08-23T21:50:42.253Z',
+          bchCost: '0.00011073',
+          __v: 0,
+          remove: async () => { }
+        })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(0)
+
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+        await uut.addTicketEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'which is less than the required fee of')
+      }
+    })
+
+    it('should throw an error if there are no tickets in the database', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+          _id: '63054bb29ebc5f612533845a',
+          address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+          hdIndex: '5',
+          timeCreated: '2022-08-23T21:50:42.253Z',
+          bchCost: '0.00011073',
+          __v: 0,
+          remove: async () => { }
+        })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(11073)
+        sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
+          cashAddress: 'bad-address',
+          wif: 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS',
+          hdIndex: '6'
+        })
+        sandbox.stub(uut.adapters.localdb.Tickets, 'find').resolves([])
+
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+        await uut.addTicketEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'No pre-burned tickets available')
+      }
+    })
+
+    it('should throw an error issue with database lookup of address', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+          _id: '63054bb29ebc5f612533845a',
+          address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+          hdIndex: '5',
+          timeCreated: '2022-08-23T21:50:42.253Z',
+          bchCost: '0.00011073',
+          __v: 0,
+          remove: async () => { }
+        })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(11073)
+        sandbox.stub(uut.adapters.localdb.Tickets, 'find').resolves([{
+          txid: 'fake-txid',
+          signature: 'fake-sig',
+          message: 'fake-message',
+          remove: async () => {}
+        }])
+        sandbox.stub(uut.axios, 'post').resolves({ data: { hash: 'fake-hash' } })
+        sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
+          cashAddress: 'bad-address',
+          wif: 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS',
+          hdIndex: '6'
+        })
+        // sandbox.stub(uut.adapters.wallet,'getKeyPair').resolves('abc123')
+
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+        await uut.addTicketEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Unexpected error: HD index')
+      }
     })
   })
 })

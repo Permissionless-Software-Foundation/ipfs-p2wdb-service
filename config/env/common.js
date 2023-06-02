@@ -48,7 +48,7 @@ const config = {
   // ipfs-bch-wallet-consumer URL
   consumerUrl: process.env.CONSUMER_URL
     ? process.env.CONSUMER_URL
-    : 'https://free-bch.fullstack.cash/',
+    : 'https://free-bch.fullstack.cash',
 
   // IPFS settings.
   isCircuitRelay: !!process.env.ENABLE_CIRCUIT_RELAY,
@@ -78,6 +78,7 @@ const config = {
   //   ? parseFloat(process.env.REQ_TOKEN_QTY)
   //   : 0.08335233,
   reqTokenQty: 0.08335233,
+
   // JSON-LD and Schema.org schema with info about this app.
   announceJsonLd: {
     '@context': 'https://schema.org/',
@@ -114,7 +115,13 @@ const config = {
   // Turn on pay-in-bch plugin. Disabled by default. Use env var to overwrite.
   enableBchPayment: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
   // By default use the web3 Cash Stack from CashStack.info, but can overide to use web2 infra like FullStack.cash
+
   useFullStackCash: !!process.env.USE_FULLSTACKCASH,
-  ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/'
+
+  ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/',
+
+  // Pre-burn ticket feature
+  // enablePreBurnTicket: process.env.ENABLE_PRE_BURN_TICKET ? true : false
+  enablePreBurnTicket: true
 }
 export default config

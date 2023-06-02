@@ -1,17 +1,21 @@
-import chai from 'chai'
-import PayToWriteAccessController from '../../../../src/adapters/orbit/pay-to-write-access-controller.js'
-import sinon from 'sinon'
-import mongoose from 'mongoose'
-import config from '../../../../config/index.js'
-import util from 'util'
-import mock from '../../mocks/pay-to-write-mock.js'
 /*
   Unit tests for the pay-to-write access controller for OrbitDB.
 */
-const assert = chai.assert
+
+import { assert } from 'chai'
+import sinon from 'sinon'
+import mongoose from 'mongoose'
+
+import PayToWriteAccessController from '../../../../src/adapters/orbit/pay-to-write-access-controller.js'
+import config from '../../../../config/index.js'
+import util from 'util'
+import mock from '../../mocks/pay-to-write-mock.js'
+
 util.inspect.defaultOptions = { depth: 1 }
+
 let sandbox
 let uut
+
 describe('#PayToWriteAccessController', () => {
   before(async () => {
     // Connect to the Mongo Database.
@@ -23,15 +27,19 @@ describe('#PayToWriteAccessController', () => {
       useNewUrlParser: true
     })
   })
+
   beforeEach(async () => {
     uut = new PayToWriteAccessController()
     await uut.initialize()
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => sandbox.restore())
+
   after(() => {
     mongoose.connection.close()
   })
+
   describe('#initialize', () => {
     it('should initialize the library', async () => {
       // Mock dependencies and force desired code path
@@ -212,8 +220,12 @@ describe('#PayToWriteAccessController', () => {
       const result = await uut._validateTx(txId, entry)
       assert.isFalse(result)
     })
+
     it('should return true if required tokens are burned', async () => {
+      const existingReqTokenQty = uut.config.reqTokenQty
+
       uut.config.reqTokenQty = 0
+
       sandbox.stub(uut.wallet, 'getTxData').resolves([
         {
           tokenId: '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
@@ -222,8 +234,10 @@ describe('#PayToWriteAccessController', () => {
           vout: []
         }
       ])
+
       // sandbox.stub(uut.bchjs.Transaction, 'get').resolves(mock.txInfo)
       sandbox.stub(uut, 'getTokenQtyDiff').resolves(0.5)
+
       // Mock data
       const now = new Date()
       const entry = {
@@ -235,9 +249,14 @@ describe('#PayToWriteAccessController', () => {
       }
       uut._options.writePrice = { currentRate: 0.133 }
       const txId = mock.tx.txid
+
       const result = await uut._validateTx(txId, entry)
+
       assert.isTrue(result)
+
+      uut.config.reqTokenQty = existingReqTokenQty
     })
+
     it('should display complete error if it has no message', async () => {
       try {
         sandbox
@@ -636,27 +655,30 @@ describe('#PayToWriteAccessController', () => {
       await uut.revoke(1, 'a')
     })
   })
+
   describe('#_onUpdate', () => {
     it('should emit an update signal', () => {
       uut.emit = () => { }
       uut._onUpdate()
     })
   })
+
   // describe('#create', () => {
   //   it('should create a new database', async () => {
   //     // Mock dependencies and force desired code path
-  //     dbMock = {
+  //     const dbMock = {
   //       close: async () => {},
   //       events: {
   //         on: () => {}
   //       },
   //       load: async () => {}
   //     }
+
   //     // sandbox.stub(uut._orbitdb,'keyvalue').resolves({events: { on: () => {}}})
   //     uut._orbitdb = {
   //       keyvalue: async () => dbMock
   //     }
-  //
+
   //     const result = await PayToWriteAccessController.create()
   //     console.log('result: ', result)
   //   })

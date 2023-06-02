@@ -3,10 +3,12 @@ import config from '../../../config/index.js'
 import validationEvent from './validation-event.js'
 import AccessControllers from 'orbit-db-access-controllers'
 import PayToWriteAccessController from './pay-to-write-access-controller.js'
+
 AccessControllers.addAccessController({
   AccessController: PayToWriteAccessController
 })
 // let _this
+
 class OrbitDBAdapter {
   constructor (localConfig = {}) {
     // Dependency injection

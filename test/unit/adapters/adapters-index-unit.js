@@ -1,20 +1,26 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import Adapters from '../../../src/adapters/index.js'
 /*
   Unit tests for the adapters index.js library
 */
+
 // Global npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+// Local libraries
+import Adapters from '../../../src/adapters/index.js'
+
 describe('#adapters', () => {
   let uut, sandbox
+
   beforeEach(() => {
     uut = new Adapters()
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => {
     sandbox.restore()
   })
+
   describe('#start', () => {
     it('should start the async adapters', async () => {
       // Mock dependencies
@@ -28,6 +34,7 @@ describe('#adapters', () => {
       const result = await uut.start()
       assert.equal(result, true)
     })
+
     it('should enable BCH payments if that flag is set', async () => {
       // Mock dependencies
       uut.config.getJwtAtStartup = true
@@ -37,14 +44,19 @@ describe('#adapters', () => {
       sandbox.stub(uut.ipfs, 'start').resolves()
       sandbox.stub(uut.p2wdb, 'start').resolves()
       sandbox.stub(uut.writePrice, 'getMcWritePrice').resolves(0.2)
+
       // Force desired code path
       uut.config.enableBchPayment = true
       sandbox.stub(uut.writePrice, 'getWriteCostInBch').resolves(0.00001)
       sandbox.stub(uut.wallet, 'openWallet').resolves()
       sandbox.stub(uut.wallet, 'instanceWallet').resolves()
+      sandbox.stub(uut.wallet, 'getKeyPair').resolves({})
+
       const result = await uut.start()
+
       assert.equal(result, true)
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error

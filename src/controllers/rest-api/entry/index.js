@@ -14,12 +14,15 @@ class EntryController {
     if (!this.useCases) {
       throw new Error('Instance of Use Cases library required when instantiating Entry REST Controller.')
     }
+
     const dependencies = {
       adapters: this.adapters,
       useCases: this.useCases
     }
+
     // Encapsulate dependencies.
     this.entryRESTController = new EntryRESTControllerLib(dependencies)
+
     // Instantiate the router.
     const baseUrl = '/entry'
     this.router = new Router({ prefix: baseUrl })
@@ -30,6 +33,7 @@ class EntryController {
     if (!app) {
       throw new Error('Must pass app object when attached REST API controllers.')
     }
+
     // Define the routes and attach the controller.
     this.router.post('/write', this.postEntry)
     this.router.get('/all/:page', this.readAllEntries)
@@ -39,7 +43,9 @@ class EntryController {
     this.router.get('/cost/psf', this.getPsfCost)
     this.router.get('/cost/bch', this.getBchCost)
     this.router.post('/write/bch', this.postBchEntry)
+    this.router.post('/write/ticket', this.postTicketEntry)
     this.router.get('/balance', this.getBalance)
+
     // Attach the Controller routes to the Koa app.
     app.use(cors({ origin: '*' }))
     app.use(this.router.routes())
@@ -54,6 +60,13 @@ class EntryController {
   async postBchEntry (ctx, next) {
     // await _this.validators.ensureUser(ctx, next)
     await _this.entryRESTController.postBchEntry(ctx, next)
+  }
+
+  async postTicketEntry (ctx, next) {
+    // await _this.validators.ensureUser(ctx, next)
+    await _this.entryRESTController.postTicketEntry(ctx, next)
+
+    return true
   }
 
   async readAllEntries (ctx, next) {

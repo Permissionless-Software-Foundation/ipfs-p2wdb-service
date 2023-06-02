@@ -1,8 +1,13 @@
+
+// Global npm libraries
 import axios from 'axios'
 import MultisigApproval from 'psf-multisig-approval'
+
+// Local libraries
 import config from '../../config/index.js'
 import WalletAdapter from './wallet.js'
 import WritePriceModel from './localdb/models/write-price.js'
+
 class WritePrice {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
@@ -13,11 +18,18 @@ class WritePrice {
     this.config = config
     this.WalletAdapter = WalletAdapter
     this.WritePriceModel = WritePriceModel
+
     // state
     this.currentRate = config.reqTokenQty
     this.currentRateInBch = 0.00008544
     this.priceHistory = []
     this.filterTxids = [] // Tracks invalid approval TXs
+
+    // Bind 'this' object to class subfunctions.
+    this.instanceWallet = this.instanceWallet.bind(this)
+    this.getWriteCostInBch = this.getWriteCostInBch.bind(this)
+    this.getPsfPriceInBch = this.getPsfPriceInBch.bind(this)
+    this.getMcWritePrice = this.getMcWritePrice.bind(this)
   }
 
   // Instantiate the wallet if it has not already been instantiated.
@@ -81,7 +93,8 @@ class WritePrice {
     // This value is returned if there are any issues returning the write price.
     // It should be higher than actual fee, so that any writes will propegate to
     // the P2WDB nodes that successfully retrieved the current write price.
-    let writePrice = 0.08335233
+    let writePrice = this.config.reqTokenQty
+
     try {
       const WRITE_PRICE_ADDR = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'
       // Instance the wallet.
@@ -155,4 +168,5 @@ class WritePrice {
     return writePrice
   }
 }
+
 export default WritePrice

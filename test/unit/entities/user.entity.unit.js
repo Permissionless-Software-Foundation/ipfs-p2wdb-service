@@ -1,19 +1,25 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import User from '../../../src/entities/user.js'
 /*
   Unit tests for the User entity library.
 */
+
+import chai from 'chai'
+import sinon from 'sinon'
+import User from '../../../src/entities/user.js'
+
 const assert = chai.assert
 let sandbox
 let uut
+
 describe('#User-Entity', () => {
   before(async () => { })
+
   beforeEach(() => {
     uut = new User()
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#validate', () => {
     it('should throw an error if email is not provided', () => {
       try {

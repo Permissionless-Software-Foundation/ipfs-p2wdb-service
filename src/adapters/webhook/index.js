@@ -1,14 +1,18 @@
 import axios from 'axios'
 import validationEvent from '../orbit/validation-event.js'
 import WebhookModel from '../localdb/models/webhook.js'
+
 let _this
+
 class WebhookAdapter {
   constructor (localConfig) {
     // Attach the event handler to the event.
     validationEvent.on('ValidationSucceeded', this.validationSucceededEventHandler)
+
     // Encapsulate dependencies
     this.WebhookModel = WebhookModel
     this.axios = axios
+
     _this = this
   }
 
@@ -57,9 +61,11 @@ class WebhookAdapter {
   // It loops through each match and executes that webhook.
   async triggerWebhook (matches, data) {
     console.log('triggerWebhook() triggered with these matches: ', matches)
+
     for (let i = 0; i < matches.length; i++) {
       const thisMatch = matches[i]
       console.log(`Webhook triggered. appId: ${thisMatch.appId}, Calling: ${thisMatch.url}`)
+
       try {
         // Call the webhook.
         await this.axios.post(thisMatch.url, data)
@@ -67,6 +73,8 @@ class WebhookAdapter {
         /* exit quietly */
       }
     }
+
+    return true
   }
 
   // Add a new Webhook entity to the local database.

@@ -14,6 +14,7 @@ import EntryAdapter from './entry/index.js'
 import WebhookAdapter from './webhook/index.js'
 import WritePrice from './write-price.js'
 import Wallet from './wallet.js'
+import Ticket from './ticket-adapter.js'
 import config from '../../config/index.js'
 
 class Adapters {
@@ -31,6 +32,8 @@ class Adapters {
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()
     this.wallet = new Wallet()
+    this.ticket = new Ticket()
+
     // Pass the instance of write-price when instantiating the P2WDB OrbitDB.
     localConfig.writePrice = this.writePrice
     // console.log('adapters index.js localConfig: ', localConfig)
@@ -49,6 +52,7 @@ class Adapters {
         // Instantiate bch-js with the JWT token, and overwrite the placeholder for bch-js.
         this.bchjs = await this.fullStackJwt.instanceBchjs()
       }
+
       // Do not start these adapters if this is an e2e test.
       if (this.config.env !== 'test') {
         // Get the write price set by the PSF Minting Council.
@@ -65,6 +69,13 @@ class Adapters {
           // Instance the wallet.
           const walletData = await this.wallet.openWallet()
           await this.wallet.instanceWallet(walletData)
+
+          // If ticket feature is enabled, then create a ticket queue.
+          if (this.config.enablePreBurnTicket) {
+            const ticketKeyPair = await this.wallet.getKeyPair(1)
+            console.log('ticketKeyPair: ', ticketKeyPair)
+            // this.ticket = new Ticket({ wallet: this.wallet.bchWallet })
+          }
         }
 
         // Start the IPFS node.
@@ -72,6 +83,7 @@ class Adapters {
         // Start the P2WDB
         await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
       }
+
       console.log('Async Adapters have been started.')
       return true
     } catch (err) {

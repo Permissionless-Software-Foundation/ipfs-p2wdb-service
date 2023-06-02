@@ -1,6 +1,8 @@
 import { wlogger } from '../../../adapters/wlogger.js'
 import config from '../../../../config/index.js'
+
 let _this
+
 class EntryRESTControllerLib {
   constructor (localConfig = {}) {
     // Dependency Injection.
@@ -529,6 +531,74 @@ class EntryRESTControllerLib {
       ctx.body = {
         success: true,
         hash
+      }
+    } catch (err) {
+      // console.log('Error in post-entry.js/restController(): ', err)
+      // throw err
+      _this.handleError(ctx, err)
+    }
+  }
+
+  /**
+     * @api {post} /entry/write/ticket Write Ticket
+     * @apiPermission public
+     * @apiName P2WDB Write Ticket
+     * @apiGroup REST P2WDB
+     *
+     * @apiDescription
+     * Write a new entry to the database, paying with a ticket instead of PSF
+     * tokens. This
+     * requires a call to entry/cost/bch first, in order to register a
+     * BCH payment. That address can then be used in this call. If the address
+     * has the required payment, the P2WDB will consume a pre-burned ticket to
+     * write to the P2WDB, on behalf of the user.
+     *
+     * Given the body data properties returns the following properties
+     *
+     *  - success : - Petition status
+     *  - id : "" - Orbitdb hash.
+     *
+     * @apiExample Example usage:
+     * curl -H "Content-Type: application/json" -X POST -d '{ "address": "bitcoincash:qqsrke9lh257tqen99dkyy2emh4uty0vky9y0z0lsr", "data": "This is the data that will go into the database.", "appId": "test001" }' localhost:5010/entry/write/ticket
+     *
+     * @apiSuccessExample {json} Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *        "success":true,
+     *        "hash": "zdpuAtvo53imGJ5DDe7LrZNRZihJsGj9Q7M3bxkaf2EdK4Kfb"
+     *     }
+     *
+     *
+     * @apiError UnprocessableEntity Missing required parameters
+     *
+     * @apiErrorExample {json} Error-Response:
+     *     HTTP/1.1 422 Unprocessable Entity
+     *     {
+     *       "status": 422,
+     *       "error": "Unprocessable Entity"
+     *     }
+     */
+  async postTicketEntry (ctx) {
+    try {
+      // Throw error if BCH payments are not enabled.
+      if (!this.config.enableBchPayment) {
+        console.log('Throwing error because BCH payments are not enabled. This is expected behavior.')
+        ctx.throw(501, 'BCH payments are not enabled in this instance of P2WDB.')
+      }
+
+      const address = ctx.request.body.address
+      const data = ctx.request.body.data
+      const appId = ctx.request.body.appId
+      const writeObj = { address, data, appId }
+      console.log(`body data: ${JSON.stringify(writeObj, null, 2)}`)
+
+      // const hash = await this.addEntry.addUserEntry(writeObj)
+      const { hash, proofOfBurn } = await this.useCases.entry.addEntry.addTicketEntry(writeObj)
+
+      ctx.body = {
+        success: true,
+        hash,
+        proofOfBurn
       }
     } catch (err) {
       // console.log('Error in post-entry.js/restController(): ', err)

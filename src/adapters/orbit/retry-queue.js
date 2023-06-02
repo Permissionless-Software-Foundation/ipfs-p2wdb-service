@@ -1,5 +1,3 @@
-import pQueue from 'p-queue'
-import pRetry from 'p-retry'
 /*
   This library leverages the p-retry and p-queue libraries, to create a
   validation queue with automatic retry.
@@ -10,14 +8,22 @@ import pRetry from 'p-retry'
 
   pay-to-write-access-controller.js depends on this library.
 */
+
+import pQueue from 'p-queue'
+import pRetry from 'p-retry'
+
 const PQueue = pQueue.default
+
 let _this
+
 class RetryQueue {
   constructor (localConfig = {}) {
+    // Dependency injection
     if (!localConfig.bchjs) {
       throw new Error('Must pass instance of bch-js when instantiating RetryQueue Class.')
     }
     this.bchjs = localConfig.bchjs
+
     // Encapsulate dependencies
     this.validationQueue = new PQueue({ concurrency: 1 })
     this.pRetry = pRetry
@@ -35,7 +41,9 @@ class RetryQueue {
       if (!inputObj) {
         throw new Error('input object is required')
       }
+
       const returnVal = await _this.validationQueue.add(() => _this.retryWrapper(funcHandle, inputObj))
+
       return returnVal
     } catch (err) {
       console.error('Error in addToQueue(): ', err)

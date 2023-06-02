@@ -1,6 +1,3 @@
-import IpfsAdapters from '../ipfs/index.js'
-import OribitAdapter from '../orbit/index.js'
-import KeyValue from '../localdb/models/key-value.js'
 /*
   Adapter for the pay-to-write database (P2WDB).
   This library provides high-level abstraction for interacting with the P2WDB,
@@ -14,9 +11,17 @@ import KeyValue from '../localdb/models/key-value.js'
     need to be started.
   - An isReady flag can be checked to see if any dependency is in a ready state.
 */
+
+// Local libraries
+import IpfsAdapters from '../ipfs/index.js'
+import OribitAdapter from '../orbit/index.js'
+import KeyValue from '../localdb/models/key-value.js'
+
 // Customizable constants.
 const ENTRIES_PER_PAGE = 20
+
 let _this
+
 class P2WDB {
   constructor (localConfig = {}) {
     // console.log('p2wdb localConfig: ', localConfig)
