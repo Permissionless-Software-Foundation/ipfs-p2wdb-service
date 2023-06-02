@@ -1,23 +1,30 @@
-import chai from 'chai'
+/*
+  Unit tests for the IPFS Adapter.
+*/
+
+// Global npm library
+import { assert } from 'chai'
 import sinon from 'sinon'
+
+// Local library
 import IPFSCoordAdapter from '../../../src/adapters/ipfs/ipfs-coord.js'
 import IPFSMock from '../mocks/ipfs-mock.js'
 import IPFSCoordMock from '../mocks/ipfs-coord-mock.js'
 import config from '../../../config/index.js'
-/*
-  Unit tests for the IPFS Adapter.
-*/
-const assert = chai.assert
+
 describe('#ipfs-coord', () => {
   let uut
   let sandbox
+
   beforeEach(() => {
     const ipfs = IPFSMock.create()
     const bchjs = {}
     uut = new IPFSCoordAdapter({ ipfs, bchjs })
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#constructor', () => {
     it('should throw an error if ipfs instance is not included', () => {
       try {
@@ -27,6 +34,7 @@ describe('#ipfs-coord', () => {
         assert.include(err.message, 'Instance of IPFS must be passed when instantiating ipfs-coord.')
       }
     })
+
     it('should throw an error if bchjs instance is not included', () => {
       try {
         const ipfs = IPFSMock.create()
@@ -36,6 +44,7 @@ describe('#ipfs-coord', () => {
         assert.include(err.message, 'Instance of bch-js must be passed when instantiating ipfs-coord.')
       }
     })
+
     it('should get the public IP address if this node is a Circuit Relay', async () => {
       // Mock dependencies.
       uut.IpfsCoord = IPFSCoordMock
@@ -46,6 +55,7 @@ describe('#ipfs-coord', () => {
       // console.log('result: ', result)
       assert.equal(result, true)
     })
+
     it('should return a promise that resolves into an instance of IPFS in production mode', async () => {
       uut.config.isProduction = true
       uut.config.isCircuitRelay = false
@@ -57,22 +67,40 @@ describe('#ipfs-coord', () => {
       config.isProduction = false
     })
   })
+
   // TODO:
   // This test stopped passing after the jwt-bch-lib was introduced. It needs
   // to be debugged and reinstated.
   //
   // describe('#start', () => {
-  //   it('should return a promise that resolves into an instance of IPFS.', async () => {
-  //     // Mock dependencies.
-  //     uut.IpfsCoord = IPFSCoordMock
-  //
-  //     console.log('uut: ', uut)
-  //     const result = await uut.start()
-  //     // console.log('result: ', result)
-  //
-  //     assert.equal(result, true)
+  // it('should return a promise that resolves into an instance of IPFS.', async () => {
+  //   // Mock dependencies.
+  //   uut.IpfsCoord = IPFSCoordMock
+
+  //   console.log('uut: ', uut)
+  //   const result = await uut.start()
+  //   // console.log('result: ', result)
+
+  //   assert.equal(result, true)
+  // })
+
+  //   it('should catch errors and exit quietly', async () => {
+  //     const oldConfig = uut.config.isCircuitRelay
+  //     uut.config.isCircuitRelay = true
+
+  //     // Force an error
+  //     sandbox.stub(uut.publicIp,'v4').rejects(new Error('test error'))
+
+  //     try {
+  //       await uut.start()
+  //     } catch(err) {
+  //       assert.include(err.message, 'test error')
+  //     }
+
+  //     uut.config.isCircuitRelay = oldConfig
   //   })
   // })
+
   describe('#attachRPCRouter', () => {
     it('should attached a router output', async () => {
       // Mock dependencies
@@ -93,6 +121,7 @@ describe('#ipfs-coord', () => {
       const router = console.log
       uut.attachRPCRouter(router)
     })
+
     it('should catch and throw an error', () => {
       try {
         // Force an error
@@ -105,6 +134,7 @@ describe('#ipfs-coord', () => {
       }
     })
   })
+
   describe('#subscribeToChat', () => {
     it('should subscribe to the chat channel', async () => {
       // Mock dependencies

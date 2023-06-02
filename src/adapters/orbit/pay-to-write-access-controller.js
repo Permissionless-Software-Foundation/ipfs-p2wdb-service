@@ -1,6 +1,9 @@
+// Global npm libraries
 import AccessController from 'orbit-db-access-controllers/interface'
 import pMapSeries from 'p-map-series'
 import path from 'path'
+
+// Local libraries
 import config from '../../../config/index.js'
 import KeyValue from '../localdb/models/key-value.js'
 import RetryQueue from './retry-queue.js'
@@ -12,6 +15,7 @@ let _this
 class PayToWriteAccessController extends AccessController {
   constructor (orbitdb, options) {
     super()
+
     this._orbitdb = orbitdb
     this._db = null
     this._options = options || {}
@@ -185,7 +189,9 @@ class PayToWriteAccessController extends AccessController {
   // No test coverage as this is copied directly from OrbitDB ACL.
   static async create (orbitdb, options = {}) {
     const ac = new PayToWriteAccessController(orbitdb, options)
+
     await ac.load(options.address || options.name || 'default-access-controller')
+
     // Add write access from options
     if (options.write && !options.address) {
       await pMapSeries(options.write, async (e) => ac.grant('write', e))
