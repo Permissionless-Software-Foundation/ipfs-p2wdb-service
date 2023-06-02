@@ -316,75 +316,120 @@ describe('#AddEntry', () => {
       assert.property(result, 'proofOfBurn')
     })
 
-    // it('should throw an error if BCH address is not found in the database', async () => {
-    //   try {
-    //     // Force desired code path
-    //     sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves(null)
-    //     const data = {
-    //       address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
-    //       data: 'fake-data',
-    //       appId: 'fake-appId'
-    //     }
-    //     await uut.addBchEntry(data)
-    //     assert.fail('Unexpected result')
-    //   } catch (err) {
-    //     assert.include(err.message, 'Payment model not found. Call POST /entry/cost/bch first to get a BCH payment address.')
-    //   }
-    // })
+    it('should throw an error if BCH address is not found in the database', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves(null)
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+        await uut.addTicketEntry(data)
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Payment model not found. Call POST /entry/cost/bch first to get a BCH payment address.')
+      }
+    })
 
-    // it('should throw an error if BCH payment has not been made', async () => {
-    //   try {
-    //     // Force desired code path
-    //     sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
-    //       _id: '63054bb29ebc5f612533845a',
-    //       address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
-    //       hdIndex: '5',
-    //       timeCreated: '2022-08-23T21:50:42.253Z',
-    //       bchCost: '0.00011073',
-    //       __v: 0,
-    //       remove: async () => { }
-    //     })
-    //     sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(0)
-    //     const data = {
-    //       address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
-    //       data: 'fake-data',
-    //       appId: 'fake-appId'
-    //     }
-    //     await uut.addBchEntry(data)
-    //     assert.fail('Unexpected result')
-    //   } catch (err) {
-    //     assert.include(err.message, 'which is less than the required fee of')
-    //   }
-    // })
+    it('should throw an error if BCH payment has not been made', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+          _id: '63054bb29ebc5f612533845a',
+          address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+          hdIndex: '5',
+          timeCreated: '2022-08-23T21:50:42.253Z',
+          bchCost: '0.00011073',
+          __v: 0,
+          remove: async () => { }
+        })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(0)
 
-    // it('should throw an error issue with database lookup of address', async () => {
-    //   try {
-    //     // Force desired code path
-    //     sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
-    //       _id: '63054bb29ebc5f612533845a',
-    //       address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
-    //       hdIndex: '5',
-    //       timeCreated: '2022-08-23T21:50:42.253Z',
-    //       bchCost: '0.00011073',
-    //       __v: 0,
-    //       remove: async () => { }
-    //     })
-    //     sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(11073)
-    //     sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
-    //       cashAddress: 'bad-address',
-    //       wif: 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS',
-    //       hdIndex: '6'
-    //     })
-    //     const data = {
-    //       address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
-    //       data: 'fake-data',
-    //       appId: 'fake-appId'
-    //     }
-    //     await uut.addBchEntry(data)
-    //     assert.fail('Unexpected result')
-    //   } catch (err) {
-    //     assert.include(err.message, 'Unexpected error: HD index')
-    //   }
-    // })
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+        await uut.addTicketEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'which is less than the required fee of')
+      }
+    })
+
+    it('should throw an error if there are no tickets in the database', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+          _id: '63054bb29ebc5f612533845a',
+          address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+          hdIndex: '5',
+          timeCreated: '2022-08-23T21:50:42.253Z',
+          bchCost: '0.00011073',
+          __v: 0,
+          remove: async () => { }
+        })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(11073)
+        sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
+          cashAddress: 'bad-address',
+          wif: 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS',
+          hdIndex: '6'
+        })
+        sandbox.stub(uut.adapters.localdb.Tickets, 'find').resolves([])
+
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+        await uut.addTicketEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'No pre-burned tickets available')
+      }
+    })
+
+    it('should throw an error issue with database lookup of address', async () => {
+      try {
+        // Force desired code path
+        sandbox.stub(uut.adapters.localdb.BchPayment, 'findOne').resolves({
+          _id: '63054bb29ebc5f612533845a',
+          address: 'bitcoincash:qqy9qhr67mq6fcudvq8vgnzrn798gf3wjyfyhapz59',
+          hdIndex: '5',
+          timeCreated: '2022-08-23T21:50:42.253Z',
+          bchCost: '0.00011073',
+          __v: 0,
+          remove: async () => { }
+        })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(11073)
+        sandbox.stub(uut.adapters.localdb.Tickets, 'find').resolves([{
+          txid: 'fake-txid',
+          signature: 'fake-sig',
+          message: 'fake-message',
+          remove: async () => {}
+        }])
+        sandbox.stub(uut.axios, 'post').resolves({ data: { hash: 'fake-hash' } })
+        sandbox.stub(uut.adapters.wallet, 'getKeyPair').resolves({
+          cashAddress: 'bad-address',
+          wif: 'L2WXayLcTiX6GoZ9Mk5tPNRDVcmYhFP5KMUU1p8sdJwXpVytXnTS',
+          hdIndex: '6'
+        })
+        // sandbox.stub(uut.adapters.wallet,'getKeyPair').resolves('abc123')
+
+        const data = {
+          address: 'bitcoincash:qza7sy8jnljkhtt7tgnq5z7f8g7wjgumcyj8rc8duu',
+          data: 'fake-data',
+          appId: 'fake-appId'
+        }
+        await uut.addTicketEntry(data)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Unexpected error: HD index')
+      }
+    })
   })
 })
