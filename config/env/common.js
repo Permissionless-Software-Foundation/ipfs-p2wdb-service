@@ -121,8 +121,8 @@ const config = {
   ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/',
 
   // Pre-burn ticket feature
-  enablePreBurnTicket: !!process.env.ENABLE_PRE_BURN_TICKET,
+  enablePreBurnTicket: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
   // enablePreBurnTicket: true,
-  maxTickets: 6 // Size of pre-burn ticket queue
+  maxTickets: 5 // Size of pre-burn ticket queue
 }
 export default config

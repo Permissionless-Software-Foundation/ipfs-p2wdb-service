@@ -21,7 +21,7 @@ class WritePrice {
 
     // state
     this.currentRate = config.reqTokenQty
-    this.currentRateInBch = 0.00008544
+    this.currentRateInBch = null
     this.priceHistory = []
     this.filterTxids = [] // Tracks invalid approval TXs
 
@@ -40,6 +40,7 @@ class WritePrice {
       this.wallet = await walletAdapter.instanceWalletWithoutInitialization(walletData)
       this.bchjs = this.wallet.bchjs
       this.ps009 = new MultisigApproval({ wallet: this.wallet })
+
       return true
     }
     return false
@@ -50,20 +51,45 @@ class WritePrice {
   // That includes a markup cost for the service of providing PSF tokens to
   // the user. The market cost is set in the config file.
   async getWriteCostInBch () {
-    // For debugging. Write the current balance of the wallet and token balance.
-    const bchBalance = await this.wallet.getBalance()
-    console.log('App wallet BCH balance: ', bchBalance)
-    const tokenBalance = await this.wallet.listTokens()
-    console.log('App wallet SLP balance: ', tokenBalance)
-    const bchPerToken = await this.getPsfPriceInBch()
-    // Cost in BCH + markup.
-    let costToUser = this.currentRate * bchPerToken * (1 + this.config.psfTradeMarkup)
-    // Round to 8 decimals.
-    costToUser = this.bchjs.Util.floor8(costToUser)
-    // Save to state.
-    this.currentRateInBch = costToUser
-    console.log(`Write cost in BCH: ${costToUser}`)
-    return costToUser
+    // On the first call, wait to get the proper BCH write price.
+    // On subsequent calls, update the write price in the background and use the cached value.
+    if (!this.currentRateInBch) {
+      await this.updateCurrentRateInBch()
+    } else {
+      this.updateCurrentRateInBch()
+    }
+
+    return this.currentRateInBch
+  }
+
+  // This function updates the current write price in BCH.
+  // It's intended to be called without await, so that it updates the rate in the background.
+  async updateCurrentRateInBch () {
+    try {
+      // For debugging. Write the current balance of the wallet and token balance.
+      const bchBalance = await this.wallet.getBalance()
+      console.log('App wallet BCH balance: ', bchBalance)
+
+      const tokenBalance = await this.wallet.listTokens()
+      console.log('App wallet SLP balance: ', tokenBalance)
+
+      const bchPerToken = await this.getPsfPriceInBch()
+
+      // Cost in BCH + markup.
+      const costToUser = this.currentRate * bchPerToken * (1 + this.config.psfTradeMarkup)
+
+      // Round to 8 decimals.
+      this.currentRateInBch = this.bchjs.Util.floor8(costToUser)
+
+      console.log(`Current write price in BCH: ${this.currentRateInBch}`)
+
+      return true
+    } catch (err) {
+      console.error('Error in adapters/write-price.js/updateCurrentRateInBch()')
+      return false
+
+      // No need to throw an error here. It will be retried on the next request.
+    }
   }
 
   // Get's the cost of PSF tokens in BCH from the PSF token liquidity app.
@@ -73,10 +99,12 @@ class WritePrice {
     try {
       const response = await this.axios.get('https://psfoundation.cash/price')
       // console.log('response.data: ', response.data)
+
       const usdPerBch = response.data.usdPerBCH
       const usdPerToken = response.data.usdPerToken
       const bchPerToken = this.bchjs.Util.floor8(usdPerToken / usdPerBch)
       // console.log('bchPerToken: ', bchPerToken)
+
       return bchPerToken
     } catch (err) {
       console.error('Error in adapters/write-price.js/getPsfPrice(): ', err)

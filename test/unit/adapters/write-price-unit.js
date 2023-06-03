@@ -1,16 +1,26 @@
+/*
+  Unit tests for the write-price.js adapter library.
+*/
+
+// Global npm libraries
 import sinon from 'sinon'
-import chai from 'chai'
+import { assert } from 'chai'
 import cloneDeep from 'lodash.clonedeep'
+
+// Local libraries
 import WritePrice from '../../../src/adapters/write-price.js'
 import mockDataLib from '../mocks/adapters/write-price-mocks.js'
-const assert = chai.assert
+
 describe('#write-price', () => {
   let uut, sandbox, mockData
+
   beforeEach(async () => {
     uut = new WritePrice()
     await uut.instanceWallet()
+
     mockData = cloneDeep(mockDataLib)
     sandbox = sinon.createSandbox()
+
     // Replace the database model with this mock.
     uut.WritePriceModel = class WritePriceModel {
       static findOne () { }
@@ -19,7 +29,9 @@ describe('#write-price', () => {
       }
     }
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#instanceWallet', () => {
     it('should return false if wallet is already instantiated', async () => {
       // Mock dependencies and force desired code path
@@ -27,6 +39,7 @@ describe('#write-price', () => {
       const result = await uut.instanceWallet()
       assert.equal(result, false)
     })
+
     it('should return true after instantiating wallet', async () => {
       // Mock dependencies and force desired code path
       uut.wallet = false
@@ -38,19 +51,45 @@ describe('#write-price', () => {
       assert.equal(result, true)
     })
   })
-  describe('#getWriteCostInBch', () => {
-    it('should get write cost in BCH', async () => {
+
+  describe('#updateCurrentRateInBch', () => {
+    it('should calculate write cost in BCH', async () => {
       // Mock dependencies
       sandbox.stub(uut, 'getPsfPriceInBch').resolves(0.00075689)
       sandbox.stub(uut.wallet, 'getBalance').resolves()
       sandbox.stub(uut.wallet, 'listTokens').resolves()
       uut.currentRate = 0.08335233
+
       const result = await uut.getWriteCostInBch()
       console.log('result: ', result)
+
       // assert.equal(result, 0.00011073)
       assert.isAbove(result, 0.00001000)
     })
   })
+
+  describe('#getWriteCostInBch', () => {
+    it('should await if currentRate is false', async () => {
+      // Mock dependencies and force desired code path
+      uut.currentRateInBch = null
+      sandbox.stub(uut, 'updateCurrentRateInBch').resolves()
+
+      const result = await uut.getWriteCostInBch()
+
+      assert.equal(result, null)
+    })
+
+    it('should not await if currentRate is false', async () => {
+      // Mock dependencies and force desired code path
+      uut.currentRateInBch = 0.0001
+      sandbox.stub(uut, 'updateCurrentRateInBch').resolves()
+
+      const result = await uut.getWriteCostInBch()
+
+      assert.equal(result, 0.0001)
+    })
+  })
+
   describe('#getPsfPriceInBch', () => {
     it('should get the price of PSF tokens in BCH', async () => {
       // Mock network calls
@@ -66,6 +105,7 @@ describe('#write-price', () => {
       // console.log('result: ', result)
       assert.equal(result, 0.00075689)
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force and error
@@ -77,6 +117,7 @@ describe('#write-price', () => {
       }
     })
   })
+
   describe('#getMcWritePrice', () => {
     it('should validate a new approval transaction', async () => {
       // Mock dependencies and force desired code path.
@@ -89,6 +130,7 @@ describe('#write-price', () => {
       // console.log('result: ', result)
       assert.equal(result, 0.08335233)
     })
+
     it('should retrieve a previously validated approval transaction from the database', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.ps009, 'getApprovalTx').resolves(mockData.approvalObj01)
@@ -99,6 +141,7 @@ describe('#write-price', () => {
       // console.log('result: ', result)
       assert.equal(result, 0.08335233)
     })
+
     it('should recursivly call itself to find the next approval tx', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.ps009, 'getApprovalTx').resolves(mockData.approvalObj01)

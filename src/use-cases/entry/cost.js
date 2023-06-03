@@ -28,12 +28,15 @@ class Cost {
   async getBchCost () {
     // Calculate the cost of a P2WDB write in terms of BCH.
     const bchCost = await this.adapters.writePrice.getWriteCostInBch()
+
     // Generate a key pair
     const { cashAddress, hdIndex } = await this.adapters.wallet.getKeyPair()
     const address = cashAddress
+
     // Create a time stamp.
     const now = new Date()
     const timeCreated = now.toISOString()
+
     // Create a new database model to save this data.
     const dbObj = {
       address,
@@ -43,6 +46,7 @@ class Cost {
     }
     const bchPaymentModel = new this.BchPaymentModel(dbObj)
     await bchPaymentModel.save()
+
     // Return the payment data to the user.
     return { bchCost, address }
   }
