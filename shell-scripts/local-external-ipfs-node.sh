@@ -33,9 +33,11 @@ export DBURL=mongodb://localhost:27017/p2wdb-service-dev
 #export USE_FULLSTACKCASH=1
 #export APISERVER=http://localhost:3000/v5/
 
-
 # Enable BCH payments for P2WDB writes
 export ENABLE_BCH_PAYMENT=1
+
+# Enable pre-burn ticket features
+export ENABLE_PRE_BURN_TICKET=1
 
 
 
