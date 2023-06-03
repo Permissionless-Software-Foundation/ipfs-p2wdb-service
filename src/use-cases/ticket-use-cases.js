@@ -13,9 +13,7 @@
 import TicketEntity from '../entities/ticket-entity.js'
 import ReadEntry from './entry/read-entry.js'
 import RetryQueue from '@chris.troutner/retry-queue'
-
-// Set the maximum number of tickets that are held in the queue.
-const MAX_TICKETS = 2
+import config from '../../config/index.js'
 
 const MIN_SATS = 100000
 const MIN_PSF_TOKENS = 1
@@ -36,14 +34,10 @@ class TicketUseCases {
     this.TicketModel = this.adapters.localdb.Tickets
     this.readEntry = new ReadEntry({ p2wdbAdapter: this.adapters.p2wdb })
     this.retryQueue = new RetryQueue()
-    this.MAX_TICKETS = MAX_TICKETS
+    this.config = config
+    this.MAX_TICKETS = config.maxTickets
     this.MIN_SATS = MIN_SATS
     this.MIN_PSF_TOKENS = MIN_PSF_TOKENS
-
-    // State
-    this.state = {
-
-    }
 
     // Bind 'this' object to all subfunctions.
     this.start = this.start.bind(this)
