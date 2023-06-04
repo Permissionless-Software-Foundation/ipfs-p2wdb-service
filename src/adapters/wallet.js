@@ -59,6 +59,7 @@ class WalletAdapter {
       if (!walletData.mnemonic) {
         throw new Error('Wallet data is not formatted correctly. Can not read mnemonic in wallet file!')
       }
+
       const advancedConfig = {}
       console.log(`Using FullStack.cash: ${this.config.useFullStackCash}`)
       if (this.config.useFullStackCash) {

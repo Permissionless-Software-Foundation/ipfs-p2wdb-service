@@ -220,7 +220,8 @@ class AddEntry {
         signature: ticket.signature,
         data: JSON.stringify(dataObj)
       }
-      const result = await this.axios.post('http://localhost:5010/entry/write', bodyData)
+      // const result = await this.axios.post('http://localhost:5010/entry/write', bodyData)
+      const result = await this.axios.post(`http://localhost:${this.config.port}/entry/write`, bodyData)
 
       const hash = result.data
       console.log('hash: ', hash)
