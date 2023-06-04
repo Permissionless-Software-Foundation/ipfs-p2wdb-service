@@ -52,7 +52,8 @@ RUN git checkout ct-unstable
 
 # Install dependencies
 #RUN mkdir .ipfsdata
-RUN npm install
+#RUN npm install
+RUN npm ci
 
 # Generate the API docs
 RUN npm run docs
