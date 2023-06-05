@@ -30,6 +30,7 @@ class WritePrice {
     this.getWriteCostInBch = this.getWriteCostInBch.bind(this)
     this.getPsfPriceInBch = this.getPsfPriceInBch.bind(this)
     this.getMcWritePrice = this.getMcWritePrice.bind(this)
+    this.updateCurrentRateInBch = this.updateCurrentRateInBch.bind(this)
   }
 
   // Instantiate the wallet if it has not already been instantiated.
