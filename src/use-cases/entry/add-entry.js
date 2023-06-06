@@ -118,7 +118,7 @@ class AddEntry {
 
       // Verify that address has the required BCH payment.
       const requiredFee = bchPayment.bchCost
-      const balance = await this.adapters.wallet.bchWallet.getBalance({bchAddress: address})
+      const balance = await this.adapters.wallet.bchWallet.getBalance({ bchAddress: address })
       // console.log('balance: ', balance)
 
       // Throw error if address does not have the necessary payment.
@@ -188,7 +188,7 @@ class AddEntry {
 
       // Verify that address has the required BCH payment.
       const requiredFee = bchPayment.bchCost
-      const balance = await this.adapters.wallet.bchWallet.getBalance({bchAddress: address})
+      const balance = await this.adapters.wallet.bchWallet.getBalance({ bchAddress: address })
       console.log(`balance for address ${address.toString()}: `, balance)
 
       // Throw error if address does not have the necessary payment.
