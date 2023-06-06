@@ -15,7 +15,7 @@ async function deleteTicket () {
   mongoose.set('useCreateIndex', true) // Stop deprecation warning.
   await mongoose.connect(config.database, { useNewUrlParser: true, useUnifiedTopology: true })
 
-  const ticket = await Tickets.findOne({txid: TXID})
+  const ticket = await Tickets.findOne({ txid: TXID })
 
   console.log(`ticket deleted: ${JSON.stringify(ticket, null, 2)}`)
 
