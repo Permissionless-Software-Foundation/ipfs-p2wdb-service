@@ -123,6 +123,6 @@ const config = {
   // Pre-burn ticket feature
   enablePreBurnTicket: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
   // enablePreBurnTicket: true,
-  maxTickets: 5 // Size of pre-burn ticket queue
+  maxTickets: process.env.MAX_TICKETS ? parseInt(process.env.MAX_TICKETS) : 5
 }
 export default config

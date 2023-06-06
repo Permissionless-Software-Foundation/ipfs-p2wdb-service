@@ -69,6 +69,8 @@ class TicketUseCases {
   // Generates new tickets until the queue is full.
   async manageTicketQueue () {
     try {
+      console.log(`Checking balance of ticket wallet: ${this.wallet.walletInfo.cashAddress}`)
+
       // Check that the wallet has a balance of BCH.
       const bchBalance = await this.retryQueue.addToQueue(this.wallet.getBalance, {})
       console.log(`bchBalance: ${JSON.stringify(bchBalance, null, 2)}`)
@@ -80,7 +82,7 @@ class TicketUseCases {
       const tokenBalance = await this.retryQueue.addToQueue(this.wallet.getTokenBalance, { tokenId: TOKEN_ID })
       console.log(`tokenBalance: ${JSON.stringify(tokenBalance, null, 2)}`)
       if (tokenBalance < this.MIN_PSF_TOKENS) {
-        throw new Error(`Can not generate pre-burn tickets. Insufficient PSF token balance in ticket wallet. Must have at least ${MIN_PSF_TOKENS} PSF tokens. Send more than ${MIN_PSF_TOKENS} PSF tokens to ${this.wallet.walletInfo.slpAddress}, or disable ticket feature in config, to resolve this error.`)
+        throw new Error(`Can not generate pre-burn tickets. Insufficient PSF token balance in ticket wallet. Must have at least ${this.MIN_PSF_TOKENS} PSF tokens. Send more than ${MIN_PSF_TOKENS} PSF tokens to ${this.wallet.walletInfo.slpAddress}, or disable ticket feature in config, to resolve this error.`)
       }
 
       let ticketCnt = await this.getTicketCount()
