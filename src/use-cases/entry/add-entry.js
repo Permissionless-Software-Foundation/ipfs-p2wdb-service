@@ -258,7 +258,7 @@ class AddEntry {
           hash,
           proofOfBurn: ticket.txid
         }
-      } catch(err) {
+      } catch (err) {
         // Restore the ticket to the database, if an error occurs while trying
         // to consume it.
         const newTicket = new this.adapters.localdb.Tickets(ticket)
@@ -267,7 +267,6 @@ class AddEntry {
 
         throw err
       }
-
     } catch (err) {
       console.error('Error in use-cases/entry/add-entry.js/addTicketEntry(): ', err)
       throw err
