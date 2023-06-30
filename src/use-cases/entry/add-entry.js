@@ -206,52 +206,66 @@ class AddEntry {
 
       const ticket = tickets[0]
 
-      // Write an entry to this P2WDB, using a pre-burned ticket.
-      const now = new Date()
-      const dataObj = {
-        appId,
-        data,
-        timestamp: now.toISOString(),
-        localTimeStamp: now.toLocaleString()
-      }
-      const bodyData = {
-        txid: ticket.txid,
-        message: ticket.message,
-        signature: ticket.signature,
-        data: JSON.stringify(dataObj)
-      }
-      // const result = await this.axios.post('http://localhost:5010/entry/write', bodyData)
-      const result = await this.axios.post(`http://localhost:${this.config.port}/entry/write`, bodyData)
-
-      const hash = result.data
-      console.log('hash: ', hash)
-
-      // Get the private key for the payment address.
-      const keyPair = await this.adapters.wallet.getKeyPair(bchPayment.hdIndex)
-      if (keyPair.cashAddress !== address) {
-        throw new Error(`Unexpected error: HD index ${bchPayment.hdIndex} generated address ${keyPair.cashAddress}, which does not match expected address ${address}`)
-      }
-      // console.log('keyPair: ', keyPair)
-
-      // Instantiate a wallet using the addresses private key.
-      // const tempWallet = new this.adapters.wallet.BchWallet(keyPair.wif, { interface: 'consumer-api' })
-      const tempWallet = await this._createTempWallet(keyPair.wif)
-      await tempWallet.initialize()
-
-      // Move payment to app's root address.
-      const rootAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
-      const txid1 = await tempWallet.sendAll(rootAddr)
-      console.log(`Sent ${balance} sats to root address ${rootAddr}. TXID: ${txid1}`)
-
-      // Delete the BCH payment database model.
-      await bchPayment.remove()
-      console.log('ticket: ', ticket)
-      // Delete the ticket from the database.
+      // Delete the ticket from the database, so that it's not used again (in
+      // the case of rapid REST API calls).
       await ticket.remove()
 
-      return {
-        hash,
-        proofOfBurn: ticket.txid
+      try {
+        // Write an entry to this P2WDB, using a pre-burned ticket.
+        const now = new Date()
+        const dataObj = {
+          appId,
+          data,
+          timestamp: now.toISOString(),
+          localTimeStamp: now.toLocaleString()
+        }
+        const bodyData = {
+          txid: ticket.txid,
+          message: ticket.message,
+          signature: ticket.signature,
+          data: JSON.stringify(dataObj)
+        }
+        // const result = await this.axios.post('http://localhost:5010/entry/write', bodyData)
+        const result = await this.axios.post(`http://localhost:${this.config.port}/entry/write`, bodyData)
+
+        const hash = result.data
+        console.log('hash: ', hash)
+
+        // Get the private key for the payment address.
+        const keyPair = await this.adapters.wallet.getKeyPair(bchPayment.hdIndex)
+        if (keyPair.cashAddress !== address) {
+          throw new Error(`Unexpected error: HD index ${bchPayment.hdIndex} generated address ${keyPair.cashAddress}, which does not match expected address ${address}`)
+        }
+        // console.log('keyPair: ', keyPair)
+
+        // Instantiate a wallet using the addresses private key.
+        // const tempWallet = new this.adapters.wallet.BchWallet(keyPair.wif, { interface: 'consumer-api' })
+        const tempWallet = await this._createTempWallet(keyPair.wif)
+        await tempWallet.initialize()
+
+        // Move payment to app's root address.
+        const rootAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
+        const txid1 = await tempWallet.sendAll(rootAddr)
+        console.log(`Sent ${balance} sats to root address ${rootAddr}. TXID: ${txid1}`)
+
+        // Delete the BCH payment database model.
+        await bchPayment.remove()
+        console.log('ticket: ', ticket)
+        // Delete the ticket from the database.
+        // await ticket.remove()
+
+        return {
+          hash,
+          proofOfBurn: ticket.txid
+        }
+      } catch (err) {
+        // Restore the ticket to the database, if an error occurs while trying
+        // to consume it.
+        const newTicket = new this.adapters.localdb.Tickets(ticket)
+        await newTicket.save()
+        console.log('Ticket restored before throwing error.')
+
+        throw err
       }
     } catch (err) {
       console.error('Error in use-cases/entry/add-entry.js/addTicketEntry(): ', err)
