@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# See configuration documentation at https://p2wdb.com
+
 # The P2WDB this app should mirror.
 #export ORBITDB_NAME=/orbitdb/zdpuAwAxsMjxUTP58Tbd4vps2bTJNBoKkjs72SDLxuWjVy1Bx/psf-bch-p2wdb-keyvalue-v1.0.0-0003
 #export ORBITDB_NAME=test0423
@@ -19,8 +21,8 @@ export IPFS_WS_PORT=5669
 #export FULLSTACKPASS=demo
 
 # Run with a local instance of Cash Stack (dev environment)
-export USE_FULLSTACK=1
-export APISERVE=http://localhost:3000/v5/
+#export USE_FULLSTACK=1
+#export APISERVE=http://localhost:3000/v5/
 
 # Set the debug verbosity level
 export DEBUG_LEVEL=0
