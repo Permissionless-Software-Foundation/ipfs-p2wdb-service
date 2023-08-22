@@ -41,10 +41,12 @@ class WebhookAdapter {
       console.log(`jsonData: ${JSON.stringify(jsonData, null, 2)}`)
       const appId = jsonData.appId
       console.log('appId: ', appId)
+
       // Exit quietly if there is no appId in the JSON data.
       if (!appId) { return }
       const matches = await _this.WebhookModel.find({ appId })
       console.log('matches: ', matches)
+
       // Add P2WDB entry data to the webhook data.
       jsonData.txid = eventData.txid
       jsonData.hash = eventData.hash

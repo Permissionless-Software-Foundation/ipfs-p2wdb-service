@@ -250,7 +250,7 @@ class AddEntry {
 
         // Delete the BCH payment database model.
         await bchPayment.remove()
-        console.log('ticket: ', ticket)
+        console.log('ticket consumed: ', ticket)
         // Delete the ticket from the database.
         // await ticket.remove()
 
