@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# See configuration documentation at https://p2wdb.com
+
 # BEGIN: Optional configuration settings
 
 # This mnemonic is used to set up persistent public key for e2ee
@@ -18,7 +20,7 @@ export COORD_NAME=generic-p2wdb-production
 # Debug level. 0 = minimal info. 2 = max info.
 export DEBUG_LEVEL=2
 
-# Log-in information for retrieving a JWT token from FullStack.cash.
+# Log-in information for retrieving a JWT token from FullStack.cash (if you're using it)
 export FULLSTACKLOGIN=demo@demo.com
 export FULLSTACKPASS=demo
 
@@ -44,5 +46,9 @@ export IPFS_WS_PORT=4003
 # P2WDB specific env vars
 export ORBITDB_NAME=/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh/psf-bch-p2wdb-keyvalue-v3.0.0-0001
 #export ORBITDB_NAME=psf-bch-p2wdb-keyvalue-v3.0.0-0001
+
+# Uncomment this if you are developing on a local web2 CashStack
+#export USE_FULLSTACKCASH=1
+#export APISERVER=http://192.168.1.104:3000/v5/
 
 npm start
