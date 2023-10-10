@@ -21,8 +21,8 @@ export IPFS_WS_PORT=5669
 #export FULLSTACKPASS=demo
 
 # Run with a local instance of Cash Stack (dev environment)
-#export USE_FULLSTACK=1
-#export APISERVE=http://localhost:3000/v5/
+export USE_FULLSTACKCASH=1
+export APISERVER=http://localhost:3000/v5/
 
 # Set the debug verbosity level
 export DEBUG_LEVEL=0
