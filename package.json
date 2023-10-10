@@ -28,7 +28,7 @@
     "@chainsafe/libp2p-gossipsub": "10.1.0",
     "@chainsafe/libp2p-noise": "13.0.1",
     "@chainsafe/libp2p-yamux": "5.0.0",
-    "@chris.troutner/orbitdb-helia": "1.0.1",
+    "@chris.troutner/orbitdb-helia": "/home/trout/work/personal/orbitdb",
     "@chris.troutner/retry-queue": "1.0.8",
     "@libp2p/bootstrap": "9.0.8",
     "@libp2p/tcp": "8.0.9",

@@ -41,6 +41,8 @@ class PayToWriteAccessController extends AccessController {
     // this.webhook = new Webhook()
     // this.initialize()
 
+    this.type = 'payToWrite'
+
     _this = this
   }
 

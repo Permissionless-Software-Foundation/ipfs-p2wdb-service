@@ -1,4 +1,13 @@
-import OrbitDB from 'orbit-db'
+/*
+  Clean Architecture adapter library for the pay-to-write version of
+  Orbit-DB. This creates a custom OrbitDB Access Controller that allows anyone
+  to write to this database, so long as they provide proof-of-burn. A
+  proof-of-burn is a TXID for a transaction that burns a minimum amount of
+  PSF token.
+*/
+
+// import OrbitDB from 'orbit-db'
+import { createOrbitDB } from '@chris.troutner/orbitdb-helia'
 import config from '../../../config/index.js'
 import validationEvent from './validation-event.js'
 import AccessControllers from 'orbit-db-access-controllers'
@@ -7,7 +16,6 @@ import PayToWriteAccessController from './pay-to-write-access-controller.js'
 AccessControllers.addAccessController({
   AccessController: PayToWriteAccessController
 })
-// let _this
 
 class OrbitDBAdapter {
   constructor (localConfig = {}) {
@@ -20,14 +28,16 @@ class OrbitDBAdapter {
     if (!this.writePrice) {
       throw new Error('Pass instance of writePrice when instantiating OrbitDBAdapter adapter library.')
     }
+
     // Encapsulate dependencies
     this.config = config
     this.validationEvent = validationEvent
-    this.OrbitDB = OrbitDB
+    // this.OrbitDB = OrbitDB
+    this.createOrbitDB = createOrbitDB
+
     // Properties of this class instance.
     this.db = {} // Instance of OrbitDB.
     this.isReady = false
-    // _this = this
   }
 
   // A wrapper to start OrbitDB.
@@ -37,6 +47,7 @@ class OrbitDBAdapter {
         await this.createDb({ bchjs })
       }
       console.log('OrbitDB is ready.')
+
       return true
     } catch (err) {
       console.error('Error in orbitdb/index.js/start()')
@@ -51,30 +62,54 @@ class OrbitDBAdapter {
       if (!bchjs) {
         throw new Error('Instance of bchjs required when called createDb()')
       }
+
       // By default, use the DB name in the config file.
       if (!dbName) {
         dbName = this.config.orbitDbName
       }
-      const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
-        // directory: "./orbitdb/examples/eventlog",
-        directory: './.ipfsdata/p2wdb/dbs/keyvalue',
-        AccessControllers: AccessControllers
+
+      const orbitdb = await this.createOrbitDB({
+        ipfs: this.ipfs,
+        directory: './.ipfsdata/p2wdb/dbs/keyvalue'
       })
-      const options = {
-        accessController: {
-          type: 'payToWrite',
-          write: ['*'],
-          writePrice: this.writePrice
-        }
-      }
-      // console.log('dbName: ', dbName)
-      // Create the key-value store.
+
       try {
-        this.db = await orbitdb.keyvalue(dbName, options)
+        this.db = await orbitdb.open(dbName,
+          {
+            AccessController: AccessControllers,
+            type: 'payToWrite',
+            write: ['*'],
+            writePrice: this.writePrice
+          }
+        )
+        console.log(`------>Successfully opened OrbitDB: ${dbName}`)
       } catch (err) {
-        console.log(`Can not download manifest for OrbitDB ${dbName}.\nExiting`)
+        console.log(`------>Error opening Orbit DB named ${dbName}. Error: `, err)
+        // console.log(`------>Can not download manifest for OrbitDB ${dbName}.\nExiting`)
         this.exitProgram()
       }
+
+      // const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
+      //   // directory: "./orbitdb/examples/eventlog",
+      //   directory: './.ipfsdata/p2wdb/dbs/keyvalue',
+      //   AccessControllers: AccessControllers
+      // })
+
+      // const options = {
+      //   accessController: {
+      //     type: 'payToWrite',
+      //     write: ['*'],
+      //     writePrice: this.writePrice
+      //   }
+      // }
+      // console.log('dbName: ', dbName)
+      // Create the key-value store.
+      // try {
+      //   this.db = await orbitdb.keyvalue(dbName, options)
+      // } catch (err) {
+      //   console.log(`Can not download manifest for OrbitDB ${dbName}.\nExiting`)
+      //   this.exitProgram()
+      // }
       // Overwrite the default bchjs instance used by the pay-to-write access
       // controller.
       this.db.options.accessController.bchjs = bchjs

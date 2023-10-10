@@ -61,7 +61,9 @@ const config = {
   orbitDbName: process.env.ORBITDB_NAME
     ? process.env.ORBITDB_NAME
   // : 'psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Start a new database
-    : '/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh/psf-bch-p2wdb-keyvalue-v3.0.0-0001',
+    // : '/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh/psf-bch-p2wdb-keyvalue-v3.0.0-0001',
+    // : '/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh',
+    : 'psf-bch-p2wdb-keyvalue-v4.0.0-0001',
   // Maximum size of a new database entry.
   maxDataSize: process.env.MAX_DATA_SIZE
     ? parseInt(process.env.MAX_DATA_SIZE)
