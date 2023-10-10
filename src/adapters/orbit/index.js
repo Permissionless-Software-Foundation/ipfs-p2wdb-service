@@ -7,15 +7,16 @@
 */
 
 // import OrbitDB from 'orbit-db'
-import { createOrbitDB } from '@chris.troutner/orbitdb-helia'
+import { createOrbitDB, useAccessController, useDatabaseType } from '@chris.troutner/orbitdb-helia'
 import config from '../../../config/index.js'
 import validationEvent from './validation-event.js'
-import AccessControllers from 'orbit-db-access-controllers'
+// import AccessControllers from 'orbit-db-access-controllers'
 import PayToWriteAccessController from './pay-to-write-access-controller.js'
+import PayToWriteDatabase from './pay-to-write-database.js'
 
-AccessControllers.addAccessController({
-  AccessController: PayToWriteAccessController
-})
+// AccessControllers.addAccessController({
+//   AccessController: PayToWriteAccessController
+// })
 
 class OrbitDBAdapter {
   constructor (localConfig = {}) {
@@ -68,6 +69,8 @@ class OrbitDBAdapter {
         dbName = this.config.orbitDbName
       }
 
+      useAccessController(PayToWriteAccessController)
+      useDatabaseType(PayToWriteDatabase)
       const orbitdb = await this.createOrbitDB({
         ipfs: this.ipfs,
         directory: './.ipfsdata/p2wdb/dbs/keyvalue'
@@ -76,13 +79,14 @@ class OrbitDBAdapter {
       try {
         this.db = await orbitdb.open(dbName,
           {
-            AccessController: AccessControllers,
+            AccessController: PayToWriteAccessController({ write: ['*'] }),
             type: 'payToWrite',
             write: ['*'],
             writePrice: this.writePrice
           }
         )
         console.log(`------>Successfully opened OrbitDB: ${dbName}`)
+        console.log('db.address: ', this.db.address)
       } catch (err) {
         console.log(`------>Error opening Orbit DB named ${dbName}. Error: `, err)
         // console.log(`------>Can not download manifest for OrbitDB ${dbName}.\nExiting`)
@@ -110,16 +114,20 @@ class OrbitDBAdapter {
       //   console.log(`Can not download manifest for OrbitDB ${dbName}.\nExiting`)
       //   this.exitProgram()
       // }
+
       // Overwrite the default bchjs instance used by the pay-to-write access
       // controller.
-      this.db.options.accessController.bchjs = bchjs
-      this.db.access.bchjs = bchjs
-      this.db.access._this = this.db.access
+      // this.db.options.accessController.bchjs = bchjs
+      // this.db.access.bchjs = bchjs
+      // this.db.access._this = this.db.access
       // console.log('this.db: ', this.db)
-      console.log('OrbitDB ID: ', this.db.id)
+
+      // console.log('OrbitDB ID: ', this.db.id)
+
       // Load data persisted to the hard drive.
       // await this.db.load()
-      this.db.load()
+      // this.db.load()
+
       // Signal that the OrbitDB is ready to use.
       this.isReady = true
       return this.db
