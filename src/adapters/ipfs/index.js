@@ -1,6 +1,13 @@
+/*
+  This is a top-level adapter library that combines the IPFS adaper and the
+  helia-coord adapter, and any future IPFS-related adapters that need to be
+  created.
+*/
+
 import IpfsAdapter from './ipfs.js'
 import IpfsCoordAdapter from './ipfs-coord.js'
 import config from '../../../config/index.js'
+
 class IPFS {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
@@ -9,6 +16,7 @@ class IPFS {
     this.process = process
     this.config = config
     this.ipfsCoordAdapter = {} // placeholder
+
     // Properties of this class instance.
     this.isReady = false
   }
@@ -21,11 +29,14 @@ class IPFS {
       if (!bchjs) {
         throw new Error('Instance of bch-js must be passed when instantiating IPFS adapter.')
       }
+
       // Start IPFS
       await this.ipfsAdapter.start()
       console.log('IPFS is ready.')
+
       // this.ipfs is a Promise that will resolve into an instance of an IPFS node.
       this.ipfs = this.ipfsAdapter.ipfs
+
       // Start ipfs-coord
       this.ipfsCoordAdapter = new this.IpfsCoordAdapter({
         ipfs: this.ipfs,

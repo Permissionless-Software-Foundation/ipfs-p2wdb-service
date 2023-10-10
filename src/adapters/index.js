@@ -80,8 +80,9 @@ class Adapters {
 
         // Start the IPFS node.
         await this.ipfs.start({ bchjs: this.bchjs })
+
         // Start the P2WDB
-        await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
+        // await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
       }
 
       console.log('Async Adapters have been started.')

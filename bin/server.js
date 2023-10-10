@@ -33,6 +33,7 @@ class Server {
       // Create a Koa instance.
       const app = new Koa()
       app.keys = [this.config.session]
+
       // Connect to the Mongo Database.
       this.mongoose.Promise = global.Promise
       this.mongoose.set('useCreateIndex', true) // Stop deprecation warning.
@@ -41,16 +42,20 @@ class Server {
         useUnifiedTopology: true,
         useNewUrlParser: true
       })
+
       console.log(`Starting environment: ${this.config.env}`)
       console.log(`Debug level: ${this.config.debugLevel}`)
       console.log(`Using FullStack.cash: ${this.config.useFullStackCash}`)
+
       // MIDDLEWARE START
       app.use(convert(logger()))
       app.use(bodyParser())
       app.use(session())
       app.use(errorMiddleware())
+
       // Used to generate the docs.
       app.use(mount('/', serve(`${process.cwd()}/docs`)))
+
       // Mount the page for displaying logs.
       app.use(mount('/logs', serve(`${process.cwd()}/config/logs`)))
 
@@ -73,24 +78,31 @@ class Server {
       // Attach REST API and JSON RPC controllers to the app.
       await this.controllers.attachRESTControllers(app)
       app.controllers = this.controllers
+
       // MIDDLEWARE END
+
       console.log(`Running server in environment: ${this.config.env}`)
       wlogger.info(`Running server in environment: ${this.config.env}`)
+
       this.server = await app.listen(this.config.port)
       console.log(`Server started on ${this.config.port}`)
+
       // Create the system admin user.
       const success = await this.adminLib.createSystemUser()
       if (success) { console.log('System admin user created.') }
+
       // Attach the other IPFS controllers.
       // Skip if this is a test environment.
       if (this.config.env !== 'test') {
         await this.controllers.attachControllers(app)
       }
+
       // Display configuration settings
       console.log('\nConfiguration:')
       console.log(`Circuit Relay: ${this.config.isCircuitRelay}`)
       console.log(`IPFS TCP port: ${this.config.ipfsTcpPort}`)
       console.log(`IPFS WS port: ${this.config.ipfsWsPort}\n`)
+
       return app
     } catch (err) {
       console.error('Could not start server. Error: ', err)

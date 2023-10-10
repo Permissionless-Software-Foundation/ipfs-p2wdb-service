@@ -102,7 +102,7 @@ const config = {
   ipnsConfig: 'QmTtXA18C6sg3ji9zem4wpNyoz9m4UZT85mA2D2jx2gzEk',
   // BCH Mnemonic for generating encryption keys and payment address
   mnemonic: process.env.MNEMONIC ? process.env.MNEMONIC : '',
-  debugLevel: process.env.DEBUG_LEVEL ? parseInt(process.env.DEBUG_LEVEL) : 2,
+  debugLevel: process.env.DEBUG_LEVEL ? parseInt(process.env.DEBUG_LEVEL) : 3,
   // Settings for production, using external go-ipfs node.
   isProduction: process.env.P2W_ENV === 'production',
   ipfsHost: process.env.IPFS_HOST ? process.env.IPFS_HOST : 'localhost',

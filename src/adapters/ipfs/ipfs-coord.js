@@ -1,5 +1,6 @@
 // Public npm libraries
-import IpfsCoord from 'ipfs-coord-esm'
+// import IpfsCoord from 'ipfs-coord-esm'
+import IpfsCoord from 'helia-coord'
 import publicIp from 'public-ip'
 import SlpWallet from 'minimal-slp-wallet'
 
@@ -67,9 +68,9 @@ class IpfsCoordAdapter {
     }
 
     // Production env uses external go-ipfs node.
-    if (this.config.isProduction) {
-      ipfsCoordOptions.nodeType = 'external'
-    }
+    // if (this.config.isProduction) {
+    //   ipfsCoordOptions.nodeType = 'external'
+    // }
 
     this.ipfsCoord = new this.IpfsCoord(ipfsCoordOptions)
     // console.log('ipfsCoord: ', this.ipfsCoord)
