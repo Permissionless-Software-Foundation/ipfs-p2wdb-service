@@ -22,6 +22,7 @@ class PayToWriteAccessController extends AccessController {
     // console.log('this._options: ', this._options)
     // State of this library
     this.isInitialized = false
+
     // Encapsulate dependencies
     // this.bchjs = new BCHJS()
     this.config = config
@@ -211,18 +212,21 @@ class PayToWriteAccessController extends AccessController {
       // console.log('canAppend entry: ', entry)
       // Initialize the wallet if it hasn't already been done.
       await this.initialize()
+
       let validTx = false
       const txid = entry.payload.key
       const message = entry.payload.value.message
       const signature = entry.payload.value.signature
       const dbData = entry.payload.value.data
       // console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
+
       // Throw an error if the message is bigger than 10 KB.
       // TODO: Create a unit test for this code path.
       if (dbData.length > this.config.maxDataSize) {
         console.error(`TXID ${txid} not allowed to write to DB because message exceeds max size of ${this.config.maxDataSize}`)
         return false
       }
+
       // Fast validation: validate the TXID if it already exists in MongoDB.
       const mongoRes = await this.KeyValue.find({ key: txid })
       if (mongoRes.length > 0) {
@@ -232,14 +236,17 @@ class PayToWriteAccessController extends AccessController {
         const isValid = mongoRes[0].isValid
         return isValid
       }
+
       // Display the entry if it did not pass a check of the MongoDB.
       console.log('canAppend entry: ', entry)
+
       // Ensure the entry is less than a year old.
       const isAYearOld = this.checkDate(entry.payload)
       if (isAYearOld) {
         console.log('Entry is older than a year, ignoring.')
         return false
       }
+
       // If this is recent transaction, then wait a few seconds to ensure the SLP
       // indexer has time to process it.
       // const entryDate = new Date(entry.payload.value.timestamp)

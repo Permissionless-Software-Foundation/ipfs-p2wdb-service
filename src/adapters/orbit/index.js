@@ -13,6 +13,7 @@ import validationEvent from './validation-event.js'
 // import AccessControllers from 'orbit-db-access-controllers'
 import PayToWriteAccessController from './pay-to-write-access-controller.js'
 import PayToWriteDatabase from './pay-to-write-database.js'
+import P2WCanAppend from './can-append-validator.js'
 
 // AccessControllers.addAccessController({
 //   AccessController: PayToWriteAccessController
@@ -27,7 +28,11 @@ class OrbitDBAdapter {
     }
     this.writePrice = localConfig.writePrice
     if (!this.writePrice) {
-      throw new Error('Pass instance of writePrice when instantiating OrbitDBAdapter adapter library.')
+      throw new Error('Pass instance of writePrice when instantiating OrbitDBAdapter library.')
+    }
+    this.wallet = localConfig.wallet
+    if (!this.wallet) {
+      throw new Error('Instance of minimal-slp-wallet required when instantiating OrbitDBAdapter library')
     }
 
     // Encapsulate dependencies
@@ -39,13 +44,17 @@ class OrbitDBAdapter {
     // Properties of this class instance.
     this.db = {} // Instance of OrbitDB.
     this.isReady = false
+
+    // Bind 'this' object to all subfunctions
+    this.start = this.start.bind(this)
+    this.createDb = this.createDb.bind(this)
   }
 
   // A wrapper to start OrbitDB.
-  async start (bchjs) {
+  async start () {
     try {
       if (process.env.TEST_TYPE !== 'e2e') {
-        await this.createDb({ bchjs })
+        await this.createDb()
       }
       console.log('OrbitDB is ready.')
 
@@ -59,15 +68,21 @@ class OrbitDBAdapter {
   // Create or load an Orbit database.
   async createDb (localConfig = {}) {
     try {
-      let { dbName, bchjs } = localConfig
-      if (!bchjs) {
-        throw new Error('Instance of bchjs required when called createDb()')
-      }
+      let { dbName } = localConfig
 
       // By default, use the DB name in the config file.
       if (!dbName) {
         dbName = this.config.orbitDbName
       }
+
+      // Initialize the P2WCanAppend library
+      const p2wdbCanAppend = new P2WCanAppend({
+        wallet: this.wallet,
+        writePrice: this.writePrice
+      })
+
+      // Inject an instance of the CanAppend library into the Access Controller.
+      PayToWriteAccessController.injectDeps(p2wdbCanAppend)
 
       useAccessController(PayToWriteAccessController)
       useDatabaseType(PayToWriteDatabase)
@@ -92,6 +107,11 @@ class OrbitDBAdapter {
         // console.log(`------>Can not download manifest for OrbitDB ${dbName}.\nExiting`)
         this.exitProgram()
       }
+
+      const key = Math.floor(Math.random() * 1000).toString()
+      const value = Math.floor(Math.random() * 1000)
+
+      await this.db.put(key, value)
 
       // const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
       //   // directory: "./orbitdb/examples/eventlog",

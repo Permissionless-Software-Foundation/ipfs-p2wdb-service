@@ -32,6 +32,7 @@ class Adapters {
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()
     this.wallet = new Wallet()
+    localConfig.wallet = this.wallet
     this.ticket = new Ticket()
 
     // Pass the instance of write-price when instantiating the P2WDB OrbitDB.

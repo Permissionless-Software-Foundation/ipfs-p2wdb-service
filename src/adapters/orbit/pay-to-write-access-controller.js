@@ -34,6 +34,8 @@ const AccessControlList = async ({ storage, type, params }) => {
 
 const type = 'p2w'
 
+let p2wCanAppendLib
+
 /**
  * Creates an instance of P2WDBAccessController.
  * @callback P2WDBAccessController
@@ -61,6 +63,8 @@ const type = 'p2w'
  * @memberof module:AccessControllers
  */
 const P2WDBAccessController = ({ write, storage } = {}) => async ({ orbitdb, identities, address }) => {
+  console.log('P2WDBAccessController() executed')
+
   storage = storage || await ComposedStorage(
     await LRUStorage({ size: 1000 }),
     await IPFSBlockStorage({ ipfs: orbitdb.ipfs, pin: true })
@@ -89,17 +93,22 @@ const P2WDBAccessController = ({ write, storage } = {}) => async ({ orbitdb, ide
    * @memberof module:AccessControllers.AccessControllers-IPFS
    */
   const canAppend = async (entry) => {
-    const writerIdentity = await identities.getIdentity(entry.identity)
-    if (!writerIdentity) {
-      return false
-    }
-    const { id } = writerIdentity
-    // Allow if the write access list contain the writer's id or is '*'
-    if (write.includes(id) || write.includes('*')) {
-      // Check that the identity is valid
-      return identities.verifyIdentity(writerIdentity)
-    }
-    return false
+    p2wCanAppendLib.hello()
+    console.log('entry: ', entry)
+
+    return await p2wCanAppendLib.canAppend(entry)
+
+    // const writerIdentity = await identities.getIdentity(entry.identity)
+    // if (!writerIdentity) {
+    //   return false
+    // }
+    // const { id } = writerIdentity
+    // // Allow if the write access list contain the writer's id or is '*'
+    // if (write.includes(id) || write.includes('*')) {
+    //   // Check that the identity is valid
+    //   return identities.verifyIdentity(writerIdentity)
+    // }
+    // return false
   }
 
   return {
@@ -111,5 +120,11 @@ const P2WDBAccessController = ({ write, storage } = {}) => async ({ orbitdb, ide
 }
 
 P2WDBAccessController.type = type
+
+P2WDBAccessController.injectDeps = (p2wdbCanAppend) => {
+  console.log('-->Injecting dependencies<--')
+
+  p2wCanAppendLib = p2wdbCanAppend
+}
 
 export default P2WDBAccessController

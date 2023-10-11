@@ -1,3 +1,8 @@
+/*
+  This is a Clean Architecture adapter library for interfacing with
+  minimal-slp-wallet, an SLP-token-aware Bitcoin Cash wallet.
+*/
+
 import BchWallet from 'minimal-slp-wallet'
 import JsonFiles from './json-files.js'
 import config from '../../config/index.js'
@@ -34,11 +39,14 @@ class WalletAdapter {
         // Create a new wallet.
         // No-Update flag creates wallet without making any network calls.
         const walletInstance = new this.BchWallet(undefined, { noUpdate: true })
+
         // Wait for wallet to initialize.
         await walletInstance.walletInfoPromise
         walletData = walletInstance.walletInfo
+
         // Add the nextAddress property
         walletData.nextAddress = 1
+
         // Write the wallet data to the JSON file.
         await this.jsonFiles.writeJSON(walletData, this.WALLET_FILE)
       }
