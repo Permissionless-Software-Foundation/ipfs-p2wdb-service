@@ -32,7 +32,6 @@ class Adapters {
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()
     this.wallet = new Wallet()
-    localConfig.wallet = this.wallet
     this.ticket = new Ticket()
 
     // Pass the instance of write-price when instantiating the P2WDB OrbitDB.
@@ -46,30 +45,43 @@ class Adapters {
 
   async start () {
     try {
+      // Modify adapter library to use MNEMONIC passed in env vars.
+      let apiToken
       if (this.config.getJwtAtStartup) {
         // Get a JWT token and instantiate bch-js with it. Then pass that instance
         // to all the rest of the apps controllers and adapters.
-        await this.fullStackJwt.getJWT()
-        // Instantiate bch-js with the JWT token, and overwrite the placeholder for bch-js.
-        this.bchjs = await this.fullStackJwt.instanceBchjs()
+        apiToken = await this.fullStackJwt.getJWT()
+      }
+
+      // Create a default instance of minimal-slp-wallet without initializing it
+      // (without retrieving the wallets UTXOs). This instance will be overwritten
+      // if the operator has configured BCH payments.
+      console.log('\nCreating default startup wallet. This wallet may be overwritten.')
+      await this.wallet.instanceWalletWithoutInitialization({}, { apiToken })
+      this.bchjs = this.wallet.bchWallet.bchjs
+
+      // If enbableBchPayment is enabled, override the wallet instance generated
+      // from env var mnemonic, with mnemonic from wallet file.
+      if (this.config.enableBchPayment) {
+        await this.wallet.openWallet({ apiToken })
+
+        // Overwrite bchjs instance with the one from the new wallet.
+        this.bchjs = this.wallet.bchWallet.bchjs
       }
 
       // Do not start these adapters if this is an e2e test.
       if (this.config.env !== 'test') {
         // Get the write price set by the PSF Minting Council.
-        await this.writePrice.instanceWallet()
+        await this.writePrice.instanceWallet({ wallet: this.wallet })
         const currentRate = await this.writePrice.getMcWritePrice()
-        console.log(`Current P2WDB cost is ${currentRate} PSF tokens per write.`)
+        console.log(`\nCurrent P2WDB cost is ${currentRate} PSF tokens per write.`)
         // await this.writePrice.getWriteCostInBch()
 
         // Only execute the code in this block if BCH payments are enabled.
         if (this.config.enableBchPayment) {
           // Retrieve the cost of a write in BCH, if that feature is enabled.
           const bchRate = await this.writePrice.getWriteCostInBch()
-          console.log(`BCH payments enabled. Current P2WDB cost is ${bchRate} BCH per write.`)
-          // Instance the wallet.
-          const walletData = await this.wallet.openWallet()
-          await this.wallet.instanceWallet(walletData)
+          console.log(`\nBCH payments enabled. Current P2WDB cost is ${bchRate} BCH per write.`)
 
           // If ticket feature is enabled, then create a ticket queue.
           if (this.config.enablePreBurnTicket) {
@@ -83,7 +95,7 @@ class Adapters {
         await this.ipfs.start({ bchjs: this.bchjs })
 
         // Start the P2WDB
-        await this.p2wdb.start({ ipfs: this.ipfs.ipfs, bchjs: this.bchjs })
+        await this.p2wdb.start({ ipfs: this.ipfs.ipfs, wallet: this.wallet })
       }
 
       console.log('Async Adapters have been started.')

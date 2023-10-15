@@ -34,17 +34,14 @@ class WritePrice {
   }
 
   // Instantiate the wallet if it has not already been instantiated.
-  async instanceWallet () {
-    if (!this.wallet) {
-      const walletAdapter = new this.WalletAdapter()
-      const walletData = await walletAdapter.openWallet()
-      this.wallet = await walletAdapter.instanceWalletWithoutInitialization(walletData)
-      this.bchjs = this.wallet.bchjs
-      this.ps009 = new MultisigApproval({ wallet: this.wallet })
+  async instanceWallet (inObj = {}) {
+    this.wallet = inObj.wallet
+    if (!this.wallet) throw new Error('Wallet library instance required when calling write-price.js/instanceWallet()')
 
-      return true
-    }
-    return false
+    this.bchjs = this.wallet.bchWallet.bchjs
+    this.ps009 = new MultisigApproval({ wallet: this.wallet.bchWallet })
+
+    return true
   }
 
   // This function calls getPsfPrice() to get the price of PSF tokens in BCH.
@@ -132,7 +129,7 @@ class WritePrice {
         throw new Error('Call instanceWallet() before calling this function')
       }
       // Find the PS009 approval transaction the addresses tx history.
-      console.log('Searching blockchain for updated write price...')
+      console.log('\nSearching blockchain for updated write price...')
       const approvalObj = await this.ps009.getApprovalTx({
         address: WRITE_PRICE_ADDR,
         filterTxids: this.filterTxids

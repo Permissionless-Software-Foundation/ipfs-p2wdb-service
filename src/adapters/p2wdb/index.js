@@ -30,10 +30,6 @@ class P2WDB {
     if (!this.writePrice) {
       throw new Error('Pass instance of writePrice when instantiating P2WDB adapter library.')
     }
-    this.wallet = localConfig.wallet
-    if (!this.wallet) {
-      throw new Error('Instance of wallet required when instantiating P2WDB adapter library.')
-    }
 
     // Encapsulate dependencies
     this.ipfsAdapters = new IpfsAdapters()
@@ -48,13 +44,15 @@ class P2WDB {
   // Start OrbitDB.
   async start (localConfig = {}) {
     try {
-      const { ipfs, bchjs } = localConfig
+      const { ipfs, wallet } = localConfig
       if (!ipfs) {
         throw new Error('Must past instance of IPFS when instantiating P2WDB adapter.')
       }
-      if (!bchjs) {
-        throw new Error('Must past instance of bchjs when instantiating P2WDB adapter.')
+      if (!wallet) {
+        throw new Error('Must past instance of wallet library when instantiating P2WDB adapter.')
       }
+      this.wallet = wallet
+      this.bchjs = wallet.bchWallet.bchjs
 
       // Start the P2WDB OrbitDB.
       this.orbit = new this.OribitAdapter({

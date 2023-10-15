@@ -108,11 +108,6 @@ class OrbitDBAdapter {
         this.exitProgram()
       }
 
-      const key = Math.floor(Math.random() * 1000).toString()
-      const value = Math.floor(Math.random() * 1000)
-
-      await this.db.put(key, value)
-
       // const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
       //   // directory: "./orbitdb/examples/eventlog",
       //   directory: './.ipfsdata/p2wdb/dbs/keyvalue',

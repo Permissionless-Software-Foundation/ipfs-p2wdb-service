@@ -26,7 +26,7 @@ class P2WCanAppend {
     // Encapsulate dependencies
     this.config = config
     this.KeyValue = KeyValue
-    this.bchjs = this.wallet.bchjs
+    this.bchjs = this.wallet.bchWallet.bchjs
     this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
 
     // Bind 'this' object to all subfunctions.
@@ -83,6 +83,7 @@ class P2WCanAppend {
       // indexer has time to process it.
       // const entryDate = new Date(entry.payload.value.timestamp)
       const timestamp = entry.payload.value.timestamp
+      console.log(`timestamp: ${timestamp}`)
       const now = new Date()
       const tenSeconds = 10000
       if (timestamp > now.getTime() - tenSeconds) {
@@ -96,6 +97,8 @@ class P2WCanAppend {
       const inputObj = { txid, signature, message, entry }
       validTx = await this.retryQueue.addToQueue(this.validateAgainstBlockchain, inputObj)
       console.log(`Validation for TXID ${txid} completed. Result: ${validTx}`)
+
+      return validTx
     } catch (err) {
       console.log('Error in can-append-validator.js/canAppend(). Returning false. Error: \n', err)
       return false
@@ -128,7 +131,10 @@ class P2WCanAppend {
   // This is an async wrapper function. It wraps all other logic for validating
   // a new entry and it's proof-of-burn against the blockchain.
   async validateAgainstBlockchain (inputObj) {
+    console.log('Starting validateAgainstBlockchain()')
+
     const { txid, signature, message, entry } = inputObj
+
     try {
       // Input validation
       if (!inputObj || typeof inputObj !== 'object') {
@@ -146,10 +152,7 @@ class P2WCanAppend {
 
       let validTx = false
 
-      // Ensure the wallet has been instantiated.
-      // await this.instanceWallet()
-
-      let txData = await this.wallet.getTxData([txid])
+      let txData = await this.wallet.bchWallet.getTxData([txid])
       // console.log(`tx data: ${JSON.stringify(tx, null, 2)}`)
       if (!txData) {
         throw new Error('Could not get transaction details from BCH service.')
@@ -167,7 +170,7 @@ class P2WCanAppend {
       }
 
       // Validate the transaction matches the burning rules.
-      validTx = await this._validateTx(txid, entry)
+      validTx = await this._validateTx(txData, entry)
       return validTx
     } catch (err) {
       console.error('Error in adapters/orbit/pay-to-write-access-controller.js/validateAgainstBlockchain(): ', err.message)
@@ -221,6 +224,7 @@ class P2WCanAppend {
   // Returns true if the txid burned the minimum amount of PSF tokens.
   async _validateTx (txData, entry) {
     try {
+      // console.log('_validateTx() txData: ', txData)
       // Input validation
       if (!txData) {
         throw new Error('txData must be an object containing tx data')
@@ -263,8 +267,8 @@ class P2WCanAppend {
       // Get the required burn price, based on the timestamp.
       // console.log('this._options: ', this._options)
       // const requiredPrice = this._options.writePrice.getTargetCostPsf(timestamp)
-      console.log('writePrice: ', this.writePrice)
-      const requiredPrice = this.writePrice
+
+      const requiredPrice = this.writePrice.currentRate
       console.log('requiredPrice: ', requiredPrice)
 
       // If the difference is above a positive threshold, then it's a burn
@@ -381,29 +385,6 @@ class P2WCanAppend {
 
   hello () {
     console.log('hello from P2WCanAppend!')
-  }
-
-  // Initialize this library by executing the async setup.
-  async initialize () {
-    if (!this.isInitialized) {
-      await this.instanceWallet()
-      this.bchjs = this.wallet.bchjs
-      this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
-      // Signal that the library is initialized
-      this.isInitialized = true
-      return true
-    }
-  }
-
-  // Instantiate the wallet if it has not already been instantiated.
-  async instanceWallet () {
-    if (!this.wallet) {
-      const walletAdapter = new this.WalletAdapter()
-      const walletData = await walletAdapter.openWallet()
-      this.wallet = await walletAdapter.instanceWalletWithoutInitialization(walletData)
-      return true
-    }
-    return false
   }
 }
 
