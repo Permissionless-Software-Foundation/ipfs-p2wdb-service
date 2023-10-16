@@ -1,42 +1,55 @@
+/*
+  Unit test library for adapters/orbit/index.js library.
+*/
+
+// Global npm libraries
 import sinon from 'sinon'
-import chai from 'chai'
+import { assert } from 'chai'
+// import cloneDeep from 'lodash.clonedeep'
+
+// Local libraries
 import OrbitDBAdapter from '../../../../src/adapters/orbit/index.js'
 import KeyValueMock from '../../mocks/model-mock.js'
-import { OrbitDBMock as OrbitDBMock$0 } from '../../mocks/orbitdb-mock.js'
-import config from '../../../../config/index.js'
+import { OrbitDBMock } from '../../mocks/orbitdb-mock.js'
+// import config from '../../../../config/index.js'
 import WritePrice from '../../../../src/adapters/write-price.js'
-const assert = chai.assert
-const OrbitDBMock = { OrbitDBMock: OrbitDBMock$0 }.OrbitDBMock
+import { MockBchWallet } from '../../mocks/adapters/wallet.js'
+import ipfs from '../../mocks/helia-mock.js'
+
 describe('#OrbitDBAdapter', () => {
   let uut
   let sandbox
+  let mockWallet
+
   beforeEach(() => {
+    mockWallet = new MockBchWallet()
     const writePrice = new WritePrice()
+
     uut = new OrbitDBAdapter({
-      ipfs: {
-        id: () => {
-          return 'ipfs id'
-        }
-      },
-      writePrice
+      ipfs,
+      writePrice,
+      wallet: mockWallet
     })
     // Mock database dependencies.
     uut.db = new OrbitDBMock()
     uut.KeyValue = KeyValueMock
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#constructor', () => {
     it('should throw an error if instance of IPFS is not provided', () => {
       try {
-        const ipfs = { a: 'b' }
-        const _uut = new OrbitDBAdapter({ ipfs })
+        const _uut = new OrbitDBAdapter()
         console.log(_uut)
+
         assert.fail('unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Pass instance of writePrice when instantiating OrbitDBAdapter adapter library.')
+        assert.include(err.message, 'Must pass an instance of ipfs when instancing the OrbitDBAdapter class.')
       }
     })
+
     it('should throw an error if instance of WriteCost adapter is not provided', () => {
       try {
         const _uut = new OrbitDBAdapter()
@@ -47,6 +60,7 @@ describe('#OrbitDBAdapter', () => {
       }
     })
   })
+
   describe('#start', () => {
     it('should start', async () => {
       // mock dependencies
@@ -54,6 +68,7 @@ describe('#OrbitDBAdapter', () => {
       const result = await uut.start({ bchjs: {} })
       assert.isTrue(result)
     })
+
     it('should catch and throw errors', async () => {
       try {
         // Force Error
@@ -65,72 +80,97 @@ describe('#OrbitDBAdapter', () => {
       }
     })
   })
+
   describe('#createDb', () => {
     it('should use default db name in config file if name is not provided', async () => {
-      // mock function for keyvalue instance in orbitdb
-      const keyValueKakeFn = (dbName) => {
-        assert.equal(dbName, config.orbitDbName, 'expected to use default db name')
-        return new OrbitDBMock()
+      // Mock dependencies
+      uut.P2WCanAppend = class P2WCanAppend {
+        injectDeps () {}
       }
-      // mock for orbitdb instance
-      sandbox
-        .stub(uut.OrbitDB, 'createInstance')
-        .resolves({ keyvalue: keyValueKakeFn })
-      await uut.createDb({ bchjs: {} })
+      sandbox.stub(uut, 'createOrbitDB').resolves({
+        open: async () => {
+          return {
+            address: 'fake-address'
+          }
+        }
+      })
+
+      const result = await uut.createDb({ wallet: mockWallet })
+      // console.log('result: ', result)
+
       assert.isTrue(uut.isReady)
+      assert.equal(result.address, 'fake-address')
     })
+
     it('should use db name provided', async () => {
-      const myDbName = 'myDbName'
-      // mock function for keyvalue instance in orbitdb
-      const keyValueFakeFn = (dbName) => {
-        assert.equal(dbName, myDbName, 'expected to use db name provided')
-        return new OrbitDBMock()
+      // Mock dependencies
+      uut.P2WCanAppend = class P2WCanAppend {
+        injectDeps () {}
       }
-      // mock for orbitdb instance
-      sandbox
-        .stub(uut.OrbitDB, 'createInstance')
-        .resolves({ keyvalue: keyValueFakeFn })
-      await uut.createDb({ dbName: myDbName, bchjs: {} })
+      sandbox.stub(uut, 'createOrbitDB').resolves({
+        open: async () => {
+          return {
+            address: 'fake-address'
+          }
+        }
+      })
+
+      const result = await uut.createDb({
+        wallet: mockWallet,
+        dbName: 'test-db'
+      })
+      // console.log('result: ', result)
+
       assert.isTrue(uut.isReady)
+      assert.equal(result.address, 'fake-address')
     })
+
     it('should catch and throw errors', async () => {
       try {
-        // Force Error
-        sandbox
-          .stub(uut.OrbitDB, 'createInstance')
-          .throws(new Error('test error'))
-        await uut.createDb({ bchjs: {} })
+        // Mock dependencies
+        uut.P2WCanAppend = class P2WCanAppend {
+          injectDeps () {}
+        }
+        sandbox.stub(uut, 'createOrbitDB').resolves({
+          open: async () => {
+            return {
+              address: 'fake-address'
+            }
+          }
+        })
+
+        // Force error
+        sandbox.stub(uut, 'useAccessController').throws(new Error('test error'))
+
+        await uut.createDb({
+          wallet: mockWallet,
+          dbName: 'test-db'
+        })
+
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')
       }
     })
-    it('should throw error if bch-js is not passed', async () => {
-      try {
-        const myDbName = 'myDbName'
-        await uut.createDb({ dbName: myDbName })
-        assert.fail('unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'Instance of bchjs required when called createDb()')
-      }
-    })
+
     it('should exit if manifest can not be retrieved', async () => {
-      const myDbName = 'myDbName'
-      // mock function for keyvalue instance in orbitdb
-      const keyValueFakeFn = (dbName) => {
-        // assert.equal(dbName, myDbName, 'expected to use db name provided')
-        // return new OrbitDBMock()
-        throw new Error('test error')
+      // Mock dependencies
+      uut.P2WCanAppend = class P2WCanAppend {
+        injectDeps () {}
       }
-      // mock for orbitdb instance
-      sandbox
-        .stub(uut.OrbitDB, 'createInstance')
-        .resolves({ keyvalue: keyValueFakeFn })
+      sandbox.stub(uut, 'createOrbitDB').resolves({
+        open: async () => {
+          throw new Error('test error')
+        }
+      })
       sandbox.stub(uut, 'exitProgram').returns()
-      await uut.createDb({ dbName: myDbName, bchjs: {} })
-      assert.isTrue(uut.isReady)
+
+      const result = await uut.createDb({ wallet: mockWallet })
+
+      assert.equal(result, false)
     })
   })
+
   describe('#readAll', () => {
     it('should read all data from the database', () => {
       const result = uut.readAll()

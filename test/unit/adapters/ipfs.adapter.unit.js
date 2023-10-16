@@ -1,20 +1,27 @@
-import chai from 'chai'
+/*
+  Unit test for the adapters/ipfs.js library.
+*/
+
+// Global npm libraries
+import { assert } from 'chai'
 import sinon from 'sinon'
+import cloneDeep from 'lodash.clonedeep'
+
+// Import local libraries
+import config from '../../../config/index.js'
 import IPFSLib from '../../../src/adapters/ipfs/ipfs.js'
 // import IPFSMock from '../mocks/ipfs-mock.js'
-import config from '../../../config/index.js'
-/*
-  Unit tests for the IPFS Adapter.
-*/
-const assert = chai.assert
-// config.isProduction =  true;
+import createHeliaLib from '../mocks/helia-mock.js'
+
 describe('#IPFS-adapter', () => {
   let uut
   let sandbox
+  let ipfs
 
   beforeEach(() => {
     uut = new IPFSLib()
     sandbox = sinon.createSandbox()
+    ipfs = cloneDeep(createHeliaLib)
   })
 
   afterEach(() => {
@@ -24,6 +31,7 @@ describe('#IPFS-adapter', () => {
   describe('#constructor', () => {
     it('should instantiate IPFS Lib in dev mode.', async () => {
       const _uut = new IPFSLib()
+
       assert.exists(_uut)
       assert.isFunction(_uut.start)
       assert.isFunction(_uut.stop)
@@ -32,6 +40,7 @@ describe('#IPFS-adapter', () => {
     it('should instantiate dev IPFS Lib in production mode.', async () => {
       config.isProduction = true
       const _uut = new IPFSLib()
+
       assert.exists(_uut)
       assert.isFunction(_uut.start)
       assert.isFunction(_uut.stop)
@@ -42,44 +51,24 @@ describe('#IPFS-adapter', () => {
   describe('#start', () => {
     it('should return a promise that resolves into an instance of IPFS.', async () => {
       // Mock dependencies.
-      sandbox.stub(uut, 'create').resolves({
-        config: {
-          profiles: {
-            apply: () => {}
-          }
-        }
-      })
+      sandbox.stub(uut, 'createNode').resolves(ipfs)
 
       const result = await uut.start()
       // console.log('result: ', result)
 
+      // Assert properties of the instance are set.
       assert.equal(uut.isReady, true)
-      assert.property(result, 'config')
-    })
+      assert.property(uut, 'multiaddrs')
+      assert.property(uut, 'id')
 
-    it('should return a promise that resolves into an instance of IPFS in production mode.', async () => {
-      // Mock dependencies.
-      // uut.IPFS = IPFSMock
-      sandbox.stub(uut, 'create').resolves({
-        config: {
-          profiles: {
-            apply: () => {}
-          }
-        }
-      })
-
-      uut.config.isProduction = true
-      const result = await uut.start()
-      // console.log('result: ', result)
-
-      assert.equal(uut.isReady, true)
-      assert.property(result, 'config')
+      // Output should be an instance of IPFS
+      assert.property(result, 'libp2p')
     })
 
     it('should catch and throw an error', async () => {
       try {
         // Force an error
-        sandbox.stub(uut, 'create').rejects(new Error('test error'))
+        sandbox.stub(uut, 'createNode').rejects(new Error('test error'))
 
         await uut.start()
         assert.fail('Unexpected code path.')

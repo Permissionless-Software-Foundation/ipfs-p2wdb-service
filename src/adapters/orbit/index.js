@@ -38,8 +38,10 @@ class OrbitDBAdapter {
     // Encapsulate dependencies
     this.config = config
     this.validationEvent = validationEvent
-    // this.OrbitDB = OrbitDB
     this.createOrbitDB = createOrbitDB
+    this.P2WCanAppend = P2WCanAppend
+    this.useAccessController = useAccessController
+    this.useDatabaseType = useDatabaseType
 
     // Properties of this class instance.
     this.db = {} // Instance of OrbitDB.
@@ -66,6 +68,8 @@ class OrbitDBAdapter {
   }
 
   // Create or load an Orbit database.
+  // Note: this function assumes that the constructor initializes this.wallet
+  // and this.writePrice.
   async createDb (localConfig = {}) {
     try {
       let { dbName } = localConfig
@@ -76,7 +80,7 @@ class OrbitDBAdapter {
       }
 
       // Initialize the P2WCanAppend library
-      const p2wdbCanAppend = new P2WCanAppend({
+      const p2wdbCanAppend = new this.P2WCanAppend({
         wallet: this.wallet,
         writePrice: this.writePrice
       })
@@ -84,8 +88,8 @@ class OrbitDBAdapter {
       // Inject an instance of the CanAppend library into the Access Controller.
       PayToWriteAccessController.injectDeps(p2wdbCanAppend)
 
-      useAccessController(PayToWriteAccessController)
-      useDatabaseType(PayToWriteDatabase)
+      this.useAccessController(PayToWriteAccessController)
+      this.useDatabaseType(PayToWriteDatabase)
       const orbitdb = await this.createOrbitDB({
         ipfs: this.ipfs,
         directory: './.ipfsdata/p2wdb/dbs/keyvalue'
@@ -106,45 +110,12 @@ class OrbitDBAdapter {
         console.log(`------>Error opening Orbit DB named ${dbName}. Error: `, err)
         // console.log(`------>Can not download manifest for OrbitDB ${dbName}.\nExiting`)
         this.exitProgram()
+        return false
       }
-
-      // const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
-      //   // directory: "./orbitdb/examples/eventlog",
-      //   directory: './.ipfsdata/p2wdb/dbs/keyvalue',
-      //   AccessControllers: AccessControllers
-      // })
-
-      // const options = {
-      //   accessController: {
-      //     type: 'payToWrite',
-      //     write: ['*'],
-      //     writePrice: this.writePrice
-      //   }
-      // }
-      // console.log('dbName: ', dbName)
-      // Create the key-value store.
-      // try {
-      //   this.db = await orbitdb.keyvalue(dbName, options)
-      // } catch (err) {
-      //   console.log(`Can not download manifest for OrbitDB ${dbName}.\nExiting`)
-      //   this.exitProgram()
-      // }
-
-      // Overwrite the default bchjs instance used by the pay-to-write access
-      // controller.
-      // this.db.options.accessController.bchjs = bchjs
-      // this.db.access.bchjs = bchjs
-      // this.db.access._this = this.db.access
-      // console.log('this.db: ', this.db)
-
-      // console.log('OrbitDB ID: ', this.db.id)
-
-      // Load data persisted to the hard drive.
-      // await this.db.load()
-      // this.db.load()
 
       // Signal that the OrbitDB is ready to use.
       this.isReady = true
+
       return this.db
     } catch (err) {
       console.error('Error in createDb(): ', err)
