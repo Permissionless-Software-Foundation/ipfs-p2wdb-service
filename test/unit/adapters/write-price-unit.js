@@ -10,13 +10,17 @@ import cloneDeep from 'lodash.clonedeep'
 // Local libraries
 import WritePrice from '../../../src/adapters/write-price.js'
 import mockDataLib from '../mocks/adapters/write-price-mocks.js'
+import Wallet from '../../../src/adapters/wallet.js'
 
 describe('#write-price', () => {
   let uut, sandbox, mockData
 
   beforeEach(async () => {
+    const wallet = new Wallet()
+    await wallet.instanceWalletWithoutInitialization()
+
     uut = new WritePrice()
-    await uut.instanceWallet()
+    await uut.initialize({ wallet })
 
     mockData = cloneDeep(mockDataLib)
     sandbox = sinon.createSandbox()
@@ -32,22 +36,14 @@ describe('#write-price', () => {
 
   afterEach(() => sandbox.restore())
 
-  describe('#instanceWallet', () => {
-    it('should return false if wallet is already instantiated', async () => {
-      // Mock dependencies and force desired code path
-      uut.wallet = true
-      const result = await uut.instanceWallet()
-      assert.equal(result, false)
-    })
-
+  describe('#initialize', () => {
     it('should return true after instantiating wallet', async () => {
       // Mock dependencies and force desired code path
-      uut.wallet = false
-      uut.WalletAdapter = class WalletAdapter {
-        async openWallet () { return true }
-        async instanceWalletWithoutInitialization () { return true }
-      }
-      const result = await uut.instanceWallet()
+      const wallet = new Wallet()
+      await wallet.instanceWalletWithoutInitialization()
+
+      const result = await uut.initialize({ wallet })
+
       assert.equal(result, true)
     })
   })
@@ -56,8 +52,8 @@ describe('#write-price', () => {
     it('should calculate write cost in BCH', async () => {
       // Mock dependencies
       sandbox.stub(uut, 'getPsfPriceInBch').resolves(0.00075689)
-      sandbox.stub(uut.wallet, 'getBalance').resolves()
-      sandbox.stub(uut.wallet, 'listTokens').resolves()
+      sandbox.stub(uut.wallet.bchWallet, 'getBalance').resolves()
+      sandbox.stub(uut.wallet.bchWallet, 'listTokens').resolves()
       uut.currentRate = 0.08335233
 
       const result = await uut.getWriteCostInBch()

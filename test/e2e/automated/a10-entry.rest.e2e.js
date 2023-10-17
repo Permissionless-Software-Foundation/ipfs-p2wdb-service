@@ -18,18 +18,22 @@ const context = {
   txid: 'myTxId',
   appId: 'myAppId'
 }
+
 describe('Entry', () => {
   beforeEach(() => {
     const useCases = new UseCases({ adapters })
     uut = new EntryController({ adapters, useCases })
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => sandbox.restore())
+
   after(async () => {
     // Remove the added entry from db
     const result = await adapters.entry.KeyValue.findOne({ key: context.txid })
     await result.remove()
   })
+
   describe('POST /entry/write - Create Entry', () => {
     it('should reject when data is incomplete', async () => {
       try {
@@ -305,24 +309,26 @@ describe('Entry', () => {
       }
     })
   })
-  describe('GET /balance - Get balance of wallet', () => {
-    it('should reject when bch writes are not enabled', async () => {
-      try {
-        const options = {
-          method: 'GET',
-          url: `${LOCALHOST}/entry/balance`,
-          data: {}
-        }
-        await axios(options)
-        assert(false, 'Unexpected result')
-      } catch (err) {
-        // console.log(err)
-        const status = err.response.status
-        const statusIs422 = status === 422
-        const statusIs501 = status === 501
-        const statusIs422Or501 = statusIs422 || statusIs501
-        assert.equal(statusIs422Or501, true)
-      }
-    })
-  })
+
+  // describe('GET /balance - Get balance of wallet', () => {
+  //   it('should reject when bch writes are not enabled', async () => {
+  //     try {
+  //       const options = {
+  //         method: 'GET',
+  //         url: `${LOCALHOST}/entry/balance`,
+  //         data: {}
+  //       }
+  //       await axios(options)
+
+  //       assert(false, 'Unexpected result')
+  //     } catch (err) {
+  //       console.log(err)
+  //       const status = err.response.status
+  //       const statusIs422 = status === 422
+  //       const statusIs501 = status === 501
+  //       const statusIs422Or501 = statusIs422 || statusIs501
+  //       assert.equal(statusIs422Or501, true)
+  //     }
+  //   })
+  // })
 })

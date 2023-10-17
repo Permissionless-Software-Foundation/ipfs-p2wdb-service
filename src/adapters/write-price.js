@@ -26,15 +26,16 @@ class WritePrice {
     this.filterTxids = [] // Tracks invalid approval TXs
 
     // Bind 'this' object to class subfunctions.
-    this.instanceWallet = this.instanceWallet.bind(this)
+    this.initialize = this.initialize.bind(this)
     this.getWriteCostInBch = this.getWriteCostInBch.bind(this)
     this.getPsfPriceInBch = this.getPsfPriceInBch.bind(this)
     this.getMcWritePrice = this.getMcWritePrice.bind(this)
     this.updateCurrentRateInBch = this.updateCurrentRateInBch.bind(this)
   }
 
-  // Instantiate the wallet if it has not already been instantiated.
-  async instanceWallet (inObj = {}) {
+  // Pass a wallet instance into this library. This function is required to prevent
+  // circular dependencies at startup.
+  async initialize (inObj = {}) {
     this.wallet = inObj.wallet
     if (!this.wallet) throw new Error('Wallet library instance required when calling write-price.js/instanceWallet()')
 
@@ -65,10 +66,10 @@ class WritePrice {
   async updateCurrentRateInBch () {
     try {
       // For debugging. Write the current balance of the wallet and token balance.
-      const bchBalance = await this.wallet.getBalance()
+      const bchBalance = await this.wallet.bchWallet.getBalance()
       console.log('App wallet BCH balance: ', bchBalance)
 
-      const tokenBalance = await this.wallet.listTokens()
+      const tokenBalance = await this.wallet.bchWallet.listTokens()
       console.log('App wallet SLP balance: ', tokenBalance)
 
       const bchPerToken = await this.getPsfPriceInBch()

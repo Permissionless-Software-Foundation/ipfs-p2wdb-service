@@ -4,7 +4,9 @@ import UseCases from '../use-cases/index.js'
 import JSONRPC from './json-rpc/index.js'
 import RESTControllers from './rest-api/index.js'
 import TimerControllers from './timer-controllers.js'
+
 let _this
+
 class Controllers {
   constructor (localConfig = {}) {
     // Encapsulate dependencies

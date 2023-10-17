@@ -27,7 +27,6 @@ class Adapters {
     this.nodemailer = new Nodemailer()
     this.jsonFiles = new JSONFiles()
     this.bchjs = new BCHJS()
-    // this.p2wdb = new P2WDB()
     this.entry = new EntryAdapter()
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()
@@ -36,10 +35,10 @@ class Adapters {
 
     // Pass the instance of write-price when instantiating the P2WDB OrbitDB.
     localConfig.writePrice = this.writePrice
-    // console.log('adapters index.js localConfig: ', localConfig)
     this.p2wdb = new P2WDB(localConfig)
-    this.config = config
+
     // Get a valid JWT API key and instance bch-js.
+    this.config = config
     this.fullStackJwt = new FullStackJWT(config)
   }
 
@@ -72,7 +71,7 @@ class Adapters {
       // Do not start these adapters if this is an e2e test.
       if (this.config.env !== 'test') {
         // Get the write price set by the PSF Minting Council.
-        await this.writePrice.instanceWallet({ wallet: this.wallet })
+        await this.writePrice.initialize({ wallet: this.wallet })
         const currentRate = await this.writePrice.getMcWritePrice()
         console.log(`\nCurrent P2WDB cost is ${currentRate} PSF tokens per write.`)
         // await this.writePrice.getWriteCostInBch()

@@ -26,7 +26,7 @@ class WalletAdapter {
   // Open the wallet file, or create one if the file doesn't exist.
   // Does not instance the wallet. The output of this function is expected to
   // be passed to instanceWallet().
-  async openWallet ({ advancedConfig = {} }) {
+  async openWallet (advancedConfig = {}) {
     try {
       let walletData
 
@@ -100,6 +100,7 @@ class WalletAdapter {
         advancedConfig.interface = 'rest-api'
         advancedConfig.restURL = this.config.apiServer
       } else {
+        // By default use the web3 Cash Stack (https://cashstack.info)
         advancedConfig.interface = 'consumer-api'
         advancedConfig.restURL = this.config.consumerUrl
       }
