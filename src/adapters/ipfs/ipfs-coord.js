@@ -53,13 +53,16 @@ class IpfsCoordAdapter {
 
     await this.wallet.walletInfoPromise
 
+    const nullHandler = () => {}
+
     const ipfsCoordOptions = {
       ipfs: this.ipfs,
       type: 'node.js',
       // type: 'browser',
       // bchjs: this.bchjs,
       wallet: this.wallet,
-      privateLog: console.log,
+      // privateLog: console.log,
+      privateLog: nullHandler,
       isCircuitRelay: this.config.isCircuitRelay,
       circuitRelayInfo,
       apiInfo: this.config.apiInfo,
@@ -98,7 +101,8 @@ class IpfsCoordAdapter {
 
   // Subscribe to the chat pubsub channel
   async subscribeToChat () {
-    await this.ipfsCoord.adapters.pubsub.subscribeToPubsubChannel(this.config.chatPubSubChan, console.log, this.ipfsCoord.thisNode)
+    const nullHandler = () => {}
+    await this.ipfsCoord.adapters.pubsub.subscribeToPubsubChannel(this.config.chatPubSubChan, nullHandler, this.ipfsCoord.thisNode)
   }
 }
 export default IpfsCoordAdapter
