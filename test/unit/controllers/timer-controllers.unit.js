@@ -30,18 +30,26 @@ describe('#Timer-Controllers', () => {
     it('should throw an error if adapters are not passed in', () => {
       try {
         uut = new TimerControllers()
+
         assert.fail('Unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Instance of Adapters library required when instantiating Timer Controller libraries.')
+        assert.include(
+          err.message,
+          'Instance of Adapters library required when instantiating Timer Controller libraries.'
+        )
       }
     })
 
     it('should throw an error if useCases are not passed in', () => {
       try {
         uut = new TimerControllers({ adapters })
+
         assert.fail('Unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Instance of Use Cases library required when instantiating Timer Controller libraries.')
+        assert.include(
+          err.message,
+          'Instance of Use Cases library required when instantiating Timer Controller libraries.'
+        )
       }
     })
   })

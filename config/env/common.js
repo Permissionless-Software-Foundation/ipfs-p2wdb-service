@@ -1,3 +1,4 @@
+
 // Hack to get __dirname back.
 // https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
 import * as url from 'url'
@@ -6,8 +7,8 @@ import * as url from 'url'
 import { readFileSync } from 'fs'
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const pkgInfo = JSON.parse(readFileSync(`${__dirname.toString()}/../../package.json`))
-
 const version = pkgInfo.version
+
 const ipfsCoordName = process.env.COORD_NAME
   ? process.env.COORD_NAME
   : 'ipfs-p2wdb-service-generic'
@@ -51,8 +52,8 @@ const config = {
     : 'https://free-bch.fullstack.cash',
 
   // IPFS settings.
+  useIpfs: !process.env.DISABLE_IPFS, // Disable IPFS flag
   isCircuitRelay: !!process.env.ENABLE_CIRCUIT_RELAY,
-
   // SSL domain used for websocket connection via browsers.
   crDomain: process.env.CR_DOMAIN ? process.env.CR_DOMAIN : '',
   // Information passed to other IPFS peers about this node.

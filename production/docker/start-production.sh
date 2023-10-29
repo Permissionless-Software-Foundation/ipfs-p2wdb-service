@@ -51,4 +51,8 @@ export ORBITDB_NAME=/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh/p
 #export USE_FULLSTACKCASH=1
 #export APISERVER=http://192.168.1.104:3000/v5/
 
+# Set the debug level for helia-coord. 0-3.
+# 0 = no debug logs. 3 = maximum debug logs.
+export DEBUG_LEVEL=0
+
 npm start

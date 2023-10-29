@@ -1,11 +1,14 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import Controllers from '../../../src/controllers/index.js'
 /*
   Unit tests for controllers index.js file.
 */
+
 // Public npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+// Local libraries
+import Controllers from '../../../src/controllers/index.js'
+
 describe('#Controllers', () => {
   let uut
   let sandbox
@@ -21,6 +24,10 @@ describe('#Controllers', () => {
       uut.adapters.ipfs.ipfsCoordAdapter = {
         attachRPCRouter: () => { }
       }
+
+      // Mock the timer controllers
+      sandbox.stub(uut.timerControllers, 'startTimers').returns()
+
       const app = {
         use: () => { }
       }

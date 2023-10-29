@@ -1,5 +1,7 @@
-import { wlogger } from '../../../adapters/wlogger.js'
+import wlogger from '../../../adapters/wlogger.js'
+
 // let _this
+
 class WebhookRESTControllerLib {
   constructor (localConfig = {}) {
     // Dependency Injection.

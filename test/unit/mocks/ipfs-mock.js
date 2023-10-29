@@ -23,4 +23,4 @@ class MockIpfsInstance {
     stop() { }
 }
 
-export default IPFS;
+export default create;

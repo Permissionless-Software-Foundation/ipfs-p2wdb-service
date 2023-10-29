@@ -1,13 +1,17 @@
-// Public npm libraries
-// import IpfsCoord from 'ipfs-coord-esm'
+/*
+  Clean Architecture Adapter for ipfs-coord.
+  This library deals with ipfs-coord library so that the apps business logic
+  doesn't need to have any specific knowledge of the library.
+*/
+
+// Global npm libraries
 import IpfsCoord from 'helia-coord'
-import publicIp from 'public-ip'
 import SlpWallet from 'minimal-slp-wallet'
+import publicIp from 'public-ip'
 
 // Local libraries
 import config from '../../../config/index.js'
 
-// const JSONRPC = require('../../controllers/json-rpc/')
 let _this
 
 class IpfsCoordAdapter {
@@ -25,6 +29,8 @@ class IpfsCoordAdapter {
     // Encapsulate dependencies
     this.IpfsCoord = IpfsCoord
     this.ipfsCoord = {}
+    // this.bchjs = new BCHJS()
+    this.wallet = new SlpWallet()
     this.config = config
     this.publicIp = publicIp
     this.wallet = new SlpWallet()
@@ -37,6 +43,10 @@ class IpfsCoordAdapter {
 
   async start () {
     const circuitRelayInfo = {}
+
+    // Wait for the BCH wallet to create the wallet.
+    await this.wallet.walletInfoPromise
+
     // If configured as a Circuit Relay, get the public IP addresses for this node.
     if (this.config.isCircuitRelay) {
       try {
@@ -51,18 +61,15 @@ class IpfsCoordAdapter {
       }
     }
 
-    await this.wallet.walletInfoPromise
-
-    const nullHandler = () => {}
+    const nullLog = () => {}
 
     const ipfsCoordOptions = {
       ipfs: this.ipfs,
       type: 'node.js',
       // type: 'browser',
-      // bchjs: this.bchjs,
       wallet: this.wallet,
-      // privateLog: console.log,
-      privateLog: nullHandler,
+      // privateLog: console.log, // Default to console.log
+      privateLog: nullLog,
       isCircuitRelay: this.config.isCircuitRelay,
       circuitRelayInfo,
       apiInfo: this.config.apiInfo,
@@ -105,4 +112,5 @@ class IpfsCoordAdapter {
     await this.ipfsCoord.adapters.pubsub.subscribeToPubsubChannel(this.config.chatPubSubChan, nullHandler, this.ipfsCoord.thisNode)
   }
 }
+
 export default IpfsCoordAdapter

@@ -1,4 +1,3 @@
-
 import Server from './bin/server.js'
 const server = new Server()
 

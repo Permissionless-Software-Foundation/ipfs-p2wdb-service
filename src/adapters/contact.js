@@ -1,13 +1,17 @@
-import config from '../../config/index.js'
-import NodeMailer from './nodemailer.js'
-import { wlogger } from './wlogger.js'
+
 /*
   Business logic for the /contact endpoint.
 */
 /* eslint-disable no-useless-escape */
+import config from '../../config/index.js'
+import NodeMailer from '../adapters/nodemailer.js'
+import wlogger from '../adapters/wlogger.js'
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 const nodemailer = new NodeMailer()
+
 let _this
+
 class ContactLib {
   constructor () {
     _this = this

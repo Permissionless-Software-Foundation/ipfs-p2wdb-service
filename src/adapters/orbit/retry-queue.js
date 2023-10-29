@@ -9,10 +9,10 @@
   pay-to-write-access-controller.js depends on this library.
 */
 
-import pQueue from 'p-queue'
+import PQueue from 'p-queue'
 import pRetry from 'p-retry'
 
-const PQueue = pQueue.default
+// const PQueue = pQueue.default
 
 let _this
 

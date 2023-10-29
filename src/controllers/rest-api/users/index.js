@@ -1,6 +1,14 @@
+/*
+  REST API library for /user route.
+*/
+
+// Public npm libraries.
 import Router from 'koa-router'
+
+// Local libraries.
 import UserRESTControllerLib from './controller.js'
 import Validators from '../middleware/validators.js'
+
 let _this
 class UserRouter {
   constructor (localConfig = {}) {

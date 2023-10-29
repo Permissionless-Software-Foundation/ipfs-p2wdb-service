@@ -1,5 +1,15 @@
-// Public npm libraries
+/*
+  This Koa server has two interfaces:
+  - REST API over HTTP
+  - JSON RPC over IPFS
+
+  The architecture of the code follows the Clean Architecture pattern:
+  https://troutsblog.com/blog/clean-architecture
+*/
+
+// npm libraries
 import Koa from 'koa'
+
 import bodyParser from 'koa-bodyparser'
 import convert from 'koa-convert'
 import logger from 'koa-logger'
@@ -11,10 +21,11 @@ import serve from 'koa-static'
 import cors from 'kcors'
 
 // Local libraries
-import config from '../config/index.js'
+import config from '../config/index.js' // this first.
+
 import AdminLib from '../src/adapters/admin.js'
 import errorMiddleware from '../src/controllers/rest-api/middleware/error.js'
-import { wlogger } from '../src/adapters/wlogger.js'
+import wlogger from '../src/adapters/wlogger.js'
 import Controllers from '../src/controllers/index.js'
 import { applyPassportMods } from '../config/passport.js'
 

@@ -1,5 +1,14 @@
+/*
+  Validators for the JSON RPC
+*/
+/* eslint no-useless-catch: 0 */
+
+// Public npm libraries
 import jwt from 'jsonwebtoken'
+
+// Local libraries
 import config from '../../../config/index.js'
+
 // const UserModel = require('../../adapters/localdb/models/users')
 class Validators {
   constructor (localConfig = {}) {

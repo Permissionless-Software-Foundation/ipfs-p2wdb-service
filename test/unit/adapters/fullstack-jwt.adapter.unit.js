@@ -1,11 +1,13 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import FullStackJWT from '../../../src/adapters/fullstack-jwt.js'
 /*
   Unit tests for the jwt-bch-lib and fullstack-jwt.js adapter library.
 
 */
-const assert = chai.assert
+
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+import FullStackJWT from '../../../src/adapters/fullstack-jwt.js'
+
 describe('#FullStackJWT', () => {
   let sandbox
   let uut

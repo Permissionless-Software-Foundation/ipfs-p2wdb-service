@@ -1,25 +1,26 @@
+
+// Public npm libraries.
+
+// Local libraries
 import Adapters from '../adapters/index.js'
-import validationEvent from '../adapters/orbit/validation-event.js'
-import UseCases from '../use-cases/index.js'
 import JSONRPC from './json-rpc/index.js'
+import UseCases from '../use-cases/index.js'
 import RESTControllers from './rest-api/index.js'
 import TimerControllers from './timer-controllers.js'
-
-let _this
+import config from '../../config/index.js'
+import validationEvent from '../adapters/orbit/validation-event.js'
 
 class Controllers {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
     this.adapters = new Adapters()
     this.useCases = new UseCases({ adapters: this.adapters })
-    this.timerControllers = new TimerControllers({
-      adapters: this.adapters,
-      useCases: this.useCases
-    })
+    this.timerControllers = new TimerControllers({ adapters: this.adapters, useCases: this.useCases })
+    this.config = config
+
     // Attach the event handler to the event.
     // This event is responsible for adding validated entries to MongoDB.
     validationEvent.on('ValidationSucceeded', this.validationSucceededEventHandler)
-    _this = this
   }
 
   // Spin up any adapter libraries that have async startup needs.
@@ -45,9 +46,14 @@ class Controllers {
 
   // Attach any other controllers other than REST API controllers.
   async attachControllers (app) {
-    // RPC controllers
+    // Wait for any startup processes to complete for the Adapters libraries.
+    // await this.adapters.start()
+
+    // Attach JSON RPC controllers
     this.attachRPCControllers()
-    // Add any additional controllers here.
+
+    // Attach and start the timer controllers
+    this.timerControllers.startTimers()
   }
 
   // Add the JSON RPC router to the ipfs-coord adapter.
@@ -68,7 +74,7 @@ class Controllers {
       //   'ValidationSucceeded event triggering addPeerEntry() with this data: ',
       //   data
       // )
-      await _this.useCases.entry.addEntry.addPeerEntry(data)
+      await this.useCases.entry.addEntry.addPeerEntry(data)
     } catch (err) {
       console.error('Error trying to process peer data with addPeerEntry(): ', err)
       // Do not throw an error. This is a top-level function.

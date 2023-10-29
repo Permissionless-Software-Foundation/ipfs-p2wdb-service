@@ -1,4 +1,4 @@
-import { wlogger } from '../../../adapters/wlogger.js'
+import wlogger from '../../../adapters/wlogger.js'
 import config from '../../../../config/index.js'
 
 let _this

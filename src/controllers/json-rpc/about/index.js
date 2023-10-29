@@ -1,5 +1,16 @@
+/*
+  This is the JSON RPC router for the users API
+
+  CT 3/5/22: This library can probably be deleted. Handling of the /about endpoint
+  is now directly controlled by the ipfs-coord library.
+*/
+
+// Public npm libraries
 import jsonrpc from 'jsonrpc-lite'
+
+// Local libraries
 import config from '../../../../config/index.js'
+
 class AboutRPC {
   constructor (localConfig) {
     // Encapsulate dependencies

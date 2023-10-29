@@ -1,4 +1,9 @@
-import { wlogger } from '../../../adapters/wlogger.js'
+/*
+  REST API Controller library for the /user route
+*/
+
+import wlogger from '../../../adapters/wlogger.js'
+
 let _this
 class UserRESTControllerLib {
   constructor (localConfig = {}) {
@@ -18,46 +23,46 @@ class UserRESTControllerLib {
   }
 
   /**
-     * @api {post} /users Create a new user
-     * @apiPermission user
-     * @apiName CreateUser
-     * @apiGroup REST Users
-     *
-     * @apiExample Example usage:
-     * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "email": "email@format.com", "name": "my name", "password": "secretpasas" } }' localhost:5001/users
-     *
-     * @apiParam {Object} user          User object (required)
-     * @apiParam {String} user.email Email
-     * @apiParam {String} user.password Password
-     * @apiParam {String} user.name name or handle
-     *
-     * @apiSuccess {Object}   users           User object
-     * @apiSuccess {ObjectId} users._id       User id
-     * @apiSuccess {String}   user.type       User type (admin or user)
-     * @apiSuccess {String}   users.name      User name
-     * @apiSuccess {String}   users.username  User username
-     * @apiSuccess {String}   users.email     User email
-     *
-     * @apiSuccessExample {json} Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "user": {
-     *          "_id": "56bd1da600a526986cf65c80"
-     *          "name": "John Doe"
-     *          "email": "email@format.com",
-     *          "password": "somestrongpassword"
-     *       }
-     *     }
-     *
-     * @apiError UnprocessableEntity Missing required parameters
-     *
-     * @apiErrorExample {json} Error-Response:
-     *     HTTP/1.1 422 Unprocessable Entity
-     *     {
-     *       "status": 422,
-     *       "error": "Unprocessable Entity"
-     *     }
-     */
+   * @api {post} /users Create a new user
+   * @apiPermission user
+   * @apiName CreateUser
+   * @apiGroup REST Users
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "email": "email@format.com", "name": "my name", "password": "secretpasas" } }' localhost:5010/users
+   *
+   * @apiParam {Object} user          User object (required)
+   * @apiParam {String} user.email Email
+   * @apiParam {String} user.password Password
+   * @apiParam {String} user.name name or handle
+   *
+   * @apiSuccess {Object}   users           User object
+   * @apiSuccess {ObjectId} users._id       User id
+   * @apiSuccess {String}   user.type       User type (admin or user)
+   * @apiSuccess {String}   users.name      User name
+   * @apiSuccess {String}   users.username  User username
+   * @apiSuccess {String}   users.email     User email
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "user": {
+   *          "_id": "56bd1da600a526986cf65c80"
+   *          "name": "John Doe"
+   *          "email": "email@format.com",
+   *          "password": "somestrongpassword"
+   *       }
+   *     }
+   *
+   * @apiError UnprocessableEntity Missing required parameters
+   *
+   * @apiErrorExample {json} Error-Response:
+   *     HTTP/1.1 422 Unprocessable Entity
+   *     {
+   *       "status": 422,
+   *       "error": "Unprocessable Entity"
+   *     }
+   */
   async createUser (ctx) {
     try {
       const userObj = ctx.request.body.user
@@ -109,39 +114,39 @@ class UserRESTControllerLib {
       const users = await _this.useCases.user.getAllUsers()
       ctx.body = { users }
     } catch (err) {
-      wlogger.error('Error in users/controller.js/getUsers(): '.err)
+      wlogger.error('Error in users/controller.js/getUsers(): ', err)
       ctx.throw(422, err.message)
     }
   }
 
   /**
-     * @api {get} /users/:id Get user by id
-     * @apiPermission user
-     * @apiName GetUser
-     * @apiGroup REST Users
-     *
-     * @apiExample Example usage:
-     * curl -H "Content-Type: application/json" -X GET localhost:5000/users/56bd1da600a526986cf65c80
-     *
-     * @apiSuccess {Object}   users           User object
-     * @apiSuccess {ObjectId} users._id       User id
-     * @apiSuccess {String}   user.type       User type (admin or user)
-     * @apiSuccess {String}   users.name      User name
-     * @apiSuccess {String}   users.username  User username
-     * @apiSuccess {String}   users.email     User email
-     *
-     * @apiSuccessExample {json} Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *       "user": {
-     *          "_id": "56bd1da600a526986cf65c80"
-     *          "name": "John Doe"
-     *          "email": "email@format.com"
-     *       }
-     *     }
-     *
-     * @apiUse TokenError
-     */
+   * @api {get} /users/:id Get user by id
+   * @apiPermission user
+   * @apiName GetUser
+   * @apiGroup REST Users
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5010/users/56bd1da600a526986cf65c80
+   *
+   * @apiSuccess {Object}   users           User object
+   * @apiSuccess {ObjectId} users._id       User id
+   * @apiSuccess {String}   user.type       User type (admin or user)
+   * @apiSuccess {String}   users.name      User name
+   * @apiSuccess {String}   users.username  User username
+   * @apiSuccess {String}   users.email     User email
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "user": {
+   *          "_id": "56bd1da600a526986cf65c80"
+   *          "name": "John Doe"
+   *          "email": "email@format.com"
+   *       }
+   *     }
+   *
+   * @apiUse TokenError
+   */
   async getUser (ctx, next) {
     try {
       const user = await _this.useCases.user.getUser(ctx.params)

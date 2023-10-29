@@ -1,5 +1,6 @@
 /*
-  This library is responsible for managing all the time-based controllers.
+  This Controller library is concerned with timer-based functions that are
+  kicked off periodicially.
 */
 
 import config from '../../config/index.js'
@@ -9,12 +10,17 @@ class TimerControllers {
     // Dependency Injection.
     this.adapters = localConfig.adapters
     if (!this.adapters) {
-      throw new Error('Instance of Adapters library required when instantiating Timer Controller libraries.')
+      throw new Error(
+        'Instance of Adapters library required when instantiating Timer Controller libraries.'
+      )
     }
     this.useCases = localConfig.useCases
     if (!this.useCases) {
-      throw new Error('Instance of Use Cases library required when instantiating Timer Controller libraries.')
+      throw new Error(
+        'Instance of Use Cases library required when instantiating Timer Controller libraries.'
+      )
     }
+
     this.debugLevel = localConfig.debugLevel
 
     // Encapsulate dependencies
@@ -25,7 +31,7 @@ class TimerControllers {
     this.manageTickets = this.manageTickets.bind(this)
 
     // Automatically start the timers when this library is loaded.
-    this.startTimers()
+    // this.startTimers()
   }
 
   // Start all the time-based controllers.
@@ -40,6 +46,12 @@ class TimerControllers {
     if (this.config.enablePreBurnTicket && this.config.env !== 'test') {
       this.manageTicketsHandle = setInterval(this.manageTickets, 60000 * 11) // Every 11 minute
     }
+
+    // Any new timer control functions can be added here. They will be started
+    // when the server starts.
+    // this.optimizeWalletHandle = setInterval(this.exampleTimerFunc, 60000 * 10)
+
+    return true
   }
 
   stopTimers () {

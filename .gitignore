@@ -70,6 +70,7 @@ ipfs-service-provider.sh
 mongodb/
 run-dev.sh
 data/
+run-dev.sh
 
 !README.md
 

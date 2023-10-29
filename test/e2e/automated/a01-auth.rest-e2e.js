@@ -4,11 +4,11 @@
   This test sets up the environment for other e2e tests.
 */
 
-// npm libraries
+// Public npm libraries
 import { assert } from 'chai'
 import axios from 'axios'
 
-// Local libraries
+// Local support libraries
 import config from '../../../config/index.js'
 import Server from '../../../bin/server.js'
 import testUtils from '../../utils/test-utils.js'

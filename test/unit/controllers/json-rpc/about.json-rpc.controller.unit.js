@@ -1,7 +1,15 @@
+/*
+  Unit tests for the json-rpc/about/index.js file.
+*/
+
+// Public npm libraries
 import sinon from 'sinon'
-import chai from 'chai'
+
+import { assert } from 'chai'
+
+// Local libraries
 import AboutRPC from '../../../../src/controllers/json-rpc/about/index.js'
-const assert = chai.assert
+
 describe('#AboutRPC', () => {
   let uut
   let sandbox

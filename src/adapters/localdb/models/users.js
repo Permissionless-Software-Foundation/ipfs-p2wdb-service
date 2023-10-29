@@ -1,7 +1,11 @@
+// Global npm libraries
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
-import config from '../../../../config/index.js'
 import jwt from 'jsonwebtoken'
+
+// Local libraries
+import config from '../../../../config/index.js'
+
 const User = new mongoose.Schema({
   type: { type: String, default: 'user' },
   name: { type: String },
@@ -38,4 +42,6 @@ User.methods.generateToken = function generateToken () {
   // console.log(`generated token: ${token}`)
   return token
 }
+
+// export default mongoose.model('user', User)
 export default mongoose.model('user', User)

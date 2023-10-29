@@ -1,20 +1,24 @@
-// Global npm libraries
+/*
+  Unit tests for the json-rpc/auth/index.js file.
+*/
+
+// Public npm libraries
 import jsonrpc from 'jsonrpc-lite'
+
 import sinon from 'sinon'
-import chai from 'chai'
-// import uuid from 'uuid'
+import { assert } from 'chai'
 import { v4 as uid } from 'uuid'
 
 // Local libraries
 import AuthRPC from '../../../../src/controllers/json-rpc/auth/index.js'
+
 import RateLimit from '../../../../src/controllers/json-rpc/rate-limit.js'
 import adapters from '../../mocks/adapters/index.js'
 import UseCasesMock from '../../mocks/use-cases/index.js'
 
-const assert = chai.assert
-// const { v4: uid } = uuid
 // Set the environment variable to signal this is a test.
 process.env.P2W_ENV = 'test'
+
 describe('#AuthRPC', () => {
   let uut
   let sandbox

@@ -2,11 +2,11 @@
   Unit tests for the User entity library.
 */
 
-import chai from 'chai'
+import { assert } from 'chai'
+
 import sinon from 'sinon'
 import User from '../../../src/entities/user.js'
 
-const assert = chai.assert
 let sandbox
 let uut
 

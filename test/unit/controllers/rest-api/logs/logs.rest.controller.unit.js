@@ -1,16 +1,18 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import LogsApiController from '../../../../../src/controllers/rest-api/logs/controller.js'
-import { context } from '../../../mocks/ctx-mock.js'
+
 /*
   Unit tests for the REST API handler for the /users endpoints.
 */
 // Public npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+import LogsApiController from '../../../../../src/controllers/rest-api/logs/controller.js'
+import { context as mockContext } from '../../../../unit/mocks/ctx-mock.js'
+
 let uut
 let sandbox
 let ctx
-const mockContext = { context }.context
+
 describe('Logapi', () => {
   before(async () => {
   })

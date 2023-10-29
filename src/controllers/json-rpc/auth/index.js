@@ -1,6 +1,17 @@
+/*
+  This is the JSON RPC router for the users API
+*/
+
+// Public npm libraries
 import jsonrpc from 'jsonrpc-lite'
-import { wlogger } from '../../../adapters/wlogger.js'
+
+// Local libraries
+// const AuthLib = require('../../lib/auth')
+// const UserLib = require('../../../use-cases/user')
+import wlogger from '../../../adapters/wlogger.js'
+
 import RateLimit from '../rate-limit.js'
+
 class AuthRPC {
   constructor (localConfig = {}) {
     // Dependency Injection.

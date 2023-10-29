@@ -1,4 +1,5 @@
-import { wlogger } from '../../../adapters/wlogger.js'
+import wlogger from '../../../adapters/wlogger.js'
+
 class EntryRPC {
   constructor (localConfig = {}) {
     // Dependency Injection.

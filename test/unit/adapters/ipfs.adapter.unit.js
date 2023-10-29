@@ -7,10 +7,10 @@ import { assert } from 'chai'
 import sinon from 'sinon'
 import cloneDeep from 'lodash.clonedeep'
 
-// Import local libraries
-import config from '../../../config/index.js'
+// Local libraries
 import IPFSLib from '../../../src/adapters/ipfs/ipfs.js'
-// import IPFSMock from '../mocks/ipfs-mock.js'
+// import create from '../mocks/ipfs-mock.js'
+import config from '../../../config/index.js'
 import createHeliaLib from '../mocks/helia-mock.js'
 
 describe('#IPFS-adapter', () => {
@@ -20,6 +20,7 @@ describe('#IPFS-adapter', () => {
 
   beforeEach(() => {
     uut = new IPFSLib()
+
     sandbox = sinon.createSandbox()
     ipfs = cloneDeep(createHeliaLib)
   })
@@ -90,24 +91,56 @@ describe('#IPFS-adapter', () => {
       assert.equal(result, true)
     })
   })
-  // describe('#rmBlocksDir', () => {
-  //   it('should delete the /blocks directory', () => {
-  //     const result = uut.rmBlocksDir()
-  //
-  //     assert.equal(result, true)
-  //   })
-  //
-  //   it('should catch and throw an error', () => {
-  //     try {
-  //       // Force an error
-  //       sandbox.stub(uut.fs, 'rmdirSync').throws(new Error('test error'))
-  //
-  //       uut.rmBlocksDir()
-  //
-  //       assert.fail('Unexpected code path')
-  //     } catch (err) {
-  //       assert.equal(err.message, 'test error')
-  //     }
-  //   })
-  // })
+
+  describe('#ensureBlocksDir', () => {
+    it('should create directory if it does not exist', () => {
+      // Force desired code path
+      sandbox.stub(uut.fs, 'existsSync').returns(false)
+      sandbox.stub(uut.fs, 'mkdirSync').returns(true)
+
+      const result = uut.ensureBlocksDir()
+
+      assert.equal(result, true)
+    })
+
+    it('should report and throw errors', () => {
+      // Force an error
+      sandbox.stub(uut.fs, 'existsSync').throws(new Error('test error'))
+
+      try {
+        uut.ensureBlocksDir()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#createNode', () => {
+    it('should report and throw errors', async () => {
+      // Force an error
+      sandbox.stub(uut, 'createLibp2p').rejects(new Error('test error'))
+
+      try {
+        await uut.createNode()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+
+    it('should create an IPFS node from Helia', async () => {
+      const result = await uut.createNode()
+      // console.log('result: ', result)
+
+      // Assert the returned IPFS node has expected properties
+      assert.property(result, 'libp2p')
+      assert.property(result, 'blockstore')
+
+      // Stop the IPFS node
+      await result.stop()
+    })
+  })
 })

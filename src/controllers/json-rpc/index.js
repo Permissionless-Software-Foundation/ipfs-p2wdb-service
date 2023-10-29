@@ -1,9 +1,17 @@
+/*
+  This is the parent class library for the RPC controller.
+*/
+
+// Public npm libraries
 import jsonrpc from 'jsonrpc-lite'
-import { wlogger } from '../../adapters/wlogger.js'
+
+// Local support libraries
+import wlogger from '../../adapters/wlogger.js'
 import UserController from './users/index.js'
 import AuthController from './auth/index.js'
 import AboutController from './about/index.js'
 import EntryRPC from './entry/index.js'
+
 let _this
 class JSONRPC {
   constructor (localConfig = {}) {

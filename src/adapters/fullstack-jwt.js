@@ -1,5 +1,14 @@
+/*
+  A library of utility functions for working with FullStack.cash JWT tokens.
+
+  Feel free to copy this library into your own app, as well as the unit tests
+  for this file.
+*/
+
 import JwtLib from 'jwt-bch-lib'
+
 import BCHJS from '@psf/bch-js'
+
 class FullStackJWT {
   constructor (localConfig = {}) {
     // Input Validation

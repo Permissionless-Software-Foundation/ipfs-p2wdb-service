@@ -5,7 +5,7 @@
 
 // Global npm libraries
 import { createHelia } from 'helia'
-// import { unixfs } from '@helia/unixfs'
+import fs from 'fs'
 import { FsBlockstore } from 'blockstore-fs'
 import { FsDatastore } from 'datastore-fs'
 import { createLibp2p } from 'libp2p'
@@ -15,28 +15,44 @@ import { yamux } from '@chainsafe/libp2p-yamux'
 import { bootstrap } from '@libp2p/bootstrap'
 import { identifyService } from 'libp2p/identify'
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
-import fs from 'fs'
 
 // Local libraries
 import config from '../../../config/index.js'
 
-const IPFS_DIR = './.ipfsdata/ipfs'
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+// console.log('__dirname: ', __dirname)
+
+const ROOT_DIR = `${__dirname}../../../`
+const IPFS_DIR = `${__dirname}../../../.ipfsdata/ipfs`
 
 class IpfsAdapter {
   constructor (localConfig) {
     // Encapsulate dependencies
     this.config = config
     this.fs = fs
+    this.createLibp2p = createLibp2p
 
     // Properties of this class instance.
     this.isReady = false
     this.multiaddrs = null
     this.id = null
+
+    // Bind 'this' object to all subfunctions
+    this.start = this.start.bind(this)
+    this.createNode = this.createNode.bind(this)
+    this.stop = this.stop.bind(this)
+    this.ensureBlocksDir = this.ensureBlocksDir.bind(this)
   }
 
   // Start an IPFS node.
   async start () {
     try {
+      // Ensure the directory structure exists that is needed by the IPFS node to store data.
+      this.ensureBlocksDir()
+
       // Create an IPFS node
       const ipfs = await this.createNode()
       // console.log('ipfs: ', ipfs)
@@ -53,6 +69,7 @@ class IpfsAdapter {
       this.isReady = true
 
       this.ipfs = ipfs
+
       return this.ipfs
     } catch (err) {
       console.error('Error in ipfs.js/start()')
@@ -69,7 +86,7 @@ class IpfsAdapter {
       const datastore = new FsDatastore(`${IPFS_DIR}/datastore`)
 
       // libp2p is the networking layer that underpins Helia
-      const libp2p = await createLibp2p({
+      const libp2p = await this.createLibp2p({
         datastore,
         addresses: {
           listen: [
@@ -98,8 +115,7 @@ class IpfsAdapter {
               '/ip4/137.184.13.92/tcp/4001/p2p/12D3KooWMbpo92kSGwWiN6QH7fvstMWiLZKcxmReq3Hhbpya2bq4',
               '/ip4/78.46.129.7/tcp/4001/p2p/12D3KooWJyc54njjeZGbLew4D8u1ghrmZTTPyh3QpBF7dxtd3zGY',
               '/ip4/5.161.72.148/tcp/4001/p2p/12D3KooWAVG5kn46P9mjKCLUSPesmmLeKf2a79qRt6u22hJaEARJ',
-              '/ip4/161.35.99.207/tcp/4001/p2p/12D3KooWDtj9cfj1SKuLbDNKvKRKSsGN8qivq9M8CYpLPDpcD5pu',
-              '/ip4/192.168.2.173/tcp/4001/p2p/12D3KooWAz2hbriyU9o1wHNU2nxqG8mMgAdWnXCSfWiv5kxSfW49'
+              '/ip4/161.35.99.207/tcp/4001/p2p/12D3KooWDtj9cfj1SKuLbDNKvKRKSsGN8qivq9M8CYpLPDpcD5pu'
             ]
           })
         ],
@@ -119,6 +135,8 @@ class IpfsAdapter {
       return helia
     } catch (err) {
       console.error('Error creating Helia node: ', err)
+
+      throw err
     }
   }
 
@@ -126,5 +144,25 @@ class IpfsAdapter {
     await this.ipfs.stop()
     return true
   }
+
+  // Ensure that the directories exist to store blocks from the IPFS network.
+  // This function is called at startup, before the IPFS node is started.
+  ensureBlocksDir () {
+    try {
+      !this.fs.existsSync(`${ROOT_DIR}.ipfsdata`) && this.fs.mkdirSync(`${ROOT_DIR}.ipfsdata`)
+
+      !this.fs.existsSync(`${IPFS_DIR}`) && this.fs.mkdirSync(`${IPFS_DIR}`)
+
+      !this.fs.existsSync(`${IPFS_DIR}/blockstore`) && this.fs.mkdirSync(`${IPFS_DIR}/blockstore`)
+
+      !this.fs.existsSync(`${IPFS_DIR}/datastore`) && this.fs.mkdirSync(`${IPFS_DIR}/datastore`)
+
+      return true
+    } catch (err) {
+      console.error('Error in adapters/ipfs.js/ensureBlocksDir(): ', err)
+      throw err
+    }
+  }
 }
+
 export default IpfsAdapter

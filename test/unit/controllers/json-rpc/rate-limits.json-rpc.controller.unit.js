@@ -1,3 +1,9 @@
+/*
+  Unit tests for the JSON RPC validator middleware.
+
+  TODO: ensureTargetUserOrAdmin: it should exit quietly if user is an admin.
+*/
+
 import sinon from 'sinon'
 import chai from 'chai'
 import RateLimit from '../../../../src/controllers/json-rpc/rate-limit.js'
