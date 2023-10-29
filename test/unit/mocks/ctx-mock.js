@@ -1,5 +1,6 @@
 import Stream from "stream";
 import Koa from "koa";
+
 const context = (req, res, app) => {
     const socket = new Stream.Duplex();
     req = Object.assign({ headers: {}, socket }, Stream.Readable.prototype, req || {});
@@ -13,8 +14,11 @@ const context = (req, res, app) => {
     retApp.params = {};
     return retApp;
 };
+
 const request = (req, res, app) => context(req, res, app).request;
+
 const response = (req, res, app) => context(req, res, app).response;
+
 export { context };
 export { request };
 export { response };

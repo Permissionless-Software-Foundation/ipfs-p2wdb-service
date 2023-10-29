@@ -24,9 +24,12 @@ class IpfsCoordAdapter {
 
 const ipfs = {
     ipfsAdapter: new IpfsAdapter(),
-    ipfsCoordAdapter: new IpfsCoordAdapter()
-};
-ipfs.ipfs = ipfs.ipfsAdapter.ipfs;
+    ipfsCoordAdapter: new IpfsCoordAdapter(),
+    getStatus: async () => {},
+    getPeers: async () => {},
+    getRelays: async () => {}
+  }
+ipfs.ipfs = ipfs.ipfsAdapter.ipfs
 
 const p2wdb = {
     ipfsAdapters: {

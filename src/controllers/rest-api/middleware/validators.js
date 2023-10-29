@@ -35,6 +35,7 @@ class Validators {
       if (!token) {
         throw new Error('Token could not be retrieved from header')
       }
+
       let decoded = null
       try {
         // console.log(`token: ${JSON.stringify(token, null, 2)}`)

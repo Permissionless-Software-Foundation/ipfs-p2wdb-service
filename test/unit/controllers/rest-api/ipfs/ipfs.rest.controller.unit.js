@@ -71,6 +71,7 @@ describe('#IPFS REST API', () => {
 
         assert.fail('Unexpected result')
       } catch (err) {
+        console.log('err: ', err)
         assert.equal(err.status, 422)
         assert.include(err.message, 'test error')
       }

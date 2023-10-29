@@ -23,4 +23,6 @@ class MockIpfsInstance {
     stop() { }
 }
 
+const create = () => {}
+
 export default create;

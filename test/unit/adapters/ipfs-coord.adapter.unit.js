@@ -6,17 +6,21 @@ import { assert } from 'chai'
 
 import sinon from 'sinon'
 import IPFSCoordAdapter from '../../../src/adapters/ipfs/ipfs-coord.js'
-import create from '../mocks/ipfs-mock.js'
+// import create from '../mocks/ipfs-mock.js'
+import ipfs from '../mocks/helia-mock.js'
+import { MockBchWallet } from '../mocks/adapters/wallet.js'
 import IPFSCoordMock from '../mocks/ipfs-coord-mock.js'
 import config from '../../../config/index.js'
 
 describe('#ipfs-coord', () => {
   let uut
   let sandbox
+  const wallet = new MockBchWallet()
+  const bchjs = wallet.bchjs
 
   beforeEach(() => {
-    const ipfs = create()
-    uut = new IPFSCoordAdapter({ ipfs })
+    // const ipfs = create()
+    uut = new IPFSCoordAdapter({ ipfs, bchjs })
 
     sandbox = sinon.createSandbox()
   })
@@ -35,7 +39,7 @@ describe('#ipfs-coord', () => {
 
     it('should throw an error if bchjs instance is not included', () => {
       try {
-        const ipfs = create()
+        // const ipfs = create()
         uut = new IPFSCoordAdapter({ ipfs })
         assert.fail('Unexpected code path')
       } catch (err) {
