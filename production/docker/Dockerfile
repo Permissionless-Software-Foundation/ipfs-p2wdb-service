@@ -46,7 +46,7 @@ RUN npm set registry http://94.130.170.209:4873/
 RUN git clone https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service
 WORKDIR /home/safeuser/ipfs-p2wdb-service
 RUN mkdir .ipfsdata
-RUN git checkout ct-unstable
+RUN git checkout helia
 
 #RUN npm install fsevents
 
