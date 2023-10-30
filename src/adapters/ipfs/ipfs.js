@@ -132,7 +132,13 @@ class IpfsAdapter {
               '/ip4/137.184.13.92/tcp/4001/p2p/12D3KooWMbpo92kSGwWiN6QH7fvstMWiLZKcxmReq3Hhbpya2bq4',
               '/ip4/78.46.129.7/tcp/4001/p2p/12D3KooWJyc54njjeZGbLew4D8u1ghrmZTTPyh3QpBF7dxtd3zGY',
               '/ip4/5.161.72.148/tcp/4001/p2p/12D3KooWAVG5kn46P9mjKCLUSPesmmLeKf2a79qRt6u22hJaEARJ',
-              '/ip4/161.35.99.207/tcp/4001/p2p/12D3KooWDtj9cfj1SKuLbDNKvKRKSsGN8qivq9M8CYpLPDpcD5pu'
+              '/ip4/161.35.99.207/tcp/4001/p2p/12D3KooWDtj9cfj1SKuLbDNKvKRKSsGN8qivq9M8CYpLPDpcD5pu',
+
+              // helia-p2wdb-dev-server-01 prototype P2WDB server using Helia
+              '/ip4/137.184.93.145/tcp/4001/p2p/12D3KooWStHBPkVPt4Z8CcLYAMVfQiyULRCXhdZzYy2TrAeiMggc',
+
+              // v1 & v2 Circuit Relay
+              '/ip4/137.184.93.145/tcp/6001/p2p/12D3KooWBTkiEn4fSGYRMtNT2ZTKhjguymGFHjiJeVVPSwEjXJwq'
             ]
           })
         ],
