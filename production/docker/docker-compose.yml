@@ -35,7 +35,7 @@ services:
       #- 5668:5668 # IPFS TCP port
       #- 5669:5669 # IPFS WS Port
     volumes:
-      - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+      - ../data/ipfsdata:/home/safeuser/ipfs-p2wdb-service/.ipfsdata
       - ./start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
       #- ../../wallet.json:/home/safeuser/ipfs-p2wdb-service/wallet.json
     restart: always
