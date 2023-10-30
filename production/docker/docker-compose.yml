@@ -32,8 +32,8 @@ services:
     ports:
       # <host port>:<container port>
       - 5667:5667 # REST API
-      #- 5668:5668 # IPFS TCP port
-      #- 5669:5669 # IPFS WS Port
+      - 4001:4001 # IPFS TCP port
+      - 4003:4003 # IPFS WS Port
     volumes:
       - ../data/ipfsdata:/home/safeuser/ipfs-p2wdb-service/.ipfsdata
       - ./start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
