@@ -11,7 +11,7 @@ export const session = 'secret-boilerplate-token'
 export const token = 'secret-jwt-token'
 export const database = process.env.DBURL
   ? process.env.DBURL
-  : `mongodb://172.17.0.1:${mongoPort}/ipfs-service-prod`
+  : `mongodb://172.17.0.1:${mongoPort}/p2wdb-service-prod`
 export const env = 'prod'
 export default {
   session,

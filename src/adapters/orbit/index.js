@@ -58,7 +58,7 @@ class OrbitDBAdapter {
       const orbitdb = await this.OrbitDB.createInstance(this.ipfs, {
         // directory: "./orbitdb/examples/eventlog",
         directory: './.ipfsdata/p2wdb/dbs/keyvalue',
-        AccessControllers: AccessControllers
+        AccessControllers
       })
       const options = {
         accessController: {
