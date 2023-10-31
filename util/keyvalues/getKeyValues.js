@@ -24,7 +24,7 @@ async function getTickets () {
   mongoose.connection.close()
 
   const now = new Date()
-  const filename = `p2wdb-entries-${now.toISOString()}`
+  const filename = `p2wdb-entries-${now.toISOString()}.json`
   const jsonFiles = new JsonFiles()
   await jsonFiles.writeJSON(entries, filename)
   console.log('JSON file of entries have been written to disk.')
