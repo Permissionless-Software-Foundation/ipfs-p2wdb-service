@@ -39,6 +39,7 @@ class P2WCanAppend {
     this.getTokenQtyDiff = this.getTokenQtyDiff.bind(this)
     this.matchErrorMsg = this.matchErrorMsg.bind(this)
     this.markInvalid = this.markInvalid.bind(this)
+    this.markValid = this.markValid.bind(this)
   }
 
   async canAppend (entry) {
@@ -50,7 +51,7 @@ class P2WCanAppend {
       const message = entry.payload.value.message
       const signature = entry.payload.value.signature
       const dbData = entry.payload.value.data
-      // console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
+      console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
 
       // Throw an error if the message is bigger than 10 KB.
       if (dbData.length > this.config.maxDataSize) {
@@ -61,7 +62,7 @@ class P2WCanAppend {
       // Fast validation: validate the TXID if it already exists in MongoDB.
       const mongoRes = await this.KeyValue.find({ key: txid })
       if (mongoRes.length > 0) {
-        // console.log('mongoRes: ', mongoRes)
+        console.log('mongoRes: ', mongoRes)
         console.log('Result retrieved from Mongo database.')
 
         // Return the previously saved validation result.
@@ -97,6 +98,9 @@ class P2WCanAppend {
       const inputObj = { txid, signature, message, entry }
       validTx = await this.retryQueue.addToQueue(this.validateAgainstBlockchain, inputObj)
       console.log(`Validation for TXID ${txid} completed. Result: ${validTx}`)
+
+      // Record the entry in the MongoDB for fast validation in the future.
+      // await this.markValid(inputObj)
 
       return validTx
     } catch (err) {
@@ -331,6 +335,40 @@ class P2WCanAppend {
       return keyValue
     } catch (err) {
       console.error('Error in markInvalid()')
+      throw err
+    }
+  }
+
+  // Add the TXID to the database, and mark it as valid. This will prevent
+  // allow for fast validation for entries that have already been seen.
+  async markValid (inObj = {}) {
+    try {
+      console.log('markValid() inObj: ', inObj)
+      const { txid, signature, message, entry } = inObj
+
+      if (!txid || typeof txid !== 'string') {
+        throw new Error('txid must be a string')
+      }
+
+      // Create a new entry in the database, to remember the TXID. Mark the
+      // entry as invalid.
+      const kvObj = {
+        hash: '',
+        key: txid,
+        value: {
+          message,
+          signature,
+          data: entry
+        },
+        isValid: true
+      }
+      const keyValue = new this.KeyValue(kvObj)
+
+      await keyValue.save()
+
+      return keyValue
+    } catch (err) {
+      console.error('Error in markValid()')
       throw err
     }
   }

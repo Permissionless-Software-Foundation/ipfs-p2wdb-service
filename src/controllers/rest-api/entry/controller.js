@@ -62,8 +62,10 @@ class EntryRESTControllerLib {
       const appId = ctx.request.body.appId
       const writeObj = { txid, signature, message, data, appId }
       console.log(`body data: ${JSON.stringify(writeObj, null, 2)}`)
+
       // const hash = await this.addEntry.addUserEntry(writeObj)
       const hash = await this.useCases.entry.addEntry.addUserEntry(writeObj)
+
       ctx.body = {
         success: true,
         hash
