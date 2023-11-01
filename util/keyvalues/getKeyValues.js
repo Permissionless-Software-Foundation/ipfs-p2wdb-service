@@ -6,7 +6,7 @@
 import mongoose from 'mongoose'
 import config from '../../config/index.js'
 import KeyValue from '../../src/adapters/localdb/models/key-value.js'
-import JsonFiles from '../../src/adapters/json-files.js'
+// import JsonFiles from '../../src/adapters/json-files.js'
 
 async function getTickets () {
   // Connect to the Mongo Database.
@@ -25,10 +25,10 @@ async function getTickets () {
 
   mongoose.connection.close()
 
-  const now = new Date()
-  const filename = `p2wdb-entries-${now.toISOString()}.json`
-  const jsonFiles = new JsonFiles()
-  await jsonFiles.writeJSON(entries, filename)
-  console.log('JSON file of entries have been written to disk.')
+  // const now = new Date()
+  // const filename = `p2wdb-entries-${now.toISOString()}.json`
+  // const jsonFiles = new JsonFiles()
+  // await jsonFiles.writeJSON(entries, filename)
+  // console.log('JSON file of entries have been written to disk.')
 }
 getTickets()

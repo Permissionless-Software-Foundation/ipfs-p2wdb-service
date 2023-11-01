@@ -18,8 +18,17 @@ class Controllers {
     this.timerControllers = new TimerControllers({ adapters: this.adapters, useCases: this.useCases })
     this.config = config
 
+    // Bind 'this' object to each subfunction
+    this.initAdapters = this.initAdapters.bind(this)
+    this.initUseCases = this.initUseCases.bind(this)
+    this.attachRESTControllers = this.attachRESTControllers.bind(this)
+    this.attachControllers = this.attachControllers.bind(this)
+    this.attachRPCControllers = this.attachRPCControllers.bind(this)
+    this.validationSucceededEventHandler = this.validationSucceededEventHandler.bind(this)
+
     // Attach the event handler to the event.
     // This event is responsible for adding validated entries to MongoDB.
+    // This must come *after* the call to bind().
     validationEvent.on('ValidationSucceeded', this.validationSucceededEventHandler)
   }
 
@@ -70,10 +79,11 @@ class Controllers {
   // OrbitDB.
   async validationSucceededEventHandler (data) {
     try {
-      // console.log(
-      //   'ValidationSucceeded event triggering addPeerEntry() with this data: ',
-      //   data
-      // )
+      console.log(
+        'ValidationSucceeded event triggering addPeerEntry() with this data: ',
+        data
+      )
+      console.log('this.useCases: ', this.useCases)
       await this.useCases.entry.addEntry.addPeerEntry(data)
     } catch (err) {
       console.error('Error trying to process peer data with addPeerEntry(): ', err)

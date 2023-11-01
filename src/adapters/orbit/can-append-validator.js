@@ -10,6 +10,7 @@
 import config from '../../../config/index.js'
 import KeyValue from '../localdb/models/key-value.js'
 import RetryQueue from './retry-queue.js'
+import validationEvent from './validation-event.js'
 
 class P2WCanAppend {
   constructor (localConfig = {}) {
@@ -28,6 +29,7 @@ class P2WCanAppend {
     this.KeyValue = KeyValue
     this.bchjs = this.wallet.bchWallet.bchjs
     this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
+    this.validationEvent = validationEvent
 
     // Bind 'this' object to all subfunctions.
     this.canAppend = this.canAppend.bind(this)
@@ -99,8 +101,16 @@ class P2WCanAppend {
       validTx = await this.retryQueue.addToQueue(this.validateAgainstBlockchain, inputObj)
       console.log(`Validation for TXID ${txid} completed. Result: ${validTx}`)
 
-      // Record the entry in the MongoDB for fast validation in the future.
-      // await this.markValid(inputObj)
+      // If the entry passed validation, trigger an event.
+      // But only if the entry has a 'hash' value.
+      // - has hash value: entry is being replicated from a peer
+      // - no hash value: entry came in from a user of this node via REST or RPC.
+      if (validTx && entry.hash) {
+        inputObj.data = dbData
+        inputObj.hash = entry.hash
+        console.log('inputObj: ', inputObj)
+        this.validationEvent.emit('ValidationSucceeded', inputObj)
+      }
 
       return validTx
     } catch (err) {
