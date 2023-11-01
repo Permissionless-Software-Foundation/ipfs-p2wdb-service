@@ -51,6 +51,7 @@ class IpfsCoordAdapter {
     if (this.config.isCircuitRelay) {
       try {
         const ip4 = await this.publicIp.v4()
+        console.log(`Setting CIRCUIT RELAY ip4 address: ${ip4}, and port ${this.config.ipfsTcpPort}`)
         // const ip6 = await publicIp.v6()
         circuitRelayInfo.ip4 = ip4
         circuitRelayInfo.tcpPort = this.config.ipfsTcpPort

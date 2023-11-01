@@ -134,11 +134,17 @@ class IpfsAdapter {
               '/ip4/5.161.72.148/tcp/4001/p2p/12D3KooWAVG5kn46P9mjKCLUSPesmmLeKf2a79qRt6u22hJaEARJ',
               '/ip4/161.35.99.207/tcp/4001/p2p/12D3KooWDtj9cfj1SKuLbDNKvKRKSsGN8qivq9M8CYpLPDpcD5pu',
 
-              // helia-p2wdb-dev-server-01 prototype P2WDB server using Helia
-              '/ip4/137.184.93.145/tcp/4001/p2p/12D3KooWStHBPkVPt4Z8CcLYAMVfQiyULRCXhdZzYy2TrAeiMggc',
+              // helia-p2wdb-dev-server-01 prototype P2WDB server using Helia (Token Tiger)
+              '/ip4/137.184.93.145/tcp/4001/p2p/12D3KooWGZCpD5Ue3CJCBBEKowcuKEgeVKbTM7VMbJ8xm1bqST1j',
 
-              // v1 & v2 Circuit Relay
-              '/ip4/137.184.93.145/tcp/6001/p2p/12D3KooWBTkiEn4fSGYRMtNT2ZTKhjguymGFHjiJeVVPSwEjXJwq'
+              // v1 & v2 Circuit Relay (Token Tiger)
+              '/ip4/137.184.93.145/tcp/6001/p2p/12D3KooWBTkiEn4fSGYRMtNT2ZTKhjguymGFHjiJeVVPSwEjXJwq',
+
+              // v1 & v2 Circuit Relay server (FullStack.cash)
+              '/ip4/78.46.129.7/tcp/4002/p2p/12D3KooWBigV2M3Sx4KmM3m2DQMznnZzyNuXPawPsZWRpZmiJ8Kp',
+
+              // helia-p2wdb-dev-server-01 prototype P2WDB server using Helia (FullStack.cash)
+              '/ip4/78.46.129.7/tcp/7001/p2p/12D3KooWBigV2M3Sx4KmM3m2DQMznnZzyNuXPawPsZWRpZmiJ8Kp'
             ]
           })
         ],

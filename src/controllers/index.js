@@ -83,7 +83,7 @@ class Controllers {
         'ValidationSucceeded event triggering addPeerEntry() with this data: ',
         data
       )
-      console.log('this.useCases: ', this.useCases)
+
       await this.useCases.entry.addEntry.addPeerEntry(data)
     } catch (err) {
       console.error('Error trying to process peer data with addPeerEntry(): ', err)

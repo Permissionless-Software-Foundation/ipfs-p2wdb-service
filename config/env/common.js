@@ -56,6 +56,7 @@ const config = {
   isCircuitRelay: !!process.env.ENABLE_CIRCUIT_RELAY,
   // SSL domain used for websocket connection via browsers.
   crDomain: process.env.CR_DOMAIN ? process.env.CR_DOMAIN : '',
+
   // Information passed to other IPFS peers about this node.
   apiInfo: 'https://ipfs-service-provider.fullstack.cash/',
 
