@@ -58,13 +58,17 @@ const config = {
   crDomain: process.env.CR_DOMAIN ? process.env.CR_DOMAIN : '',
   // Information passed to other IPFS peers about this node.
   apiInfo: 'https://ipfs-service-provider.fullstack.cash/',
+
   // P2W DB OrbitDB name.
   orbitDbName: process.env.ORBITDB_NAME
     ? process.env.ORBITDB_NAME
-  // : 'psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Start a new database
+    // : 'psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Start a new database
     // : '/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh/psf-bch-p2wdb-keyvalue-v3.0.0-0001',
-    : '/orbitdb/zdpuAzuW1fXJPGqN3xx7NB5WJ33Ye7nretkK6iyXqiKk7yMPE',
-  // : 'psf-bch-p2wdb-keyvalue-v4.0.0-0001',
+    // : '/orbitdb/zdpuAzuW1fXJPGqN3xx7NB5WJ33Ye7nretkK6iyXqiKk7yMPE',
+    // : 'psf-bch-p2wdb-keyvalue-v4.0.0-0001',
+    // : '',
+    : '/orbitdb/zdpuAmuD6rz7raq9wvLs7rvMpzndxiA48qn96pzubFCoThKne',
+
   // Maximum size of a new database entry.
   maxDataSize: process.env.MAX_DATA_SIZE
     ? parseInt(process.env.MAX_DATA_SIZE)
