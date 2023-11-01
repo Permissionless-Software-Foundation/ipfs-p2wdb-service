@@ -123,15 +123,17 @@ class IpfsAdapter {
         peerDiscovery: [
           bootstrap({
             list: [
-              // '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
-              // '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
-              // '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
-              // '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt'
-              '/ip4/5.161.108.190/tcp/4102/p2p/12D3KooWKNuBjaMgEDN2tGqzmdfM2bmd22VEuboC4X7x8ua4DvUg',
-              '/ip4/5.161.108.190/tcp/4001/p2p/12D3KooWMW3u8ygGHqNHjxXsw7TA39vgrSQEx7vEGoUh7EiCwGGv',
-              '/ip4/137.184.13.92/tcp/4001/p2p/12D3KooWMbpo92kSGwWiN6QH7fvstMWiLZKcxmReq3Hhbpya2bq4',
-              '/ip4/78.46.129.7/tcp/4001/p2p/12D3KooWJyc54njjeZGbLew4D8u1ghrmZTTPyh3QpBF7dxtd3zGY',
-              '/ip4/5.161.72.148/tcp/4001/p2p/12D3KooWAVG5kn46P9mjKCLUSPesmmLeKf2a79qRt6u22hJaEARJ',
+
+              // launchpad-p2wdb-service (Launchpad pinning service)
+              '/ip4/137.184.13.92/tcp/4001/p2p/12D3KooWPpBXhhAeoCZCGuQ3KR4xwHzzvtP57f6zLmo8P7ZFBJFE',
+
+              // PSFoundation.info metrics
+              '/ip4/5.161.72.148/tcp/4001/p2p/12D3KooWDL1kPixc6hcT4s7teWGufrxXmZFD1kPeGdDrsKgYrFUt',
+
+              // PSFoundation.info P2WDB
+              '/ip4/5.161.72.148/tcp/4101/p2p/12D3KooWHz1sRB94EEVRQRJvUX9MyRm3xhr4QSyCoJbTdu2AYheq',
+
+              // TokenTiger.com backup P2WDB
               '/ip4/161.35.99.207/tcp/4001/p2p/12D3KooWDtj9cfj1SKuLbDNKvKRKSsGN8qivq9M8CYpLPDpcD5pu',
 
               // helia-p2wdb-dev-server-01 prototype P2WDB server using Helia (Token Tiger)

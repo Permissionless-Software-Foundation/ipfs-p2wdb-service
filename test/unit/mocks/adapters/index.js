@@ -11,15 +11,20 @@ class IpfsAdapter {
 }
 
 class IpfsCoordAdapter {
-    constructor() {
-        this.ipfsCoord = {
-            useCases: {
-                peer: {
-                    sendPrivateMessage: () => { }
-                }
-            }
-        };
+  constructor () {
+    this.ipfsCoord = {
+      adapters: {
+        ipfs: {
+          connectToPeer: async () => {}
+        }
+      },
+      useCases: {
+        peer: {
+          sendPrivateMessage: () => {}
+        }
+      }
     }
+  }
 }
 
 const ipfs = {
