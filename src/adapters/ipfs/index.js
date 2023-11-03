@@ -116,6 +116,7 @@ class IPFS {
           x.from.includes(thisPeer.peer)
         )
         thisPeerData = thisPeerData[0]
+        // console.log('thisPeerData: ', thisPeerData)
 
         // Skip if peerData for this IPFS peer could not be found.
         // if (!thisPeerData) continue
@@ -127,6 +128,7 @@ class IPFS {
           thisPeer.name = thisPeerData.data.jsonLd.name
           thisPeer.protocol = thisPeerData.data.jsonLd.protocol
           thisPeer.version = thisPeerData.data.jsonLd.version
+          thisPeer.connectionAddr = thisPeerData.data.connectionAddr
 
           if (showAll) {
             // Add all the peer data.
@@ -184,7 +186,9 @@ class IPFS {
         thisRelay.description = thisPeer[0].data.jsonLd.description
       }
 
-      return relayData
+      const v1Relays = this.config.v1Relays
+
+      return { v2Relays: relayData, v1Relays }
     } catch (err) {
       console.error('Error in getRelays(): ', err)
       throw err
