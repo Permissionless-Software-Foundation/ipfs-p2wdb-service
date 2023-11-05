@@ -20,8 +20,6 @@ import KeyValue from '../localdb/models/key-value.js'
 // Customizable constants.
 const ENTRIES_PER_PAGE = 20
 
-let _this
-
 class P2WDB {
   constructor (localConfig = {}) {
     // console.log('p2wdb localConfig: ', localConfig)
@@ -38,7 +36,14 @@ class P2WDB {
 
     // Properties of this class instance.
     this.isReady = false
-    _this = this
+
+    // Bind 'this' object to all subfunctions
+    this.start = this.start.bind(this)
+    this.insert = this.insert.bind(this)
+    this.readAll = this.readAll.bind(this)
+    this.readByAppId = this.readByAppId.bind(this)
+    this.readByHash = this.readByHash.bind(this)
+    this.readByTxid = this.readByTxid.bind(this)
   }
 
   // Start OrbitDB.
@@ -78,7 +83,7 @@ class P2WDB {
   async insert (entry) {
     try {
       console.log('insert entry: ', entry)
-      // console.log('_this.orbit.db: ', this.orbit.db)
+      // console.log('this.orbit.db: ', this.orbit.db)
       // Add the entry to the Oribit DB.
       const hash = await this.orbit.db.put(entry.key, entry.value)
       console.log('hash: ', hash)
@@ -113,7 +118,7 @@ class P2WDB {
   async readByAppId (appId, page = 0) {
     try {
       // console.log('appId: ', appId)
-      // const data = _this.orbit.db.get(txid)
+      // const data = this.orbit.db.get(txid)
       // Return empty array if appId is not defined.
       if (!appId) { return [] }
       // Get paginated results from the database.
@@ -137,9 +142,9 @@ class P2WDB {
       // Note: No good way listed in API reference for getting entry by hash from
       // OrbitDB directly.
       // https://github.com/orbitdb/orbit-db/blob/main/API.md
-      // const data = _this.orbit.db.get(hash)
+      // const data = this.orbit.db.get(hash)
       // Get an entry from MongoDB.
-      const data = await _this.KeyValue.findOne({ hash })
+      const data = await this.KeyValue.findOne({ hash })
       // console.log('data: ', data)
       return data
     } catch (err) {
@@ -151,9 +156,9 @@ class P2WDB {
   async readByTxid (txid) {
     try {
       console.log('txid: ', txid)
-      // const data = _this.orbit.db.get(txid)
+      // const data = this.orbit.db.get(txid)
       // Find the data in the local database
-      const data = await _this.KeyValue.findOne({ key: txid })
+      const data = await this.KeyValue.findOne({ key: txid })
       // console.log('data: ', data)
       return data
     } catch (err) {
