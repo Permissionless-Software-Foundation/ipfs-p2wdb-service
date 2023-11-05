@@ -30,11 +30,11 @@ class WebhookAdapter {
       //   eventData
       // )
       console.log('ValidationSucceeded event triggered from withing the webhook.js file.')
-      
+
       // const { txid, signature, message, data, hash } = eventData
       const { data } = eventData
       // console.log('data: ', data)
-      
+
       // Attempt to parse the raw data as JSON
       let jsonData = {}
       try {
@@ -45,15 +45,15 @@ class WebhookAdapter {
         return
       }
       console.log(`jsonData: ${JSON.stringify(jsonData, null, 2)}`)
-      
+
       const appId = jsonData.appId
       console.log('appId: ', appId)
 
       // Exit quietly if there is no appId in the JSON data.
       if (!appId) { return }
-      
+
       let matches
-      if(appId === "*") {
+      if (appId === '*') {
         // If webhook is subscribed to all entries.
         matches = await _this.WebhookModel.find({})
       } else {
