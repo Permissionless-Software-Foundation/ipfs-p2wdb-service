@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import WebhookRESTControllerLib from './controller.js'
 // const Validators = require('../middleware/validators')
 let _this
+
 class WebhookRESTController {
   constructor (localConfig = {}) {
     // Dependency Injection.

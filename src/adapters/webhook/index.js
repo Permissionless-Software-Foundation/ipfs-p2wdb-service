@@ -44,7 +44,15 @@ class WebhookAdapter {
 
       // Exit quietly if there is no appId in the JSON data.
       if (!appId) { return }
-      const matches = await _this.WebhookModel.find({ appId })
+
+      // Get wildecard webhooks
+      const wildcardMatches = await _this.WebhookModel.find({ appId: '*' })
+
+      // Get webhooks that match the appId
+      let matches = await _this.WebhookModel.find({ appId })
+
+      // Combine the matches
+      matches = matches.concat(wildcardMatches)
       console.log('matches: ', matches)
 
       // Add P2WDB entry data to the webhook data.

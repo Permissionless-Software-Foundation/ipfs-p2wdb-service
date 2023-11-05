@@ -102,6 +102,7 @@ class WebhookRESTControllerLib {
      */
   async deleteWebhook (ctx) {
     try {
+      // console.log('deleteWebhook() ctx.request.body: ', ctx.request.body)
       const url = ctx.request.body.url
       const appId = ctx.request.body.appId
       const inputData = { url, appId }
