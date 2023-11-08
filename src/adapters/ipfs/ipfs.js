@@ -17,6 +17,7 @@ import { identifyService } from 'libp2p/identify'
 import { circuitRelayServer, circuitRelayTransport } from 'libp2p/circuit-relay'
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { webSockets } from '@libp2p/websockets'
+import { webRTC } from "@libp2p/webrtc"
 
 // Local libraries
 import config from '../../../config/index.js'
@@ -136,7 +137,8 @@ class IpfsAdapter {
         transports: [
           tcp(),
           webSockets(),
-          circuitRelayTransport({ discoverRelays: 3 })
+          circuitRelayTransport({ discoverRelays: 3 }),
+          webRTC()
         ],
         connectionEncryption: [
           noise()
