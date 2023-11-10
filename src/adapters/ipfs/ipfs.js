@@ -131,7 +131,8 @@ class IpfsAdapter {
           listen: [
             '/ip4/127.0.0.1/tcp/0',
             `/ip4/0.0.0.0/tcp/${this.config.ipfsTcpPort}`,
-            `/ip4/0.0.0.0/tcp/${this.config.ipfsWsPort}/ws`
+            `/ip4/0.0.0.0/tcp/${this.config.ipfsWsPort}/ws`,
+            `/webrtc`
           ]
         },
         transports: [
