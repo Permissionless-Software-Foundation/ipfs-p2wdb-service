@@ -122,13 +122,15 @@ class IPFS {
         // if (!thisPeerData) continue
 
         try {
-          // console.log('thisPeerData: ', thisPeerData)
+          console.log('thisPeerData: ', thisPeerData)
 
           // Add data to the IPFS peer data.
           thisPeer.name = thisPeerData.data.jsonLd.name
           thisPeer.protocol = thisPeerData.data.jsonLd.protocol
           thisPeer.version = thisPeerData.data.jsonLd.version
+
           thisPeer.connectionAddr = thisPeerData.data.connectionAddr
+          if(!thisPeer.connectionAddr) thisPeer.connectionAddr = 'N/A'
 
           if (showAll) {
             // Add all the peer data.
