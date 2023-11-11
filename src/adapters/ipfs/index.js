@@ -130,7 +130,7 @@ class IPFS {
           thisPeer.version = thisPeerData.data.jsonLd.version
 
           thisPeer.connectionAddr = thisPeerData.data.connectionAddr
-          if(!thisPeer.connectionAddr) thisPeer.connectionAddr = 'N/A'
+          if (!thisPeer.connectionAddr) thisPeer.connectionAddr = 'N/A'
 
           if (showAll) {
             // Add all the peer data.
