@@ -44,6 +44,11 @@ async function start () {
       }
       console.log(`Database has this many records: ${recordCnt}`)
     })
+
+    const key = Math.floor(Math.random() * 1000).toString()
+    const value = Math.floor(Math.random() * 1000)
+    const hash = await db.put(key, value)
+    console.log(`Added key ${key}, with value ${value} to DB with entry ${hash}`)
   } catch (err) {
     console.error('Error with host: ', err)
   }

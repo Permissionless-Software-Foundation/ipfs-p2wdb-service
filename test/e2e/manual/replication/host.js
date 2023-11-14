@@ -37,10 +37,13 @@ async function start () {
     const db = await orbitdb.open('/orbitdb/zdpuAwYHUxZY4yeCyTAGk4eMFd916rk1pHNnuD1JMT7zadoiL')
     console.log('db.address: ', db.address)
 
+    console.log('Syncing database...')
+    const res = await db.all()
+    console.log('...finished syncing database. res: ', res)
+
     const key = Math.floor(Math.random() * 1000).toString()
     const value = Math.floor(Math.random() * 1000)
     const hash = await db.put(key, value)
-
     console.log(`Added key ${key}, with value ${value} to DB with entry ${hash}`)
   } catch (err) {
     console.error('Error with host: ', err)
