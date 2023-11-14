@@ -33,6 +33,9 @@ class TimerControllers {
 
     // Automatically start the timers when this library is loaded.
     // this.startTimers()
+
+    // Constants
+    this.forceSyncPeriod = 60000 * 1
   }
 
   // Start all the time-based controllers.
@@ -49,7 +52,7 @@ class TimerControllers {
     }
 
     // Create a timer to force periodic sync of the database across peers.
-    this.forceSyncHandle = setInterval(this.forceSync, 60000 * 5)
+    this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
 
     // Any new timer control functions can be added here. They will be started
     // when the server starts.
@@ -66,14 +69,24 @@ class TimerControllers {
 
   async forceSync () {
     try {
-      const db = this.adapters.p2wdb.orbitdb.db
+      // Turn off the timer while syncing is happening.
+      clearInterval(this.forceSyncHandle)
+
+      const db = this.adapters.p2wdb.orbit.db
 
       console.log('Syncing P2WDB to peers...')
       const res = await db.all()
       console.log('...finished syncing database. Records in database: ', res.length)
+
+      // Renable the timer interval
+      this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
     } catch (err) {
       // Do not throw an error. This is a top-level function.
-      console.error('Error in timer-controllers.js/forceSync()')
+      console.error('Error in timer-controllers.js/forceSync(): ', err)
+
+      // Renable the timer interval
+      this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+
       return false
     }
   }
