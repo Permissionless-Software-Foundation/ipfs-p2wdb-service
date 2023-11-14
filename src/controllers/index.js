@@ -85,6 +85,20 @@ class Controllers {
       )
 
       await this.useCases.entry.addEntry.addPeerEntry(data)
+
+      // Sync the database against other instances on the network.
+      console.log('-->syncing against all other databases<--')
+
+      await this.adapters.p2wdb.orbit.db.all()
+
+      // for await (const record of this.adapters.p2wdb.orbit.db.iterator()) {
+      //   console.log(record)
+      //
+      //   const result = await this.adapters.p2wdb.orbit.db.get(record.hash)
+      //   console.log('result: ', result)
+      // }
+
+      console.log('-->finished syncing against all other databases<--')
     } catch (err) {
       console.error('Error trying to process peer data with addPeerEntry(): ', err)
       // Do not throw an error. This is a top-level function.
