@@ -90,7 +90,10 @@ describe('#OrbitDBAdapter', () => {
       sandbox.stub(uut, 'createOrbitDB').resolves({
         open: async () => {
           return {
-            address: 'fake-address'
+            address: 'fake-address',
+            events: {
+              on: () => {}
+            }
           }
         }
       })
@@ -110,7 +113,10 @@ describe('#OrbitDBAdapter', () => {
       sandbox.stub(uut, 'createOrbitDB').resolves({
         open: async () => {
           return {
-            address: 'fake-address'
+            address: 'fake-address',
+            events: {
+              on: () => {}
+            }
           }
         }
       })
@@ -134,7 +140,10 @@ describe('#OrbitDBAdapter', () => {
         sandbox.stub(uut, 'createOrbitDB').resolves({
           open: async () => {
             return {
-              address: 'fake-address'
+              address: 'fake-address',
+              events: {
+                on: () => {}
+              }
             }
           }
         })

@@ -29,6 +29,7 @@ class TimerControllers {
     // Bind 'this' object to all subfunctions.
     this.optimizeWallet = this.optimizeWallet.bind(this)
     this.manageTickets = this.manageTickets.bind(this)
+    this.forceSync = this.forceSync.bind(this)
 
     // Automatically start the timers when this library is loaded.
     // this.startTimers()
@@ -47,6 +48,9 @@ class TimerControllers {
       this.manageTicketsHandle = setInterval(this.manageTickets, 60000 * 11) // Every 11 minute
     }
 
+    // Create a timer to force periodic sync of the database across peers.
+    this.forceSyncHandle = setInterval(this.forceSync, 60000 * 5)
+
     // Any new timer control functions can be added here. They will be started
     // when the server starts.
     // this.optimizeWalletHandle = setInterval(this.exampleTimerFunc, 60000 * 10)
@@ -57,6 +61,21 @@ class TimerControllers {
   stopTimers () {
     clearInterval(this.optimizeWalletHandle)
     clearInterval(this.manageTicketsHandle)
+    clearInterval(this.forceSyncHandle)
+  }
+
+  async forceSync () {
+    try {
+      const db = this.adapters.p2wdb.orbitdb.db
+
+      console.log('Syncing P2WDB to peers...')
+      const res = await db.all()
+      console.log('...finished syncing database. Records in database: ', res.length)
+    } catch (err) {
+      // Do not throw an error. This is a top-level function.
+      console.error('Error in timer-controllers.js/forceSync()')
+      return false
+    }
   }
 
   // Check the pre-burn ticket queue and generate new tickets if needed.

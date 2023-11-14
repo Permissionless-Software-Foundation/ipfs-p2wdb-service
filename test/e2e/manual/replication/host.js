@@ -41,6 +41,12 @@ async function start () {
     const res = await db.all()
     console.log('...finished syncing database. res: ', res)
 
+    db.events.on('update', async (entry) => {
+      console.log('Syncing database...')
+      const res = await db.all()
+      console.log('...finished syncing database. Records in database: ', res.length)
+    })
+
     const key = Math.floor(Math.random() * 1000).toString()
     const value = Math.floor(Math.random() * 1000)
     const hash = await db.put(key, value)
