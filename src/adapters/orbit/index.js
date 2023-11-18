@@ -79,7 +79,7 @@ class OrbitDBAdapter {
         dbName = this.config.orbitDbName
       }
 
-      // dbName = 'psf-bch-p2wdb-keyvalue-v4.0.0-0002'
+      // dbName = 'psf-bch-p2wdb-keyvalue-v4.0.0-0003'
 
       // Initialize the P2WCanAppend library
       const p2wdbCanAppend = new this.P2WCanAppend({
