@@ -2,8 +2,10 @@
   This is the Class Library for the Database Entry Entitity. This is a top-level
   entity as per the Clean Architecture pattern.
 */
+
 class DBEntry {
   // constructor (localConfig) {}
+
   // Make a new P2WDB Entry based on data passed by a user, from the one of
   // the interfaces.
   makeUserEntry ({ hash, txid, data, signature, message, appId, isValid = false } = {}) {

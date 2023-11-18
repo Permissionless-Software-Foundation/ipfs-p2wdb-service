@@ -46,11 +46,13 @@ class AddEntry {
 
       // Generate a validated entry by passing the raw data through input validation.
       const entry = _this.dbEntry.makeUserEntry(rawData)
+
       // Throw an error if the entry already exists.
       const exists = await _this.entryAdapter.doesEntryExist(entry)
       if (exists) {
         throw new Error('Entry already exists in the database.')
       }
+
       // Add the entry to the P2WDB OrbitDB.
       const hash = await _this.p2wdbAdapter.insert(entry)
       entry.hash = hash
@@ -72,17 +74,65 @@ class AddEntry {
     // Attempt to extract the 'appId' property from the data.
     peerData = this._extractAppId(peerData)
 
+    // Create a new entry Entity
     const entry = _this.dbEntry.makePeerEntry(peerData)
+
     // Throw an error if the entry already exists.
     const exists = await _this.entryAdapter.doesEntryExist(entry)
     if (exists) {
       throw new Error('Entry already exists in the database.')
     }
+
     // The entry already exists in the P2WDB OrbitDB, so nothing needs to be
     // done on that front.
+
     // Add the entry to the local database (Mongo).
     await _this.entryAdapter.insert(entry)
+
     return true
+  }
+
+  // This function was created as part of the Helia refactor. Because the
+  // databases are not automatically syncing, a Timer Controller will periodicially
+  // try to sync by iterating over the database. Entries are passed to this
+  // use case to try and add them to the database.
+  async addSyncEntry (inObj = {}) {
+    try {
+      // Extract variables from input OrbitDB entry
+      const { key, value, hash } = inObj
+      const { data, message, signature } = value
+
+      // Attempt to extract the 'appId' property from the data.
+      const peerData = this._extractAppId(value)
+      // console.log('peerData: ', peerData)
+      const appId = peerData.appId
+
+      // Validate the entry by creating a User Entry Entity.
+      const peerEntry = {
+        txid: key,
+        signature,
+        message,
+        data,
+        hash,
+        appId
+      }
+      const entry = _this.dbEntry.makeUserEntry(peerEntry)
+
+      // Throw an error if the entry already exists.
+      const exists = await _this.entryAdapter.doesEntryExist(entry)
+      if (exists) {
+        throw new Error('Entry already exists in the database.')
+      }
+
+      // Add the entry to the P2WDB OrbitDB.
+      const hash2 = await _this.p2wdbAdapter.insert(entry)
+      entry.hash = hash2
+      entry.isValid = true
+      console.log(`entry.hash (${entry.hash}) should match the original hash of ${hash}`)
+    } catch (err) {
+      console.error('Error in use-cases/entry/add-entry.js/addSyncEntry()')
+      throw err
+    }
   }
 
   // Attempt to extract the appId property from the data.

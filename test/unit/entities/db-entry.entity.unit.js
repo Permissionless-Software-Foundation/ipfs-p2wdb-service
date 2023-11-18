@@ -7,6 +7,7 @@ import DBEntry from '../../../src/entities/db-entry.js'
 const assert = chai.assert
 let sandbox
 let uut
+
 describe('#DBEntry', () => {
   before(async () => { })
   beforeEach(() => {
