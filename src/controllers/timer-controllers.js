@@ -52,7 +52,7 @@ class TimerControllers {
     }
 
     // Create a timer to force periodic sync of the database across peers.
-    // this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+    this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
 
     // Any new timer control functions can be added here. They will be started
     // when the server starts.
@@ -64,7 +64,7 @@ class TimerControllers {
   stopTimers () {
     clearInterval(this.optimizeWalletHandle)
     clearInterval(this.manageTicketsHandle)
-    // clearInterval(this.forceSyncHandle)
+    clearInterval(this.forceSyncHandle)
   }
 
   async forceSync () {
@@ -87,12 +87,12 @@ class TimerControllers {
         console.log('record: ', record)
         recordCnt++
 
-        try {
-          await this.useCases.entry.addEntry.addSyncEntry(record)
-        } catch (err) {
-          console.log(`Entry ${record.hash} already exists in the database. Skipping.\n`)
-          continue
-        }
+        // try {
+        //   await this.useCases.entry.addEntry.addSyncEntry(record)
+        // } catch (err) {
+        //   console.log(`Entry ${record.hash} already exists in the database. Skipping.\n`)
+        //   continue
+        // }
       }
       console.log(`Database has this many records: ${recordCnt}`)
 
