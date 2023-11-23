@@ -98,7 +98,8 @@ class Adapters {
         await this.ipfs.start({ bchjs: this.bchjs })
 
         // Start the P2WDB
-        await this.p2wdb.start({ ipfs: this.ipfs.ipfs, wallet: this.wallet })
+        // await this.p2wdb.start({ ipfs: this.ipfs.ipfs, wallet: this.wallet })
+        this.p2wdb.start({ ipfs: this.ipfs.ipfs, wallet: this.wallet })
       } else {
         // These lines are here to ensure code coverage hits 100%.
         console.log('Not starting IPFS node since this is an e2e test.')
