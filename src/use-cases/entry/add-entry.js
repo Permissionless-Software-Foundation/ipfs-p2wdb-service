@@ -67,7 +67,9 @@ class AddEntry {
     }
   }
 
-  // Trigger by an event when a peer adds a new entry to the database.
+  // Trigger by an event when a peer adds a new entry to the mongo database.
+  // This function is primarily triggered by the canAppend() library after
+  // it has successfully validated a new entry.
   async addPeerEntry (peerData) {
     console.log('Entering addPeerEntry() with this data: ', peerData)
 

@@ -93,7 +93,8 @@ describe('#OrbitDBAdapter', () => {
             address: 'fake-address',
             events: {
               on: () => {}
-            }
+            },
+            all: async () => [1]
           }
         }
       })
@@ -116,7 +117,8 @@ describe('#OrbitDBAdapter', () => {
             address: 'fake-address',
             events: {
               on: () => {}
-            }
+            },
+            all: async () => [1]
           }
         }
       })
@@ -143,7 +145,8 @@ describe('#OrbitDBAdapter', () => {
               address: 'fake-address',
               events: {
                 on: () => {}
-              }
+              },
+              all: async () => [1]
             }
           }
         })

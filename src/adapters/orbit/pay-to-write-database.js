@@ -11,10 +11,12 @@
  *
  * @augments module:Databases~Database
  */
-// import Database from '../database.js'
-import Database from '@chris.troutner/orbitdb-helia/src/database.js'
+import Database from './database.js'
+// import Database from '@chris.troutner/orbitdb-helia/src/database.js'
 
 const type = 'payToWrite'
+
+let localP2wdbCanAppend = false
 
 /**
  * Defines an PayToWriteDatabase database.
@@ -25,6 +27,12 @@ const PayToWriteDatabase = () => async ({ ipfs, identity, address, name, access,
   const database = await Database({ ipfs, identity, address, name, access, directory, meta, headsStorage, entryStorage, indexStorage, referencesCount, syncAutomatically, onUpdate })
 
   const { addOperation, log } = database
+  console.log('--->log instantiated<---')
+
+  if (localP2wdbCanAppend) {
+    log.injectDeps(localP2wdbCanAppend)
+    console.log('--->p2wdbCanAppend injected into oplog<---')
+  }
 
   /**
    * Stores a key/value pair to the store.
@@ -129,5 +137,10 @@ const PayToWriteDatabase = () => async ({ ipfs, identity, address, name, access,
 }
 
 PayToWriteDatabase.type = type
+
+PayToWriteDatabase.injectDeps = (p2wdbCanAppend) => {
+  console.log('pay-to-write-database injectDeps() executed')
+  localP2wdbCanAppend = p2wdbCanAppend
+}
 
 export default PayToWriteDatabase

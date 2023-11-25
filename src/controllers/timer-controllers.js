@@ -74,27 +74,28 @@ class TimerControllers {
 
       const db = this.adapters.p2wdb.orbit.db
 
-      let recordCnt = 0
+      // let recordCnt = 0
+
       console.log('Timer Interval: Syncing P2WDB to peers...')
 
       // console.log('db: ', db)
       // await db.sync.start()
 
-      // const res = await db.all()
-      // console.log('db length: ', res.length)
+      const res = await db.all()
+      console.log('db length: ', res.length)
 
-      for await (const record of db.iterator()) {
-        console.log('record: ', record)
-        recordCnt++
-
-        // try {
-        //   await this.useCases.entry.addEntry.addSyncEntry(record)
-        // } catch (err) {
-        //   console.log(`Entry ${record.hash} already exists in the database. Skipping.\n`)
-        //   continue
-        // }
-      }
-      console.log(`Database has this many records: ${recordCnt}`)
+      // for await (const record of db.iterator()) {
+      //   console.log('record: ', record)
+      //   recordCnt++
+      //
+      //   // try {
+      //   //   await this.useCases.entry.addEntry.addSyncEntry(record)
+      //   // } catch (err) {
+      //   //   console.log(`Entry ${record.hash} already exists in the database. Skipping.\n`)
+      //   //   continue
+      //   // }
+      // }
+      // console.log(`Database has this many records: ${recordCnt}`)
 
       console.log('...finished syncing database.')
 

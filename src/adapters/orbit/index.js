@@ -90,6 +90,8 @@ class OrbitDBAdapter {
       // Inject an instance of the CanAppend library into the Access Controller.
       PayToWriteAccessController.injectDeps(p2wdbCanAppend)
 
+      PayToWriteDatabase.injectDeps(p2wdbCanAppend)
+
       this.useAccessController(PayToWriteAccessController)
       this.useDatabaseType(PayToWriteDatabase)
       const orbitdb = await this.createOrbitDB({
@@ -109,12 +111,17 @@ class OrbitDBAdapter {
         console.log(`------>Successfully opened OrbitDB: ${dbName}`)
         console.log('db.address: ', this.db.address)
 
+        console.log('Syncing database...')
+        const res = await this.db.all()
+        console.log('...finished syncing database. Records in database: ', res.length)
+
         // Set up event handler to sync database whenever there is an update.
-        this.db.events.on('update', async (entry) => {
-          console.log('Syncing database...')
-          const res = await this.db.all()
-          console.log('...finished syncing database. Records in database: ', res.length)
-        })
+        // this.db.events.on('update', async (entry) => {
+        //   // console.log('Update event fired')
+        //   console.log('Syncing database...')
+        //   const res = await this.db.all()
+        //   console.log('...finished syncing database. Records in database: ', res.length)
+        // })
       } catch (err) {
         console.log(`------>Error opening Orbit DB named ${dbName}. Error: `, err)
         // console.log(`------>Can not download manifest for OrbitDB ${dbName}.\nExiting`)
