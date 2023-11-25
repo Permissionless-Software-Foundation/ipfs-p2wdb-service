@@ -90,7 +90,7 @@ class OrbitDBAdapter {
       // Inject an instance of the CanAppend library into the Access Controller.
       PayToWriteAccessController.injectDeps(p2wdbCanAppend)
 
-      PayToWriteDatabase.injectDeps(p2wdbCanAppend)
+      PayToWriteDatabase.injectDeps(p2wdbCanAppend.canAppend)
 
       this.useAccessController(PayToWriteAccessController)
       this.useDatabaseType(PayToWriteDatabase)

@@ -11,8 +11,8 @@
  *
  * @augments module:Databases~Database
  */
-import Database from './database.js'
-// import Database from '@chris.troutner/orbitdb-helia/src/database.js'
+// import Database from './database.js'
+import Database from '@chris.troutner/orbitdb-helia/src/database.js'
 
 const type = 'payToWrite'
 
