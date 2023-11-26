@@ -46,7 +46,7 @@ describe('#wallet', () => {
   })
 
   describe('#openWallet', () => {
-    it('should create a new wallet what wallet file does not exist', async () => {
+    it('should create a new wallet when wallet file does not exist', async () => {
       // Mock dependencies
       uut.BchWallet = MockBchWallet
       // Ensure we open the test file, not the production wallet file.

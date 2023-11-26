@@ -44,10 +44,14 @@ class P2WCanAppend {
     this.markValid = this.markValid.bind(this)
   }
 
+  // This function validates an entry to determine if it should be added to the
+  // P2WDB OrbitDB or not. It return true or false.
   async canAppend (entry) {
     try {
+      // Input validation
       this.validateEntry(entry)
 
+      // Initialize variables
       let validTx = false
       const txid = entry.payload.key
       const message = entry.payload.value.message
