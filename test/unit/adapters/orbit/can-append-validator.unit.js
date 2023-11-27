@@ -437,4 +437,52 @@ describe('#can-append-validator.js', () => {
       assert.equal(result.dummy, true)
     })
   })
+
+  describe('#markValid', () => {
+    it('should throw error if txid is not included', async () => {
+      try {
+        await uut.markValid()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'txid must be a string')
+      }
+    })
+
+    it('should mark the entry in the database as invalid', async () => {
+      // Mock dependencies
+      uut.KeyValue = class {
+        constructor () {
+          this.dummy = true
+          this.save = async () => {}
+        }
+      }
+
+      const inObj = {
+        txid: 'fake-txid',
+        signature: 'fake-sig',
+        message: 'fake-message',
+        entry: {}
+      }
+
+      const result = await uut.markValid(inObj)
+
+      assert.equal(result.dummy, true)
+    })
+  })
+
+  describe('#canAppend', () => {
+    it('should return true on a valid entry', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'validateEntry').returns()
+      sandbox.stub(uut.KeyValue, 'find').resolves([])
+      sandbox.stub(uut, 'checkDate').returns(false)
+      sandbox.stub(uut, 'validateAgainstBlockchain').resolves(true)
+      mockData.validEntry01.hash = undefined
+
+      const result = await uut.canAppend(mockData.validEntry01)
+
+      assert.equal(result, true)
+    })
+  })
 })

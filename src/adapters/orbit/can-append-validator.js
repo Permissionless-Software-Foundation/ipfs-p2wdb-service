@@ -44,8 +44,9 @@ class P2WCanAppend {
     this.markValid = this.markValid.bind(this)
   }
 
-  // This function validates an entry to determine if it should be added to the
-  // P2WDB OrbitDB or not. It return true or false.
+  // This the main function for this library. It validates an entry to
+  // determine if it should be added to the P2WDB OrbitDB or not.
+  // It returns true or false.
   async canAppend (entry) {
     try {
       // Input validation
@@ -105,6 +106,14 @@ class P2WCanAppend {
       validTx = await this.retryQueue.addToQueue(this.validateAgainstBlockchain, inputObj)
       console.log(`Validation for TXID ${txid} completed. Result: ${validTx}`)
 
+      /*
+        TODO:
+        - If the entry is valid AND has a hash, emit an event that triggers
+          the addPeerEntry() use-case.
+        - If the entry is valid (does or does not have a hash), emit an event
+          that triggers the webhook.
+      */
+
       // If the entry passed validation, trigger an event.
       // But only if the entry has a 'hash' value.
       // - has hash value: entry is being replicated from a peer
@@ -113,6 +122,7 @@ class P2WCanAppend {
         inputObj.data = dbData
         inputObj.hash = entry.hash
         console.log('inputObj: ', inputObj)
+
         this.validationEvent.emit('ValidationSucceeded', inputObj)
       }
 
@@ -348,11 +358,13 @@ class P2WCanAppend {
     }
   }
 
-  // Add the TXID to the database, and mark it as valid. This will prevent
+  // Add the TXID to the database, and mark it as valid. This will
   // allow for fast validation for entries that have already been seen.
+  //
+  // This function is currently not consumed by any other functions. It is
+  // created here as a utility function for future usage.
   async markValid (inObj = {}) {
     try {
-      console.log('markValid() inObj: ', inObj)
       const { txid, signature, message, entry } = inObj
 
       if (!txid || typeof txid !== 'string') {
