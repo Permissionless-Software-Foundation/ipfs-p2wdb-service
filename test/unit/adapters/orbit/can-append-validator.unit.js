@@ -214,4 +214,227 @@ describe('#can-append-validator.js', () => {
       }
     })
   })
+
+  describe('#_getTokenQtyDiff', () => {
+    it('should throw error if TX data is not provided', () => {
+      try {
+        uut._getTokenQtyDiff()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'txInfo is required')
+      }
+    })
+
+    it('should throw error if TX data does not have vin or vout arrays', () => {
+      try {
+        uut._getTokenQtyDiff({})
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'txInfo must contain vin and vout array')
+      }
+    })
+
+    it('should return the difference of a token burn', () => {
+      const result = uut._getTokenQtyDiff(mockData.validTx01)
+      // console.log('result: ', result)
+
+      assert.equal(result, 0.08335233)
+    })
+
+    it('should handle TXs without a tokenQty', () => {
+      mockData.validTx01.vin[0].tokenQty = null
+      mockData.validTx01.vout[1].tokenQty = null
+
+      const result = uut._getTokenQtyDiff(mockData.validTx01)
+      // console.log('result: ', result)
+
+      assert.equal(result, 0)
+    })
+  })
+
+  describe('#_validateTx', () => {
+    it('should throw error if TX data is not provided', async () => {
+      try {
+        await uut._validateTx()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'txData must be an object containing tx data')
+      }
+    })
+
+    it('should return false if TX is not a valid SLP TX', async () => {
+      mockData.validTx01.isValidSlp = false
+
+      const result = await uut._validateTx(mockData.validTx01, mockData.validEntry01)
+
+      assert.equal(result, false)
+    })
+
+    it('should throw error if TX data does not include a token ID', async () => {
+      try {
+        mockData.validTx01.tokenId = undefined
+
+        await uut._validateTx(mockData.validTx01, mockData.validEntry01)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Transaction data does not include a token ID.')
+      }
+    })
+
+    it('should return false if TX consumed the wrong token', async () => {
+      mockData.validTx01.tokenId = 'fake-token-id'
+
+      const result = await uut._validateTx(mockData.validTx01, mockData.validEntry01)
+
+      assert.equal(result, false)
+    })
+
+    it('should return true for a valid burn TX', async () => {
+      const result = await uut._validateTx(mockData.validTx01, mockData.validEntry01)
+
+      assert.equal(result, true)
+    })
+  })
+
+  describe('#validateAgainstBlockchain', () => {
+    it('should throw error if txid is not included in input object', async () => {
+      try {
+        await uut.validateAgainstBlockchain()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'txid must be a string')
+      }
+    })
+
+    it('should throw error if signature is not included in input object', async () => {
+      try {
+        await uut.validateAgainstBlockchain({
+          txid: 'fake-txid'
+        })
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'signature must be a string')
+      }
+    })
+
+    it('should throw error if message is not included in input object', async () => {
+      try {
+        await uut.validateAgainstBlockchain({
+          txid: 'fake-txid',
+          signature: 'fake-sig'
+        })
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'message must be a string')
+      }
+    })
+
+    it('should throw error if TX can not be retrieved from Cash Stack', async () => {
+      try {
+        // Force error
+        sandbox.stub(uut.wallet.bchWallet, 'getTxData').resolves(undefined)
+
+        await uut.validateAgainstBlockchain({
+          txid: 'fake-txid',
+          signature: 'fake-sig',
+          message: 'fake-message'
+        })
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Could not get transaction details from BCH service.')
+      }
+    })
+
+    it('should return false for a TX with an invalide signature', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.wallet.bchWallet, 'getTxData').resolves([mockData.validTx01])
+      sandbox.stub(uut, '_validateSignature').resolves(false)
+
+      const result = await uut.validateAgainstBlockchain({
+        txid: 'fake-txid',
+        signature: 'fake-sig',
+        message: 'fake-message'
+      })
+
+      assert.equal(result, false)
+    })
+
+    it('should return false for TX not matching burning rules', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.wallet.bchWallet, 'getTxData').resolves([mockData.validTx01])
+      sandbox.stub(uut, '_validateSignature').resolves(true)
+      sandbox.stub(uut, '_validateTx').resolves(false)
+
+      const result = await uut.validateAgainstBlockchain({
+        txid: 'fake-txid',
+        signature: 'fake-sig',
+        message: 'fake-message'
+      })
+
+      assert.equal(result, false)
+    })
+
+    it('should return true for a valid TX', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.wallet.bchWallet, 'getTxData').resolves([mockData.validTx01])
+      sandbox.stub(uut, '_validateSignature').resolves(true)
+      sandbox.stub(uut, '_validateTx').resolves(true)
+
+      const result = await uut.validateAgainstBlockchain({
+        txid: 'fake-txid',
+        signature: 'fake-sig',
+        message: 'fake-message'
+      })
+
+      assert.equal(result, true)
+    })
+
+    it('should return false if TX can not be found, and mark entry as invalid', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.wallet.bchWallet, 'getTxData').rejects(new Error('No such mempool or blockchain transaction'))
+      sandbox.stub(uut, 'markInvalid').resolves()
+
+      const result = await uut.validateAgainstBlockchain({
+        txid: 'fake-txid',
+        signature: 'fake-sig',
+        message: 'fake-message'
+      })
+
+      assert.equal(result, false)
+    })
+  })
+
+  describe('#markInvalid', () => {
+    it('should throw error if txid is not included', async () => {
+      try {
+        await uut.markInvalid()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'txid must be a string')
+      }
+    })
+
+    it('should mark the entry in the database as invalid', async () => {
+      // Mock dependencies
+      uut.KeyValue = class {
+        constructor () {
+          this.dummy = true
+          this.save = async () => {}
+        }
+      }
+
+      const result = await uut.markInvalid('fake-txid')
+
+      assert.equal(result.dummy, true)
+    })
+  })
 })

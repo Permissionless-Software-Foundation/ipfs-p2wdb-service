@@ -38,7 +38,7 @@ class P2WCanAppend {
     this.validateAgainstBlockchain = this.validateAgainstBlockchain.bind(this)
     this._validateSignature = this._validateSignature.bind(this)
     this._validateTx = this._validateTx.bind(this)
-    this.getTokenQtyDiff = this.getTokenQtyDiff.bind(this)
+    this._getTokenQtyDiff = this._getTokenQtyDiff.bind(this)
     this.matchErrorMsg = this.matchErrorMsg.bind(this)
     this.markInvalid = this.markInvalid.bind(this)
     this.markValid = this.markValid.bind(this)
@@ -148,16 +148,13 @@ class P2WCanAppend {
 
   // This is an async wrapper function. It wraps all other logic for validating
   // a new entry and it's proof-of-burn against the blockchain.
-  async validateAgainstBlockchain (inputObj) {
+  async validateAgainstBlockchain (inputObj = {}) {
     console.log('Starting validateAgainstBlockchain()')
 
     const { txid, signature, message, entry } = inputObj
 
     try {
       // Input validation
-      if (!inputObj || typeof inputObj !== 'object') {
-        throw new Error('input must be an object')
-      }
       if (!txid || typeof txid !== 'string') {
         throw new Error('txid must be a string')
       }
@@ -171,7 +168,6 @@ class P2WCanAppend {
       let validTx = false
 
       let txData = await this.wallet.bchWallet.getTxData([txid])
-      // console.log(`tx data: ${JSON.stringify(tx, null, 2)}`)
       if (!txData) {
         throw new Error('Could not get transaction details from BCH service.')
       }
@@ -189,6 +185,7 @@ class P2WCanAppend {
 
       // Validate the transaction matches the burning rules.
       validTx = await this._validateTx(txData, entry)
+
       return validTx
     } catch (err) {
       console.error('Error in adapters/orbit/pay-to-write-access-controller.js/validateAgainstBlockchain(): ', err.message)
@@ -271,8 +268,7 @@ class P2WCanAppend {
       }
 
       // Get the difference, or the amount of PSF tokens burned.
-      let diff = await this.getTokenQtyDiff(txData)
-      diff = this.bchjs.Util.floor8(diff)
+      const diff = this._getTokenQtyDiff(txData)
 
       // Get the timestamp of the entry.
       let timestamp = entry.payload.value.timestamp
@@ -282,8 +278,6 @@ class P2WCanAppend {
       // TODO: Try to determine timestamp from the TX. If that fails, fall back
       // to the payload timestamp.
       // Get the required burn price, based on the timestamp.
-      // console.log('this._options: ', this._options)
-      // const requiredPrice = this._options.writePrice.getTargetCostPsf(timestamp)
 
       const requiredPrice = this.writePrice.currentRate
       console.log('requiredPrice: ', requiredPrice)
@@ -328,13 +322,14 @@ class P2WCanAppend {
     return false
   }
 
-  // Add the TXID to the database, and mark it as invalid. This will prevent
-  // validation spamming.
+  // Add the TXID to the Mongo database, and mark it as invalid. This will
+  // prevent validation spamming.
   async markInvalid (txid) {
     try {
       if (!txid || typeof txid !== 'string') {
         throw new Error('txid must be a string')
       }
+
       // Create a new entry in the database, to remember the TXID. Mark the
       // entry as invalid.
       const kvObj = {
@@ -345,6 +340,7 @@ class P2WCanAppend {
       }
       const keyValue = new this.KeyValue(kvObj)
       await keyValue.save()
+
       return keyValue
     } catch (err) {
       console.error('Error in markInvalid()')
@@ -388,7 +384,8 @@ class P2WCanAppend {
 
   // Get the differential token qty between the inputs and outputs of a tx.
   // This determins if the tx was a proper token burn.
-  async getTokenQtyDiff (txInfo) {
+  // This function is consumed by _validateTx()
+  _getTokenQtyDiff (txInfo) {
     try {
       // Input validation
       if (!txInfo) {
@@ -409,7 +406,7 @@ class P2WCanAppend {
         }
         inputTokenQty += tokenQty
       }
-      console.log(`inputTokenQty: ${inputTokenQty}`)
+      // console.log(`inputTokenQty: ${inputTokenQty}`)
 
       // Sum up all the token outputs
       let outputTokenQty = 0
@@ -422,14 +419,15 @@ class P2WCanAppend {
         }
         outputTokenQty += tokenQty
       }
-      console.log(`outputTokenQty: ${outputTokenQty}`)
+      // console.log(`outputTokenQty: ${outputTokenQty}`)
 
-      const diff = inputTokenQty - outputTokenQty
-      console.log(`token difference (burn): ${diff}`)
+      let diff = inputTokenQty - outputTokenQty
+      diff = this.bchjs.Util.floor8(diff)
+      // console.log(`token difference (burn): ${diff}`)
 
       return diff
     } catch (err) {
-      console.error('Error in getTokenQtyDiff: ', err.message)
+      console.error('Error in _getTokenQtyDiff: ', err.message)
       throw err
     }
   }
