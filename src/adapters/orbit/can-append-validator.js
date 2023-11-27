@@ -208,6 +208,7 @@ class P2WCanAppend {
   // tokens is the same user submitting the new DB entry. It prevents
   // 'front running', or malicous users watching the network for valid burn
   // TXs then using them to submit their own data to the DB.
+  // Returns true if signature is valid. Otherwise it throws an error.
   async _validateSignature (txData, signature, message) {
     try {
       // Input validation
@@ -224,17 +225,15 @@ class P2WCanAppend {
       // Get the address for the second output of the TX.
       const addresses = txData.vout[1].scriptPubKey.addresses
       const address = addresses[0]
-      console.log(`address: ${address}`)
-      console.log(`signature: ${signature}`)
-      console.log(`message: ${message}`)
+      // console.log(`address: ${address}`)
+      // console.log(`signature: ${signature}`)
+      // console.log(`message: ${message}`)
 
       // Verify the signed message is owned by the address.
       const isValid = this.bchjs.BitcoinCash.verifyMessage(address, signature, message)
       return isValid
     } catch (err) {
-      console.error('Error in _validateSignature ')
-      // Dev note: Mock data is needed to
-      // if (err.error) throw new Error(err.error)
+      console.error('Error in _validateSignature(). Invalid signature?')
       throw err
     }
   }
