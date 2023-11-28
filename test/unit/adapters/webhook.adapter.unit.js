@@ -1,6 +1,12 @@
+/*
+  Unit tests for the webhook Adapter library.
+*/
+
+// Global npm libraries
 import sinon from 'sinon'
 import { assert } from 'chai'
 
+// Local libraries
 import WebhookAdapter from '../../../src/adapters/webhook/index.js'
 
 describe('#WebhookAdapter', () => {
@@ -14,12 +20,12 @@ describe('#WebhookAdapter', () => {
 
   afterEach(() => sandbox.restore())
 
-  describe('#validationSucceededEventHandler', () => {
+  describe('#webhookEventHandler', () => {
     it('should exit quietly if data can not be parsed into JSON', async () => {
       const eventData = {
         data: 'some data'
       }
-      await uut.validationSucceededEventHandler(eventData)
+      await uut.webhookEventHandler(eventData)
       // Not throwing an error is a pass.
       // Looking at the code coverage report is how to check if this test case
       // is working properly.
@@ -30,7 +36,7 @@ describe('#WebhookAdapter', () => {
       const eventData = {
         data: '{"title":"83214","sourceUrl":"69834"}'
       }
-      await uut.validationSucceededEventHandler(eventData)
+      await uut.webhookEventHandler(eventData)
       // Not throwing an error is a pass.
       // Looking at the code coverage report is how to check if this test case
       // is working properly.
@@ -46,7 +52,7 @@ describe('#WebhookAdapter', () => {
       sandbox.stub(uut.WebhookModel, 'find').returns(['a'])
       // mock the trigger function.
       sandbox.stub(uut, 'triggerWebhook').resolves({})
-      await uut.validationSucceededEventHandler(eventData)
+      await uut.webhookEventHandler(eventData)
       // Not throwing an error is a pass.
       // Looking at the code coverage report is how to check if this test case
       // is working properly.
@@ -54,7 +60,7 @@ describe('#WebhookAdapter', () => {
     })
 
     it('should report but not throw an error', async () => {
-      await uut.validationSucceededEventHandler()
+      await uut.webhookEventHandler()
       // Not throwing an error is a pass.
       // Looking at the code coverage report is how to check if this test case
       // is working properly.

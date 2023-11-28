@@ -93,8 +93,7 @@ const P2WDBAccessController = ({ write, storage } = {}) => async ({ orbitdb, ide
    * @memberof module:AccessControllers.AccessControllers-IPFS
    */
   const canAppend = async (entry) => {
-    p2wCanAppendLib.hello()
-    console.log('entry: ', entry)
+    // console.log('entry: ', entry)
 
     return await p2wCanAppendLib.canAppend(entry)
 

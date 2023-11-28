@@ -477,12 +477,89 @@ describe('#can-append-validator.js', () => {
       sandbox.stub(uut, 'validateEntry').returns()
       sandbox.stub(uut.KeyValue, 'find').resolves([])
       sandbox.stub(uut, 'checkDate').returns(false)
-      sandbox.stub(uut, 'validateAgainstBlockchain').resolves(true)
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
       mockData.validEntry01.hash = undefined
+      sandbox.stub(uut.validationEvent, 'emit').returns()
 
       const result = await uut.canAppend(mockData.validEntry01)
 
       assert.equal(result, true)
+    })
+
+    it('should return false data exceeds maximum size', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'validateEntry').returns()
+
+      // Force data to be too big
+      const originalConfig = uut.config.maxDataSize
+      uut.config.maxDataSize = 1
+
+      const result = await uut.canAppend(mockData.validEntry01)
+
+      assert.equal(result, false)
+
+      uut.config.maxDataSize = originalConfig
+    })
+
+    it('should return false if entry is older than a year', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'validateEntry').returns()
+      sandbox.stub(uut.KeyValue, 'find').resolves([])
+      sandbox.stub(uut, 'checkDate').returns(true)
+
+      const result = await uut.canAppend(mockData.validEntry01)
+
+      assert.equal(result, false)
+    })
+
+    it('should return value from MongoDB if entry has already been evaluated', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'validateEntry').returns()
+      sandbox.stub(uut.KeyValue, 'find').resolves([{ isValid: false }])
+
+      const result = await uut.canAppend(mockData.validEntry01)
+
+      assert.equal(result, false)
+    })
+
+    it('should delay validation if TX just happened', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'validateEntry').returns()
+      sandbox.stub(uut.KeyValue, 'find').resolves([])
+      sandbox.stub(uut, 'checkDate').returns(false)
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      mockData.validEntry01.hash = undefined
+      sandbox.stub(uut.validationEvent, 'emit').returns()
+      sandbox.stub(uut.bchjs.Util, 'sleep').resolves()
+
+      // Force timestamp to have the current date.
+      mockData.validEntry01.payload.value.timestamp = new Date()
+
+      const result = await uut.canAppend(mockData.validEntry01)
+
+      assert.equal(result, true)
+    })
+
+    it('should trigger PeerEntryAdded event if entry has a hash', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'validateEntry').returns()
+      sandbox.stub(uut.KeyValue, 'find').resolves([])
+      sandbox.stub(uut, 'checkDate').returns(false)
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      sandbox.stub(uut.validationEvent, 'emit').returns()
+
+      const result = await uut.canAppend(mockData.validEntry01)
+
+      assert.equal(result, true)
+    })
+
+    it('should return false if there is an error', async () => {
+      // Force an error
+      sandbox.stub(uut, 'validateEntry').throws(new Error('test error'))
+
+      const result = await uut.canAppend(mockData.validEntry01)
+
+      assert.equal(result, false)
     })
   })
 })

@@ -61,7 +61,8 @@ class P2WCanAppend {
       // console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
 
       // Throw an error if the message is bigger than 10 KB.
-      if (dbData.length > this.config.maxDataSize) {
+      const dbDataSize = JSON.stringify(dbData).length
+      if (dbDataSize > this.config.maxDataSize) {
         console.error(`TXID ${txid} not allowed to write to DB because message exceeds max size of ${this.config.maxDataSize}`)
         return false
       }
@@ -89,8 +90,10 @@ class P2WCanAppend {
 
       // If this is recent transaction, then wait a few seconds to ensure the SLP
       // indexer has time to process it.
-      // const entryDate = new Date(entry.payload.value.timestamp)
-      const timestamp = entry.payload.value.timestamp
+      let timestamp = entry.payload.value.timestamp
+      if (typeof timestamp === 'string') {
+        timestamp = new Date(timestamp)
+      }
       console.log(`timestamp: ${timestamp}`)
       const now = new Date()
       const tenSeconds = 10000
@@ -440,10 +443,6 @@ class P2WCanAppend {
       console.error('Error in _getTokenQtyDiff: ', err.message)
       throw err
     }
-  }
-
-  hello () {
-    console.log('hello from P2WCanAppend!')
   }
 }
 
