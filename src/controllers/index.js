@@ -24,12 +24,12 @@ class Controllers {
     this.attachRESTControllers = this.attachRESTControllers.bind(this)
     this.attachControllers = this.attachControllers.bind(this)
     this.attachRPCControllers = this.attachRPCControllers.bind(this)
-    this.validationSucceededEventHandler = this.validationSucceededEventHandler.bind(this)
+    this.peerEntryAddedEventHandler = this.peerEntryAddedEventHandler.bind(this)
 
     // Attach the event handler to the event.
     // This event is responsible for adding validated entries to MongoDB.
     // This must come *after* the call to bind().
-    validationEvent.on('ValidationSucceeded', this.validationSucceededEventHandler)
+    validationEvent.on('PeerEntryAdded', this.peerEntryAddedEventHandler)
   }
 
   // Spin up any adapter libraries that have async startup needs.
@@ -76,8 +76,8 @@ class Controllers {
   }
 
   // Event handler that is triggered when a new entry is added to the P2WDB
-  // OrbitDB.
-  async validationSucceededEventHandler (data) {
+  // OrbitDB by a peer node.
+  async peerEntryAddedEventHandler (data) {
     try {
       console.log(
         'ValidationSucceeded event triggering addPeerEntry() with this data: ',
@@ -85,20 +85,6 @@ class Controllers {
       )
 
       await this.useCases.entry.addEntry.addPeerEntry(data)
-
-      // Sync the database against other instances on the network.
-      console.log('-->syncing against all other databases<--')
-
-      await this.adapters.p2wdb.orbit.db.all()
-
-      // for await (const record of this.adapters.p2wdb.orbit.db.iterator()) {
-      //   console.log(record)
-      //
-      //   const result = await this.adapters.p2wdb.orbit.db.get(record.hash)
-      //   console.log('result: ', result)
-      // }
-
-      console.log('-->finished syncing against all other databases<--')
     } catch (err) {
       console.error('Error trying to process peer data with addPeerEntry(): ', err)
       // Do not throw an error. This is a top-level function.

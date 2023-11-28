@@ -71,7 +71,8 @@ class AddEntry {
   // This function is primarily triggered by the canAppend() library after
   // it has successfully validated a new entry.
   async addPeerEntry (peerData) {
-    console.log('Entering addPeerEntry() with this data: ', peerData)
+    console.log('Entering addPeerEntry()')
+    // console.log('Entering addPeerEntry() with this data: ', peerData)
 
     // Attempt to extract the 'appId' property from the data.
     peerData = this._extractAppId(peerData)
@@ -82,7 +83,7 @@ class AddEntry {
     // Throw an error if the entry already exists.
     const exists = await _this.entryAdapter.doesEntryExist(entry)
     if (exists) {
-      throw new Error('Entry already exists in the database.')
+      throw new Error('addPeerEntry(): Entry already exists in the database.')
     }
 
     // The entry already exists in the P2WDB OrbitDB, so nothing needs to be

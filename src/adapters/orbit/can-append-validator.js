@@ -58,7 +58,7 @@ class P2WCanAppend {
       const message = entry.payload.value.message
       const signature = entry.payload.value.signature
       const dbData = entry.payload.value.data
-      console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
+      // console.log(`payload: ${JSON.stringify(entry.payload, null, 2)}`)
 
       // Throw an error if the message is bigger than 10 KB.
       if (dbData.length > this.config.maxDataSize) {
@@ -78,7 +78,7 @@ class P2WCanAppend {
       }
 
       // Display the entry if it did not pass a check of the MongoDB.
-      console.log('canAppend entry: ', entry)
+      // console.log('canAppend entry: ', entry)
 
       // Ensure the entry is less than a year old.
       const isAYearOld = this.checkDate(entry.payload)
@@ -106,24 +106,22 @@ class P2WCanAppend {
       validTx = await this.retryQueue.addToQueue(this.validateAgainstBlockchain, inputObj)
       console.log(`Validation for TXID ${txid} completed. Result: ${validTx}`)
 
-      /*
-        TODO:
-        - If the entry is valid AND has a hash, emit an event that triggers
-          the addPeerEntry() use-case.
-        - If the entry is valid (does or does not have a hash), emit an event
-          that triggers the webhook.
-      */
-
-      // If the entry passed validation, trigger an event.
-      // But only if the entry has a 'hash' value.
-      // - has hash value: entry is being replicated from a peer
-      // - no hash value: entry came in from a user of this node via REST or RPC.
+      // If the entry has a hash value, then it is not an new entry, but an
+      // entry that is being passed by a peer OrbitDB instance. Trigger an
+      // event so a Controller can add the entry to the MongoDB.
       if (validTx && entry.hash) {
         inputObj.data = dbData
         inputObj.hash = entry.hash
-        console.log('inputObj: ', inputObj)
+        // console.log('inputObj: ', inputObj)
 
-        this.validationEvent.emit('ValidationSucceeded', inputObj)
+        this.validationEvent.emit('PeerEntryAdded', inputObj)
+      }
+
+      // For any valid entry (new or peer), trigger the webhook library to see
+      // if this entry should trigger a webhook.
+      if (validTx) {
+        inputObj.data = dbData
+        this.validationEvent.emit('TriggerWebHook', inputObj)
       }
 
       return validTx
