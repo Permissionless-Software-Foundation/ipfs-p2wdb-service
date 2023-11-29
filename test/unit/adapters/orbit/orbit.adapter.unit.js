@@ -52,7 +52,7 @@ describe('#OrbitDBAdapter', () => {
 
     it('should throw an error if instance of WritePrice adapter is not provided', () => {
       try {
-        const _uut = new OrbitDBAdapter({ipfs})
+        const _uut = new OrbitDBAdapter({ ipfs })
         console.log(_uut)
         assert.fail('unexpected code path')
       } catch (err) {
@@ -65,7 +65,7 @@ describe('#OrbitDBAdapter', () => {
         mockWallet = new MockBchWallet()
         const writePrice = new WritePrice()
 
-        const _uut = new OrbitDBAdapter({ipfs, writePrice})
+        const _uut = new OrbitDBAdapter({ ipfs, writePrice })
         console.log(_uut)
         assert.fail('unexpected code path')
       } catch (err) {
