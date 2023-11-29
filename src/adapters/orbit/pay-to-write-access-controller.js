@@ -34,7 +34,9 @@ const AccessControlList = async ({ storage, type, params }) => {
 
 const type = 'p2w'
 
-let p2wCanAppendLib
+// This is initialized as null as a placeholder. This value will be overwritten
+// by calling the injectDeps() method.
+let p2wCanAppendLib = null
 
 /**
  * Creates an instance of P2WDBAccessController.
@@ -97,6 +99,10 @@ const P2WDBAccessController = ({ write, storage } = {}) => async ({ orbitdb, ide
 
     return await p2wCanAppendLib.canAppend(entry)
 
+    // Dev Note: This is original code from the orbitdb project. This has been
+    // replaced by the canAppend() function above, to use our own custom
+    // canAppend() function.
+
     // const writerIdentity = await identities.getIdentity(entry.identity)
     // if (!writerIdentity) {
     //   return false
@@ -114,7 +120,8 @@ const P2WDBAccessController = ({ write, storage } = {}) => async ({ orbitdb, ide
     type,
     address,
     write,
-    canAppend
+    canAppend,
+    p2wCanAppendLib
   }
 }
 
