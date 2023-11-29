@@ -50,13 +50,26 @@ describe('#OrbitDBAdapter', () => {
       }
     })
 
-    it('should throw an error if instance of WriteCost adapter is not provided', () => {
+    it('should throw an error if instance of WritePrice adapter is not provided', () => {
       try {
-        const _uut = new OrbitDBAdapter()
+        const _uut = new OrbitDBAdapter({ipfs})
         console.log(_uut)
         assert.fail('unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Must pass an instance of ipfs')
+        assert.include(err.message, 'Pass instance of writePrice when instantiating OrbitDBAdapter library.')
+      }
+    })
+
+    it('should throw an error if instance of Wallet adapter is not provided', () => {
+      try {
+        mockWallet = new MockBchWallet()
+        const writePrice = new WritePrice()
+
+        const _uut = new OrbitDBAdapter({ipfs, writePrice})
+        console.log(_uut)
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Instance of minimal-slp-wallet required when instantiating OrbitDBAdapter library')
       }
     })
   })
@@ -188,6 +201,7 @@ describe('#OrbitDBAdapter', () => {
       const result = uut.readAll()
       assert.isObject(result)
     })
+
     it('should catch and throw errors', () => {
       try {
         uut.db = undefined
@@ -196,6 +210,17 @@ describe('#OrbitDBAdapter', () => {
       } catch (err) {
         assert.include(err.message, 'Cannot read')
       }
+    })
+  })
+
+  describe('#exitProgram', () => {
+    it('should exit the program when called', () => {
+      // Mock dependencies
+      sandbox.stub(uut.process, 'exit').returns()
+
+      const result = uut.exitProgram()
+
+      assert.equal(result, true)
     })
   })
 })

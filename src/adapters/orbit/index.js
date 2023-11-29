@@ -42,6 +42,7 @@ class OrbitDBAdapter {
     this.P2WCanAppend = P2WCanAppend
     this.useAccessController = useAccessController
     this.useDatabaseType = useDatabaseType
+    this.process = process
 
     // Properties of this class instance.
     this.db = {} // Instance of OrbitDB.
@@ -140,7 +141,9 @@ class OrbitDBAdapter {
   }
 
   exitProgram () {
-    process.exit(-1)
+    this.process.exit(-1)
+
+    return true
   }
 
   // The event handler.
