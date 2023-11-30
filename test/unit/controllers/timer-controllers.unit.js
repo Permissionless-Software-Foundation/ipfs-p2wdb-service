@@ -108,7 +108,7 @@ describe('#Timer-Controllers', () => {
   describe('#manageTickets', () => {
     it('should return the number of entries in the database', async () => {
       // Mock dependencies and force desired code path.
-      sandbox.stub(uut.adapters.p2wdb.orbit.db, 'all').resolves([1,2,3,4,5,6])
+      sandbox.stub(uut.adapters.p2wdb.orbit.db, 'all').resolves([1, 2, 3, 4, 5, 6])
 
       const result = await uut.forceSync()
       console.log('result: ', result)
