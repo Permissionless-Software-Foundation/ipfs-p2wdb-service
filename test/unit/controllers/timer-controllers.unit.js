@@ -89,4 +89,45 @@ describe('#Timer-Controllers', () => {
       assert.equal(result, false)
     })
   })
+
+  describe('#startTimers', () => {
+    it('should start timers', () => {
+      const originalState = uut.config.enablePreBurnTicket
+      uut.config.enablePreBurnTicket = true
+
+      const result = uut.startTimers()
+
+      uut.stopTimers()
+
+      uut.config.enablePreBurnTicket = originalState
+
+      assert.equal(result, true)
+    })
+  })
+
+  describe('#manageTickets', () => {
+    it('should return the number of entries in the database', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.adapters.p2wdb.orbit.db, 'all').resolves([1,2,3,4,5,6])
+
+      const result = await uut.forceSync()
+      console.log('result: ', result)
+
+      uut.stopTimers()
+
+      assert.equal(result, 6)
+    })
+
+    it('should return false on error', async () => {
+      // Force error
+      sandbox.stub(uut.adapters.p2wdb.orbit.db, 'all').rejects(new Error('test error'))
+
+      const result = await uut.forceSync()
+      console.log('result: ', result)
+
+      uut.stopTimers()
+
+      assert.equal(result, false)
+    })
+  })
 })

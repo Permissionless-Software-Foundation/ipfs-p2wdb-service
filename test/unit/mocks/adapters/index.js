@@ -46,6 +46,9 @@ const p2wdb = {
     orbit: {
         validationEvent: {
             on: () => { }
+        },
+        db: {
+          all: async () => {}
         }
     }
 };

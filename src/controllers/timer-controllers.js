@@ -47,7 +47,7 @@ class TimerControllers {
       // this.optimizeWalletHandle = setTimeout(this.optimizeWallet, 60000 * 0.5)
     }
 
-    if (this.config.enablePreBurnTicket && this.config.env !== 'test') {
+    if (this.config.enablePreBurnTicket) {
       this.manageTicketsHandle = setInterval(this.manageTickets, 60000 * 11) // Every 11 minute
     }
 
@@ -67,48 +67,26 @@ class TimerControllers {
     clearInterval(this.forceSyncHandle)
   }
 
+  // Force the OrbitDB to sync by iterating over the database entries. If there
+  // are missing entries, this action will cause this node to reach out to
+  // other peers to try and retrieve the missing entries.
   async forceSync () {
     try {
       // Turn off the timer while syncing is happening.
       clearInterval(this.forceSyncHandle)
 
-      const db = this.adapters.p2wdb.orbit.db
-
-      // let recordCnt = 0
-
       console.log('Timer Interval: Syncing P2WDB to peers...')
 
-      // console.log('db: ', db)
-      // await db.sync.start()
-
+      const db = this.adapters.p2wdb.orbit.db
       const res = await db.all()
       console.log('db length: ', res.length)
 
-      // for await (const record of db.iterator()) {
-      //   console.log('record: ', record)
-      //   recordCnt++
-      //
-      //   // try {
-      //   //   await this.useCases.entry.addEntry.addSyncEntry(record)
-      //   // } catch (err) {
-      //   //   console.log(`Entry ${record.hash} already exists in the database. Skipping.\n`)
-      //   //   continue
-      //   // }
-      // }
-      // console.log(`Database has this many records: ${recordCnt}`)
-
       console.log('...finished syncing database.')
-
-      // const res = await db.all()
-      // for await (const record of db.iterator()) {
-      //   console.log('record: ', record)
-      //   recordCnt++
-      // }
-      // console.log(`Database has this many records: ${recordCnt}`)
-      // console.log('...finished syncing database. Records in database: ', res.length)
 
       // Renable the timer interval
       this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+
+      return res.length
     } catch (err) {
       // Do not throw an error. This is a top-level function.
       console.error('Error in timer-controllers.js/forceSync(): ', err)

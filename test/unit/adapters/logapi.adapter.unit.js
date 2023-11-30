@@ -1,15 +1,15 @@
 import { assert } from 'chai'
 import sinon from 'sinon'
-// import util from 'util'
+import util from 'util'
 
 import LogsApiLib from '../../../src/adapters/logapi.js'
 import mockData from '../mocks/log-api-mock.js'
 
 // Hack to get __dirname back.
 // https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
-// import * as url from 'url'
-// util.inspect.defaultOptions = { depth: 1 }
-// const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+import * as url from 'url'
+util.inspect.defaultOptions = { depth: 1 }
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const context = {}
 let sandbox
@@ -32,22 +32,20 @@ describe('#LogsApiLib', () => {
       }
     })
 
-    // CT 05/13/23 Commenting out this test since I don't have time to fix it.
-    // TODO: circle back around the properly fix these tests.
-    // it('should return log', async () => {
-    //   // Mock dependencies
-    //   sandbox.stub(uut, 'generateFileName').returns(`${__dirname.toString()}/../mocks/adapters/fake-log`)
-    //
-    //   const pass = 'test'
-    //   const result = await uut.getLogs(pass)
-    //   console.log('result', result)
-    //
-    //   assert.isTrue(result.success)
-    //   assert.isArray(result.data)
-    //   assert.property(result.data[0], 'message')
-    //   assert.property(result.data[0], 'level')
-    //   assert.property(result.data[0], 'timestamp')
-    // })
+    it('should return log', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'generateFileName').returns(`${__dirname.toString()}../mocks/adapters/fake-log`)
+
+      const pass = 'test'
+      const result = await uut.getLogs(pass)
+      console.log('result', result)
+
+      assert.isTrue(result.success)
+      assert.isArray(result.data)
+      assert.property(result.data[0], 'message')
+      assert.property(result.data[0], 'level')
+      assert.property(result.data[0], 'timestamp')
+    })
 
     it('should return false if files are not found!', async () => {
       try {
@@ -159,6 +157,7 @@ describe('#LogsApiLib', () => {
       }
     })
   })
+
   describe('#readLines()', () => {
     it('should throw error if fileName is not provided', async () => {
       try {
@@ -168,6 +167,7 @@ describe('#LogsApiLib', () => {
         assert.include(err.message, 'filename must be a string')
       }
     })
+
     it('should throw error if fileName provided is not string', async () => {
       try {
         const fileName = true
@@ -177,6 +177,7 @@ describe('#LogsApiLib', () => {
         assert.include(err.message, 'filename must be a string')
       }
     })
+
     it('should throw error if the file does not exist', async () => {
       try {
         const fileName = 'test/logs/'
@@ -187,26 +188,22 @@ describe('#LogsApiLib', () => {
       }
     })
 
-    // CT 05/13/23 Commenting out this test since I don't have time to fix it.
-    // TODO: circle back around the properly fix these tests.
-    // it('should ignore fileReader callback errors', async () => {
-    //   // https://sinonjs.org/releases/latest/stubs/
-    //   // About yields
-    //   sandbox.stub(uut.lineReader, 'eachLine').yieldsRight({}, true)
-    //   const fileName = `${__dirname.toString()}/../mocks/adapters/fake-log`
-    //   const result = await uut.readLines(fileName)
-    //   assert.isArray(result)
-    // })
+    it('should ignore fileReader callback errors', async () => {
+      // https://sinonjs.org/releases/latest/stubs/
+      // About yields
+      sandbox.stub(uut.lineReader, 'eachLine').yieldsRight({}, true)
+      const fileName = `${__dirname.toString()}../mocks/adapters/fake-log`
+      const result = await uut.readLines(fileName)
+      assert.isArray(result)
+    })
 
-    // CT 05/13/23 Commenting out this test since I don't have time to fix it.
-    // TODO: circle back around the properly fix these tests.
-    // it('should return data', async () => {
-    //   const fileName = `${__dirname.toString()}/../mocks/adapters/fake-log`
-    //   const result = await uut.readLines(fileName)
-    //   assert.isArray(result)
-    //   assert.property(result[1], 'message')
-    //   assert.property(result[1], 'level')
-    //   assert.property(result[1], 'timestamp')
-    // })
+    it('should return data', async () => {
+      const fileName = `${__dirname.toString()}/../mocks/adapters/fake-log`
+      const result = await uut.readLines(fileName)
+      assert.isArray(result)
+      assert.property(result[1], 'message')
+      assert.property(result[1], 'level')
+      assert.property(result[1], 'timestamp')
+    })
   })
 })

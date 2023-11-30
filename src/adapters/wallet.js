@@ -228,10 +228,5 @@ class WalletAdapter {
     }
     return outObj
   }
-
-  // This function will create an instance of minimal-slp-wallet
-  async createDefaultWallet (mnemonic) {
-
-  }
 }
 export default WalletAdapter

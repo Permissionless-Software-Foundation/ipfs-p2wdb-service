@@ -203,6 +203,32 @@ describe('#wallet', () => {
       assert.property(result, 'walletInfoPromise')
       assert.property(result, 'walletInfo')
     })
+
+    it('should generate wallet from mnemonic in config', async () => {
+      // Create a mock wallet.
+      const mockWallet = new BchWallet()
+      await mockWallet.walletInfoPromise
+      sandbox.stub(mockWallet, 'initialize').resolves()
+
+      // Mock dependencies
+      sandbox.stub(uut, '_instanceWallet').resolves(mockWallet)
+
+      // Ensure we open the test file, not the production wallet file.
+      uut.WALLET_FILE = testWalletFile
+      const walletData = await uut.openWallet()
+      // console.log('walletData: ', walletData)
+
+      const originalConfig = uut.config.mnemonic
+      uut.config.mnemonic = walletData.mnemonic
+
+      const result = await uut.instanceWalletWithoutInitialization({})
+      // console.log('result: ', result)
+
+      uut.config.mnemonic = originalConfig
+
+      assert.property(result, 'walletInfoPromise')
+      assert.property(result, 'walletInfo')
+    })
   })
 
   describe('#initialize', () => {

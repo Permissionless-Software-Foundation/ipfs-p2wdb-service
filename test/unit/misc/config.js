@@ -39,13 +39,13 @@ describe('#config', () => {
     assert.equal(config.env, 'test')
   })
 
-  it('Should return test environment config', async () => {
-    process.env.P2W_ENV = 'prod'
+  it('Should return prod environment config', async () => {
+    process.env.P2W_ENV = 'production'
 
     const importedConfig3 = await import('../../../config/index.js?foo=bar2')
     const config = importedConfig3.default
     // console.log('config: ', config)
 
-    assert.equal(config.env, 'prod')
+    assert.equal(config.env, 'production')
   })
 })
