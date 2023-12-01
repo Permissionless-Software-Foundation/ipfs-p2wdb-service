@@ -74,8 +74,9 @@ const PayToWriteDatabase = () => async ({ ipfs, identity, address, name, access,
       const { op, key: k, value } = entry.payload
       if (op === 'PUT' && k === key) {
         return value
-      } else if (op === 'DEL' && k === key) {
-        return
+      // Commented out because it's not possible to delete an entry in the P2WDB.
+      // } else if (op === 'DEL' && k === key) {
+      //   return
       }
     }
   }
@@ -90,17 +91,22 @@ const PayToWriteDatabase = () => async ({ ipfs, identity, address, name, access,
    * @instance
    */
   const iterator = async function * ({ amount } = {}) {
+    // console.log("Entering iterator")
     const keys = {}
     let count = 0
     for await (const entry of log.traverse()) {
       const { op, key, value } = entry.payload
+
+      // console.log('op: ', op)
+      // console.log('keys[key]: ', keys[key])
       if (op === 'PUT' && !keys[key]) {
         keys[key] = true
         count++
         const hash = entry.hash
         yield { key, value, hash }
-      } else if (op === 'DEL' && !keys[key]) {
-        keys[key] = true
+      // Commented out because it's not possible to delete entries from the P2WDB.
+      // } else if (op === 'DEL' && !keys[key]) {
+      //   keys[key] = true
       }
       if (count >= amount) {
         break

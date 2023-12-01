@@ -10,6 +10,7 @@ import { rimraf } from 'rimraf'
 import { copy } from 'fs-extra'
 import { KeyStore, Identities } from '@chris.troutner/orbitdb-helia/src/index.js'
 import createHelia from '@chris.troutner/orbitdb-helia/test/utils/create-helia.js'
+import { assert } from 'chai'
 
 // Local libraries
 import PayToWriteDatabase from '../../../../src/adapters/orbit/pay-to-write-database.js'
@@ -274,6 +275,53 @@ describe('PayToWriteDatabase Database', function () {
         all.unshift({ key, value })
       }
       strictEqual(all.length, amount)
+    })
+  })
+
+  describe('#all', () => {
+    before(async () => {
+      db = await PayToWriteDatabase()({ ipfs, identity: testIdentity1, address: databaseId, accessController })
+    })
+
+    afterEach(async () => {
+      if (db) {
+        await db.drop()
+        await db.close()
+      }
+    })
+
+    it('should iterate through all entries', async () => {
+      // Add an entry to the database.
+      await db.put('key1', 'value1')
+
+      const result = await db.all()
+      // console.log('result: ', result)
+
+      assert.isArray(result)
+    })
+  })
+
+  describe('#injectDeps', () => {
+    before(async () => {
+      const fakeCanAppend = async () => true
+      PayToWriteDatabase.injectDeps(fakeCanAppend)
+
+      console.log('opening db')
+      db = await PayToWriteDatabase()({ ipfs, identity: testIdentity1, address: databaseId, accessController })
+    })
+
+    afterEach(async () => {
+      if (db) {
+        await db.drop()
+        await db.close()
+      }
+    })
+
+    it('should inject the canAppend() funciton into the op-log library', async () => {
+      // Add an entry to the database.
+      await db.put('key1', 'value1')
+
+      // console.log('db: ', db)
     })
   })
 })
