@@ -9,9 +9,10 @@ import { strictEqual, deepStrictEqual, notStrictEqual } from 'assert'
 import { rimraf } from 'rimraf'
 import Keystore from '@chris.troutner/orbitdb-helia/src/key-store.js'
 import Identities from '@chris.troutner/orbitdb-helia/src/identities/identities.js'
-import config from '@chris.troutner/orbitdb-helia/test/config.js'
-import connectPeers from '@chris.troutner/orbitdb-helia/test/utils/connect-nodes.js'
-import createHelia from '@chris.troutner/orbitdb-helia/test/utils/create-helia.js'
+// import config from '@chris.troutner/orbitdb-helia/test/config.js'
+import config from './util/config.js'
+import connectPeers from './util/connect-nodes.js'
+import createHelia from './util/create-helia.js'
 
 // Local libraries
 import P2WDBAccessController from '../../../../src/adapters/orbit/pay-to-write-access-controller.js'

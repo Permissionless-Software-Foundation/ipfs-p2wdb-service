@@ -9,7 +9,7 @@ import { deepStrictEqual, strictEqual, notStrictEqual } from 'assert'
 import { rimraf } from 'rimraf'
 import { copy } from 'fs-extra'
 import { KeyStore, Identities } from '@chris.troutner/orbitdb-helia/src/index.js'
-import createHelia from '@chris.troutner/orbitdb-helia/test/utils/create-helia.js'
+import createHelia from './util/create-helia.js'
 import { assert } from 'chai'
 
 // Local libraries
