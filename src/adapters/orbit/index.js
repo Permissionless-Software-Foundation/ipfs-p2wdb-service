@@ -112,9 +112,9 @@ class OrbitDBAdapter {
         console.log(`------>Successfully opened OrbitDB: ${dbName}`)
         console.log('db.address: ', this.db.address)
 
-        console.log('Syncing database...')
-        const res = await this.db.all()
-        console.log('...finished syncing database. Records in database: ', res.length)
+        // console.log('Syncing database...')
+        // const res = await this.db.all()
+        // console.log('...finished syncing database. Records in database: ', res.length)
 
         // Set up event handler to sync database whenever there is an update.
         // this.db.events.on('update', async (entry) => {
