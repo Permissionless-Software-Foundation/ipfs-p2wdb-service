@@ -79,10 +79,10 @@ class Controllers {
   // OrbitDB by a peer node.
   async peerEntryAddedEventHandler (data) {
     try {
-      console.log(
-        'ValidationSucceeded event triggering addPeerEntry() with this data: ',
-        data
-      )
+      // console.log(
+      //   'ValidationSucceeded event triggering addPeerEntry() with this data: ',
+      //   data
+      // )
 
       await this.useCases.entry.addEntry.addPeerEntry(data)
     } catch (err) {
