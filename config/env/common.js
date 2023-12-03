@@ -87,6 +87,10 @@ const config = {
   //   : 0.08335233,
   reqTokenQty: 0.08335233,
 
+  // Markup percentage when accepting BCH and doing the PSF token burn on behalf
+  // of the user.
+  psfTradeMarkup: 0.1,
+
   // JSON-LD and Schema.org schema with info about this app.
   announceJsonLd: {
     '@context': 'https://schema.org/',
@@ -123,28 +127,12 @@ const config = {
 
   chatPubSubChan: 'psf-ipfs-chat-001',
 
-  // Markup for providing PSF tokens so user can pay in BCH.
-  psfTradeMarkup: 0.1,
+  bootstrapRelays: [
+    // v2 Circuit Relay (Token Tiger)
+    '/ip4/137.184.93.145/tcp/8001/p2p/12D3KooWGMEKkdJfyZbwdH9EafZbRTtMn7FnhWPrE4MhRty2763g',
 
-  // Turn on pay-in-bch plugin. Disabled by default. Use env var to overwrite.
-  enableBchPayment: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
-  // By default use the web3 Cash Stack from CashStack.info, but can overide to use web2 infra like FullStack.cash
-
-  useFullStackCash: !!process.env.USE_FULLSTACKCASH,
-
-  ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/',
-
-  // Pre-burn ticket feature
-  enablePreBurnTicket: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
-  // enablePreBurnTicket: true,
-  maxTickets: process.env.MAX_TICKETS ? parseInt(process.env.MAX_TICKETS) : 5,
-
-  v1Relays: [
-    // v1 & v2 Circuit Relay (Token Tiger)
-    '/ip4/137.184.93.145/tcp/6002/p2p/12D3KooWBTkiEn4fSGYRMtNT2ZTKhjguymGFHjiJeVVPSwEjXJwq',
-
-    // v1 & v2 Circuit Relay server (FullStack.cash)
-    '/ip4/78.46.129.7/tcp/4002/p2p/12D3KooWR8URLT2d85MSKMUAHB2poADNz1jbrsGNL1GAjA1cZtTY'
+    // v2 Circuit Relay server (FullStack.cash)
+    '/ip4/78.46.129.7/tcp/4001/p2p/12D3KooWFQ11GQ5NubsJGhYZ4X3wrAGimLevxfm6HPExCrMYhpSL'
   ]
 }
 export default config
