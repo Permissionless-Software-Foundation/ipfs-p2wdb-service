@@ -136,14 +136,17 @@ class WritePrice {
         filterTxids: this.filterTxids
       })
       // console.log('approvalObj: ', JSON.stringify(approvalObj, null, 2))
+
       // Throw an error if no approval transaction can be found in the
       // transaction history.
       if (approvalObj === null) {
         throw new Error(`APPROVAL transaction could not be found in the TX history of ${WRITE_PRICE_ADDR}. Can not reach consensus on write price.`)
       }
+
       const { approvalTxid, updateTxid } = approvalObj
       const writePriceModel = await this.WritePriceModel.findOne({ txid: approvalTxid })
       // console.log('writePriceModel: ', writePriceModel)
+
       // If this approval TX is not in the database, then validate it.
       if (!writePriceModel) {
         console.log(`New approval txid found (${approvalTxid}), validating...`)
@@ -151,15 +154,18 @@ class WritePrice {
         const updateObj = await this.ps009.getUpdateTx({ txid: updateTxid })
         // console.log(`updateObj: ${JSON.stringify(updateObj, null, 2)}`)
         const { cid } = updateObj
+
         // Resolve the CID into JSON data from the IPFS gateway.
         const updateData = await this.ps009.getCidData({ cid })
         // console.log(`updateData: ${JSON.stringify(updateData, null, 2)}`)
+
         // Validate the approval transaction
         const approvalIsValid = await this.ps009.validateApproval({
           approvalObj,
           updateObj,
           updateData
         })
+
         if (approvalIsValid) {
           console.log(`Approval TXID validated. Adding to database: ${approvalTxid}`)
           // If the validation passes, then save the transaction to the database,

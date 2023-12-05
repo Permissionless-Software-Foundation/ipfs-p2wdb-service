@@ -70,6 +70,7 @@ class Adapters {
 
       // Do not start these adapters if this is an e2e test.
       if (this.config.env !== 'test') {
+        console.log('adapters start() this.wallet.bchWallet.bchjs.restURL: ', this.wallet.bchWallet.bchjs.restURL)
         // Get the write price set by the PSF Minting Council.
         await this.writePrice.initialize({ wallet: this.wallet })
         const currentRate = await this.writePrice.getMcWritePrice()

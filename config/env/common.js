@@ -45,6 +45,7 @@ const config = {
   authPass: process.env.FULLSTACK_AUTH_PASS
     ? process.env.FULLSTACK_AUTH_PASS
     : '',
+  useFullStackCash: !!process.env.USE_FULLSTACKCASH,
 
   // ipfs-bch-wallet-consumer URL
   consumerUrl: process.env.CONSUMER_URL

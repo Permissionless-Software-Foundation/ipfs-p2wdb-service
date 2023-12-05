@@ -95,6 +95,11 @@ class WalletAdapter {
         advancedConfig.apiToken = this.config.apiToken
       }
 
+      // If an authentication password is passed in the config, add it.
+      if (this.config.authPass) {
+        advancedConfig.authPass = this.config.authPass
+      }
+
       // Detect and configure different blockchain infrastructure settings.
       if (this.config.useFullStackCash) {
         advancedConfig.interface = 'rest-api'
@@ -104,6 +109,8 @@ class WalletAdapter {
         advancedConfig.interface = 'consumer-api'
         advancedConfig.restURL = this.config.consumerUrl
       }
+
+      console.log('advancedConfig setting when creating wallet: ', advancedConfig)
 
       // Instantiate minimal-slp-wallet.
       if (walletData.mnemonic) {
@@ -137,6 +144,9 @@ class WalletAdapter {
   async _instanceWallet (mnemonic, config) {
     const wallet = new this.BchWallet(mnemonic, config)
     await wallet.walletInfoPromise
+
+    console.log('_instanceWallet() wallet.bchjs.restURL: ', wallet.bchjs.restURL)
+
     return wallet
   }
 

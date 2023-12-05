@@ -63,7 +63,7 @@
     "nodemailer": "6.7.5",
     "p2wdb": "2.4.0",
     "passport-local": "1.0.0",
-    "psf-multisig-approval": "2.0.1",
+    "psf-multisig-approval": "2.0.3",
     "public-ip": "4.0.4",
     "shelljs": "0.8.5",
     "winston": "3.3.3",
