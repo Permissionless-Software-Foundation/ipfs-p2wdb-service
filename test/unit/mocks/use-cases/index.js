@@ -73,6 +73,10 @@ class UseCasesMock {
     ticket = {
       manageTicketQueue: async () => { }
     }
+
+    pin = {
+      pinJson: async () => {}
+    }
 }
 
 export default UseCasesMock;
