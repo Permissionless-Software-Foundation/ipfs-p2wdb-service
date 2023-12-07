@@ -102,6 +102,8 @@ class EntryController {
   async getBalance (ctx, next) {
     // await _this.validators.ensureUser(ctx, next)
     await _this.entryRESTController.getBalance(ctx, next)
+
+    return true
   }
 }
 export default EntryController

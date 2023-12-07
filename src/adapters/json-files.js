@@ -65,4 +65,5 @@ class JsonFiles {
     })
   }
 }
+
 export default JsonFiles

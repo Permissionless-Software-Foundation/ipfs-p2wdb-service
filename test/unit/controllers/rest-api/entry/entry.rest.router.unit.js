@@ -65,4 +65,15 @@ describe('#Entry-REST-Router', () => {
       assert.equal(result, true)
     })
   })
+
+  describe('#getBalance', () => {
+    it('should route to the controller', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.entryRESTController, 'getBalance').resolves()
+
+      const result = await uut.getBalance()
+
+      assert.equal(result, true)
+    })
+  })
 })

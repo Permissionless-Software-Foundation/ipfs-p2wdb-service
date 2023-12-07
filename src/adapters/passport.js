@@ -1,4 +1,9 @@
+/*
+  koa-passport is an authorization library used for different authentication schemes.
+*/
+
 import passport from 'koa-passport'
+
 let _this
 class Passport {
   constructor () {

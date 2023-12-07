@@ -13,11 +13,14 @@
   in the Adapter directory.
 */
 
+// Global npm libraries
 import axios from 'axios'
 import mongoose from 'mongoose'
-import User from './localdb/models/users.js'
+
+// Local libraries
+import User from '../adapters/localdb/models/users.js'
 import config from '../../config/index.js'
-import JsonFiles from './json-files.js'
+import JsonFiles from '../adapters/json-files.js'
 
 // Hack to get __dirname back.
 // https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
@@ -26,7 +29,8 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const jsonFiles = new JsonFiles()
 const JSON_FILE = `system-user-${config.env}.json`
-const JSON_PATH = `${__dirname.toString()}/../../config/${JSON_FILE}`
+const JSON_PATH = `${__dirname.toString()}../../config/${JSON_FILE}`
+
 const LOCALHOST = `http://localhost:${config.port}`
 const context = {}
 let _this

@@ -1,11 +1,13 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import NodeMailer from '../../../src/adapters/nodemailer.js'
+
 /*
   Unit tests for the nodemailer.js library.
 */
 // Public npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+
+import sinon from 'sinon'
+import NodeMailer from '../../../src/adapters/nodemailer.js'
+
 let sandbox
 let uut
 describe('NodeMailer', () => {

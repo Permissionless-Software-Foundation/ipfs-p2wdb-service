@@ -1,3 +1,4 @@
+
 // Hack to get __dirname back.
 // https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
 import * as url from 'url'
@@ -6,8 +7,8 @@ import * as url from 'url'
 import { readFileSync } from 'fs'
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 const pkgInfo = JSON.parse(readFileSync(`${__dirname.toString()}/../../package.json`))
-
 const version = pkgInfo.version
+
 const ipfsCoordName = process.env.COORD_NAME
   ? process.env.COORD_NAME
   : 'ipfs-p2wdb-service-generic'
@@ -44,6 +45,7 @@ const config = {
   authPass: process.env.FULLSTACK_AUTH_PASS
     ? process.env.FULLSTACK_AUTH_PASS
     : '',
+  useFullStackCash: !!process.env.USE_FULLSTACKCASH,
 
   // ipfs-bch-wallet-consumer URL
   consumerUrl: process.env.CONSUMER_URL
@@ -51,17 +53,25 @@ const config = {
     : 'https://free-bch.fullstack.cash',
 
   // IPFS settings.
+  useIpfs: !process.env.DISABLE_IPFS, // Disable IPFS flag
   isCircuitRelay: !!process.env.ENABLE_CIRCUIT_RELAY,
-
   // SSL domain used for websocket connection via browsers.
   crDomain: process.env.CR_DOMAIN ? process.env.CR_DOMAIN : '',
+
   // Information passed to other IPFS peers about this node.
   apiInfo: 'https://ipfs-service-provider.fullstack.cash/',
+
   // P2W DB OrbitDB name.
   orbitDbName: process.env.ORBITDB_NAME
     ? process.env.ORBITDB_NAME
-  // : 'psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Start a new database
-    : '/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh/psf-bch-p2wdb-keyvalue-v3.0.0-0001',
+    // : 'psf-bch-p2wdb-keyvalue-v3.0.0-0001', // Start a new database
+    // : '/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh/psf-bch-p2wdb-keyvalue-v3.0.0-0001',
+    // : '/orbitdb/zdpuAzuW1fXJPGqN3xx7NB5WJ33Ye7nretkK6iyXqiKk7yMPE',
+    // : 'psf-bch-p2wdb-keyvalue-v4.0.0-0001',
+    // : '',
+    // : '/orbitdb/zdpuAxsSm9BNCBchqXXLLqtwkmCcGepzJ96q4AMH8KSdjomtS',
+    : '/orbitdb/zdpuAvnyvhFXi7XhofRaZb9F1y91nkuLh9ziVCJC4QJni2Ghe',
+
   // Maximum size of a new database entry.
   maxDataSize: process.env.MAX_DATA_SIZE
     ? parseInt(process.env.MAX_DATA_SIZE)
@@ -78,6 +88,10 @@ const config = {
   //   ? parseFloat(process.env.REQ_TOKEN_QTY)
   //   : 0.08335233,
   reqTokenQty: 0.08335233,
+
+  // Markup percentage when accepting BCH and doing the PSF token burn on behalf
+  // of the user.
+  psfTradeMarkup: 0.1,
 
   // JSON-LD and Schema.org schema with info about this app.
   announceJsonLd: {
@@ -100,29 +114,28 @@ const config = {
   // IPNS hash to get the latest config info.
   // Not currently implemented.
   ipnsConfig: 'QmTtXA18C6sg3ji9zem4wpNyoz9m4UZT85mA2D2jx2gzEk',
-  // BCH Mnemonic for generating encryption keys and payment address
+
+  // BCH Mnemonic for generating encryption keys, payment address, and for
+  // intialized the default instance of minimal-slp-wallet.
   mnemonic: process.env.MNEMONIC ? process.env.MNEMONIC : '',
-  debugLevel: process.env.DEBUG_LEVEL ? parseInt(process.env.DEBUG_LEVEL) : 2,
+
+  debugLevel: process.env.DEBUG_LEVEL ? parseInt(process.env.DEBUG_LEVEL) : 3,
   // Settings for production, using external go-ipfs node.
   isProduction: process.env.P2W_ENV === 'production',
   ipfsHost: process.env.IPFS_HOST ? process.env.IPFS_HOST : 'localhost',
   ipfsApiPort: process.env.IPFS_API_PORT
     ? parseInt(process.env.IPFS_API_PORT)
     : 5001,
+
   chatPubSubChan: 'psf-ipfs-chat-001',
-  // Markup for providing PSF tokens so user can pay in BCH.
-  psfTradeMarkup: 0.1,
-  // Turn on pay-in-bch plugin. Disabled by default. Use env var to overwrite.
-  enableBchPayment: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
-  // By default use the web3 Cash Stack from CashStack.info, but can overide to use web2 infra like FullStack.cash
 
-  useFullStackCash: !!process.env.USE_FULLSTACKCASH,
+  // This can add specific Circuit Relay v2 servers to connect to.
+  bootstrapRelays: [
+    // v2 Circuit Relay (Token Tiger)
+    // '/ip4/137.184.93.145/tcp/8001/p2p/12D3KooWGMEKkdJfyZbwdH9EafZbRTtMn7FnhWPrE4MhRty2763g',
 
-  ipfsGateway: process.env.IPFS_GATEWAY ? process.env.IPFS_GATEWAY : 'https://p2wdb-gateway-678.fullstack.cash/ipfs/',
-
-  // Pre-burn ticket feature
-  enablePreBurnTicket: process.env.ENABLE_BCH_PAYMENT ? process.env.ENABLE_BCH_PAYMENT : false,
-  // enablePreBurnTicket: true,
-  maxTickets: process.env.MAX_TICKETS ? parseInt(process.env.MAX_TICKETS) : 5
+    // v2 Circuit Relay server (FullStack.cash)
+    // '/ip4/78.46.129.7/tcp/4001/p2p/12D3KooWFQ11GQ5NubsJGhYZ4X3wrAGimLevxfm6HPExCrMYhpSL'
+  ]
 }
 export default config

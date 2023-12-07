@@ -1,7 +1,7 @@
-import chai from 'chai'
+import { assert } from 'chai'
 import PassportLib from '../../../src/adapters/passport.js'
 import sinon from 'sinon'
-const assert = chai.assert
+
 let uut
 let sandbox
 describe('#passport.js', () => {

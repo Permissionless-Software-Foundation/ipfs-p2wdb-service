@@ -3,15 +3,15 @@ import axios from 'axios'
 import { assert } from 'chai'
 import sinon from 'sinon'
 
-import { context } from '../../unit/mocks/ctx-mock.js'
+import { context as mockContext } from '../../unit/mocks/ctx-mock.js'
 import ContactController from '../../../src/controllers/rest-api/contact/controller.js'
 
 // Mock data
 // const mockData = require('./mocks/contact-mocks')
 const LOCALHOST = `http://localhost:${config.port}`
-const mockContext = { context }.context
 let uut
 let sandbox
+
 describe('Contact', () => {
   beforeEach(() => {
     uut = new ContactController()

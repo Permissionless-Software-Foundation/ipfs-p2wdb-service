@@ -1,8 +1,10 @@
 import mongoose from 'mongoose'
 import config from '../../config/index.js'
 import User from '../../src/models/users'
+
 const EMAIL = 'test@test.com'
 const PASSWORD = 'pass'
+
 async function addUser () {
   // Connect to the Mongo Database.
   mongoose.Promise = global.Promise
@@ -20,7 +22,6 @@ async function addUser () {
   console.log(`User ${EMAIL} created.`)
 }
 addUser()
-export { addUser }
 export default {
   addUser
 }

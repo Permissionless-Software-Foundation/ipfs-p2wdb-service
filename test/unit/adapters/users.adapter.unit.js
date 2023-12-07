@@ -1,4 +1,4 @@
-import chai from 'chai'
+import { assert } from 'chai'
 import sinon from 'sinon'
 import mongoose from 'mongoose'
 import User from '../../../src/adapters/localdb/models/users.js'
@@ -6,7 +6,7 @@ import config from '../../../config/index.js'
 /*
   Unit tests for the users Mongoose model.
 */
-const assert = chai.assert
+
 // Set the environment variable to signal this is a test.
 process.env.P2W_ENV = 'test'
 describe('#User-Adapter', () => {

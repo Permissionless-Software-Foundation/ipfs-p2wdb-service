@@ -2,9 +2,9 @@
   Use Case library for Users.
 */
 
-// Local libraries
 import UserEntity from '../entities/user.js'
-import { wlogger } from '../adapters/wlogger.js'
+
+import wlogger from '../adapters/wlogger.js'
 
 class UserLib {
   constructor (localConfig = {}) {

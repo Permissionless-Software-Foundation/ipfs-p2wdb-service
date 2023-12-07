@@ -1,6 +1,16 @@
+/*
+  This is the JSON RPC router for the users API
+*/
+
+// Public npm libraries
 import jsonrpc from 'jsonrpc-lite'
+
+// Local libraries
+// const UserLib = require('../../../use-cases/user')
 import Validators from '../validators.js'
+
 import RateLimit from '../rate-limit.js'
+
 class UserRPC {
   constructor (localConfig = {}) {
     // Dependency Injection.

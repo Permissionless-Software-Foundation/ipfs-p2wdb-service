@@ -1,9 +1,19 @@
+/*
+  This index file for the Clean Architecture Controllers loads dependencies,
+  creates instances, and attaches the controller to REST API endpoints for
+  Koa.
+*/
+
+// Public npm libraries.
+
+// Local libraries
 import AuthRESTController from './auth/index.js'
 import UserRouter from './users/index.js'
 import ContactRESTController from './contact/index.js'
 import LogsRESTController from './logs/index.js'
 import EntryRESTController from './entry/index.js'
 import WebhookRESTController from './webhook/index.js'
+import IpfsRESTController from './ipfs/index.js'
 
 class RESTControllers {
   constructor (localConfig = {}) {
@@ -42,6 +52,11 @@ class RESTControllers {
     // Attach the REST API Controllers associated with the /webhook route
     const webhookRESTController = new WebhookRESTController(dependencies)
     webhookRESTController.attach(app)
+
+    // Attach the REST API Controllers associated with the /ipfs route
+    const ipfsRESTController = new IpfsRESTController(dependencies)
+    ipfsRESTController.attach(app)
   }
 }
+
 export default RESTControllers

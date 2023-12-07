@@ -1,7 +1,8 @@
-import chai from 'chai'
+import { assert } from 'chai'
 import sinon from 'sinon'
+
 import ContactLib from '../../../src/adapters/contact.js'
-const assert = chai.assert
+
 let uut
 let sandbox
 describe('Contact', () => {

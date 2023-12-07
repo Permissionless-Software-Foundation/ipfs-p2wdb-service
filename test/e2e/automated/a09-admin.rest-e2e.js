@@ -1,8 +1,7 @@
-import util from 'util'
+import { assert } from 'chai'
 import Admin from '../../../src/adapters/admin.js'
 import sinon from 'sinon'
-import { assert } from 'chai'
-
+import util from 'util'
 util.inspect.defaultOptions = { depth: 1 }
 let sandbox
 let uut

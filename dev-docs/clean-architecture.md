@@ -11,14 +11,14 @@ Without knowing the patterns and reasoning behind Clean Architecture, the code i
 
 - [Summary Video](https://youtu.be/LftjSIbHzbo)
 
-Clean Architecture solves two key problems is application design:
+Clean Architecture solves two key problems in application design:
 
 - It manages increasing complexity as new features and interfaces are added over time.
 - It provides defense against [code rot](https://en.wikipedia.org/wiki/Software_rot) by isolating the parts that rarely change from the parts that change frequently.
 
 ## File Layout
 
-The code in the `src` folder of this repository is split up into four main directories: `entities`, `use-cases`, `adapaters`, and `controllers`. These directories reflect the arrangement of concerns in the Clean Architecture diagram:
+The code in the `src` folder of this repository is split up into four main directories: `entities`, `use-cases`, `adapters`, and `controllers`. These directories reflect the arrangement of concerns in the Clean Architecture diagram:
 
 ![Clean Architecture Diagram](./diagrams/cleanarchitecture.jpg)
 
@@ -33,4 +33,4 @@ Major features of the diagram above:
 - This project is a Koa web server app. Koa is a framework and the entry point of Koa program loads the Controllers first.
 - The Controllers load the Adapters, then it loads the Use Cases, then finally the Entities. Each lower stage depends on the stage above it.
 - Dependency Injection is used heavily to pass dependencies to the individual libraries.
-- Encapsulation pattern is used for unit tests.
+- Libraries are created as Classes. Dependencies are 'encapsulated' into each class instance. This encapsulation pattern makes it easier to achieve 100% unit test coverage.

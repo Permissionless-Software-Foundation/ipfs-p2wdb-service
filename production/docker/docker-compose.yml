@@ -13,37 +13,9 @@ services:
     command: mongod --logpath=/dev/null # -- quiet
     restart: always
 
-  p2wdb-ipfs:
-    image: christroutner/trickle-ipfs:v1.0.1
-    #build:
-    #  context: ./
-    #  dockerfile: Dockerfile
-    container_name: ipfs
-    environment:
-      IPFS_DAEMON_ARGUMENTS: '--enable-pubsub-experiment --migrate=true --agent-version-suffix=docker --routing=dhtclient'
-      UPLOAD_KBPS: '1000'
-      DOWNLOAD_KBPS: '1000'
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '10m'
-        max-file: '10'
-    mem_limit: 2000mb
-    ports:
-      - 4001:4001
-      - 4003:4003
-      - 172.17.0.1:5001:5001
-      - 172.17.0.1:8080:8080
-    command: [
-      './start-ipfs.sh'
-    ]
-    volumes:
-      - ../data/go-ipfs/data:/root/.ipfs
-    restart: always
-
   p2wdb:
-    #build: .
-    image: christroutner/p2wdb:v4.2.8
+    build: .
+    #image: christroutner/p2wdb:v4.2.8
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -60,10 +32,10 @@ services:
     ports:
       # <host port>:<container port>
       - 5667:5667 # REST API
-      #- 5668:5668 # IPFS TCP port
-      #- 5669:5669 # IPFS WS Port
+      - 4001:4001 # IPFS TCP port
+      - 4003:4003 # IPFS WS Port
     volumes:
-      - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+      - ../data/ipfsdata:/home/safeuser/ipfs-p2wdb-service/.ipfsdata
       - ./start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
       #- ../../wallet.json:/home/safeuser/ipfs-p2wdb-service/wallet.json
     restart: always

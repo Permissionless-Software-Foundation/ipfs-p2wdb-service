@@ -1,18 +1,21 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import adapters from '../../../mocks/adapters/index.js'
-import UseCasesMock from '../../../mocks/use-cases/index.js'
-import UserController from '../../../../../src/controllers/rest-api/users/controller.js'
-import { context } from '../../../mocks/ctx-mock.js'
+
 /*
   Unit tests for the REST API handler for the /users endpoints.
 */
 // Public npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+// Local support libraries
+import adapters from '../../../mocks/adapters/index.js'
+import UseCasesMock from '../../../mocks/use-cases/index.js'
+import UserController from '../../../../../src/controllers/rest-api/users/controller.js'
+
+import { context as mockContext } from '../../../../unit/mocks/ctx-mock.js'
 let uut
 let sandbox
 let ctx
-const mockContext = { context }.context
+
 describe('#Users-REST-Controller', () => {
   // const testUser = {}
   beforeEach(() => {

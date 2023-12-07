@@ -2,9 +2,11 @@
   A library for controlling the sending of email.
 */
 
+'use strict'
 import nodemailer from 'nodemailer'
+
 import config from '../../config/index.js'
-import { wlogger } from './wlogger.js'
+import wlogger from './wlogger.js'
 
 let _this
 class NodeMailer {

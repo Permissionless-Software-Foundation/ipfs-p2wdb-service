@@ -26,25 +26,23 @@ class WritePrice {
     this.filterTxids = [] // Tracks invalid approval TXs
 
     // Bind 'this' object to class subfunctions.
-    this.instanceWallet = this.instanceWallet.bind(this)
+    this.initialize = this.initialize.bind(this)
     this.getWriteCostInBch = this.getWriteCostInBch.bind(this)
     this.getPsfPriceInBch = this.getPsfPriceInBch.bind(this)
     this.getMcWritePrice = this.getMcWritePrice.bind(this)
     this.updateCurrentRateInBch = this.updateCurrentRateInBch.bind(this)
   }
 
-  // Instantiate the wallet if it has not already been instantiated.
-  async instanceWallet () {
-    if (!this.wallet) {
-      const walletAdapter = new this.WalletAdapter()
-      const walletData = await walletAdapter.openWallet()
-      this.wallet = await walletAdapter.instanceWalletWithoutInitialization(walletData)
-      this.bchjs = this.wallet.bchjs
-      this.ps009 = new MultisigApproval({ wallet: this.wallet })
+  // Pass a wallet instance into this library. This function is required to prevent
+  // circular dependencies at startup.
+  async initialize (inObj = {}) {
+    this.wallet = inObj.wallet
+    if (!this.wallet) throw new Error('Wallet library instance required when calling write-price.js/instanceWallet()')
 
-      return true
-    }
-    return false
+    this.bchjs = this.wallet.bchWallet.bchjs
+    this.ps009 = new MultisigApproval({ wallet: this.wallet.bchWallet })
+
+    return true
   }
 
   // This function calls getPsfPrice() to get the price of PSF tokens in BCH.
@@ -68,10 +66,10 @@ class WritePrice {
   async updateCurrentRateInBch () {
     try {
       // For debugging. Write the current balance of the wallet and token balance.
-      const bchBalance = await this.wallet.getBalance()
+      const bchBalance = await this.wallet.bchWallet.getBalance()
       console.log('App wallet BCH balance: ', bchBalance)
 
-      const tokenBalance = await this.wallet.listTokens()
+      const tokenBalance = await this.wallet.bchWallet.listTokens()
       console.log('App wallet SLP balance: ', tokenBalance)
 
       const bchPerToken = await this.getPsfPriceInBch()
@@ -132,20 +130,23 @@ class WritePrice {
         throw new Error('Call instanceWallet() before calling this function')
       }
       // Find the PS009 approval transaction the addresses tx history.
-      console.log('Searching blockchain for updated write price...')
+      console.log('\nSearching blockchain for updated write price...')
       const approvalObj = await this.ps009.getApprovalTx({
         address: WRITE_PRICE_ADDR,
         filterTxids: this.filterTxids
       })
       // console.log('approvalObj: ', JSON.stringify(approvalObj, null, 2))
+
       // Throw an error if no approval transaction can be found in the
       // transaction history.
       if (approvalObj === null) {
         throw new Error(`APPROVAL transaction could not be found in the TX history of ${WRITE_PRICE_ADDR}. Can not reach consensus on write price.`)
       }
+
       const { approvalTxid, updateTxid } = approvalObj
       const writePriceModel = await this.WritePriceModel.findOne({ txid: approvalTxid })
       // console.log('writePriceModel: ', writePriceModel)
+
       // If this approval TX is not in the database, then validate it.
       if (!writePriceModel) {
         console.log(`New approval txid found (${approvalTxid}), validating...`)
@@ -153,15 +154,18 @@ class WritePrice {
         const updateObj = await this.ps009.getUpdateTx({ txid: updateTxid })
         // console.log(`updateObj: ${JSON.stringify(updateObj, null, 2)}`)
         const { cid } = updateObj
+
         // Resolve the CID into JSON data from the IPFS gateway.
         const updateData = await this.ps009.getCidData({ cid })
         // console.log(`updateData: ${JSON.stringify(updateData, null, 2)}`)
+
         // Validate the approval transaction
         const approvalIsValid = await this.ps009.validateApproval({
           approvalObj,
           updateObj,
           updateData
         })
+
         if (approvalIsValid) {
           console.log(`Approval TXID validated. Adding to database: ${approvalTxid}`)
           // If the validation passes, then save the transaction to the database,

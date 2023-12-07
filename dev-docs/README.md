@@ -1,6 +1,6 @@
 # Developer Documentation
 
-This directory contains Markdown documents which describe the architecture of the pay-to-write database (P2WDB). The one-sentence description of the P2WDB is: "a peer-to-peer database that requires proof-of-burn in order to add entries to the database". The documents in this directory serve to expand on that statement, and describe all the subcomponents that go into that idea.
+This directory contains Markdown documents which describe the architecture of the pay-to-write database (P2WDB). The one-sentence description of the P2WDB is: "a peer-to-peer database that requires proof-of-burn in order to add entries to the database". The documents in this directory serve to expand on that statement, and describe all the sub-components that go into that idea.
 
 ## OrbitDB
 
@@ -16,7 +16,7 @@ The 'big innovation' in this project is to combine OrbitDB with a proof-of-burn 
 
 Right now the Bitcoin Cash (BCH) blockchain is used for the proof-of-burn, but one goal of this project is to expand the proof-of-burn to other blockchains, including [Avalanche](https://www.avax.network/) and [eCash](https://e.cash). Implementing interfaces for different blockchains will allow the P2WDB to become a medium for cross-blockchain communication. For example, an event on one blockchain could trigger a smart contract or Script on another blockchain.
 
-Currently, the proof of burn requires $0.01 USD in [PSF tokens](https://psfoundation.cash) burned in order to write (up to) 10KB of text data to the database. These numbers will probably change in the future, but these are what is currently implemented. [Example code](https://github.com/Permissionless-Software-Foundation/psf-js-examples/tree/master/p2wdb) are provided to help developers interact with the database.
+Currently, the proof of burn requires $0.01 USD in [PSF tokens](https://psfoundation.cash) burned in order to write (up to) 10KB of text data to the database. These numbers will probably change in the future, but these are what is currently implemented. [Example code](https://github.com/Permissionless-Software-Foundation/psf-js-examples/tree/master/p2wdb) and [documentation](https://p2wdb.com) is provided to help developers interact with the database.
 
 ## P2WDB API & RPC
 
@@ -25,9 +25,9 @@ There are two network interfaces for the P2WDB:
 - REST API over HTTP
 - JSON RPC over IPFS
 
-The REST API is based on this [koa boilerplate](https://github.com/christroutner/koa-api-boilerplate). It allows the P2WDB to be interfaced with conventional Web 2.0 technology. It's expected that the P2WDB will be bundled with additional software, probably using Docker containers. The REST API provides a great way for orchestrated software to communicate, both via intranet or internet.
+The REST API is based on this [koa boilerplate](https://github.com/christroutner/koa-api-boilerplate). It allows the P2WDB to be interfaced with conventional Web 2.0 technology. It's expected that the P2WDB will be bundled with additional software, primarily through Docker containers. The REST API provides a great way for orchestrated software to communicate, both via intranet or internet.
 
-The JSON RPC is based on the [ipfs-coord](https://github.com/Permissionless-Software-Foundation/ipfs-coord#readme) library. This library uses IPFS pubsub channels to allow new IPFS nodes to quickly find one another and establish an end-to-end encrypted (e2ee) connection. They can then exchange data by passing JSON RPC commands. The JSON RPC commands are listed in the [API documentation](https://p2wdb.fullstack.cash/).
+The JSON RPC is based on the [helia-coord](https://github.com/Permissionless-Software-Foundation/helia-coord) library. This library uses IPFS pubsub channels to allow new IPFS nodes to quickly find one another and establish an end-to-end encrypted (e2ee) connection. They can then exchange data by passing JSON RPC commands. The JSON RPC commands are listed in the [API documentation](https://p2wdb.fullstack.cash/).
 
 Both interfaces are maintained in the [ipfs-service-provider](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider) repository, and are not directly maintained in this ipfs-p2wdb-service repository. Instead, changes around the interfaces are either pushed or pulled from the upstream ipfs-service-provider repository.
 

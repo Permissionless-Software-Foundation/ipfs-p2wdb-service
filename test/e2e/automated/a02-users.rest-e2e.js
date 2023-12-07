@@ -1,10 +1,13 @@
-import testUtils from '../../utils/test-utils.js'
+
+// Public npm libraries
 import { assert } from 'chai'
-import config from '../../../config/index.js'
 import axios from 'axios'
 import sinon from 'sinon'
 import util from 'util'
 
+// Local libraries
+import testUtils from '../../utils/test-utils.js'
+import config from '../../../config/index.js'
 import UserController from '../../../src/controllers/rest-api/users/controller.js'
 import Adapters from '../../../src/adapters/index.js'
 import UseCases from '../../../src/use-cases/index.js'
@@ -32,7 +35,7 @@ describe('Users', () => {
     context.id2 = testUser.user._id
     // Get the JWT used to log in as the admin 'system' user.
     const adminJWT = await testUtils.getAdminJWT()
-    // console.log(`adminJWT: ${admi  nJWT}`)
+    console.log(`adminJWT: ${adminJWT}`)
     context.adminJWT = adminJWT
     // const admin = await testUtils.loginAdminUser()
     // context.adminJWT = admin.token
@@ -56,9 +59,6 @@ describe('Users', () => {
           }
         }
         await axios(options)
-        /*      console.log(
-                  `result stringified: ${JSON.stringify(result.data, null, 2)}`
-                ) */
         assert(false, 'Unexpected result')
       } catch (err) {
         assert(err.response.status === 422, 'Error code 422 expected.')

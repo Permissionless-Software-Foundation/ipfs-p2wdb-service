@@ -1,5 +1,13 @@
+/*
+  REST API library for auth route.
+*/
+
+// Public npm libraries.
 import Router from 'koa-router'
+
+// Local libraries.
 import AuthRESTController from './controller.js'
+
 class AuthRouter {
   constructor (localConfig = {}) {
     // Dependency Injection.

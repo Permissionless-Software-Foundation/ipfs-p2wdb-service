@@ -2,24 +2,28 @@
   Unit tests for the IPFS Adapter.
 */
 
-// Global npm library
+// Global npm libraries
 import { assert } from 'chai'
 import sinon from 'sinon'
 
-// Local library
+// Local libraries
 import IPFSCoordAdapter from '../../../src/adapters/ipfs/ipfs-coord.js'
-import IPFSMock from '../mocks/ipfs-mock.js'
+// import create from '../mocks/ipfs-mock.js'
+import ipfs from '../mocks/helia-mock.js'
+import { MockBchWallet } from '../mocks/adapters/wallet.js'
 import IPFSCoordMock from '../mocks/ipfs-coord-mock.js'
 import config from '../../../config/index.js'
 
 describe('#ipfs-coord', () => {
   let uut
   let sandbox
+  const wallet = new MockBchWallet()
+  const bchjs = wallet.bchjs
 
   beforeEach(() => {
-    const ipfs = IPFSMock.create()
-    const bchjs = {}
+    // const ipfs = create()
     uut = new IPFSCoordAdapter({ ipfs, bchjs })
+
     sandbox = sinon.createSandbox()
   })
 
@@ -37,7 +41,7 @@ describe('#ipfs-coord', () => {
 
     it('should throw an error if bchjs instance is not included', () => {
       try {
-        const ipfs = IPFSMock.create()
+        // const ipfs = create()
         uut = new IPFSCoordAdapter({ ipfs })
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -48,11 +52,26 @@ describe('#ipfs-coord', () => {
     it('should get the public IP address if this node is a Circuit Relay', async () => {
       // Mock dependencies.
       uut.IpfsCoord = IPFSCoordMock
-      sandbox.stub(uut.publicIp, 'v4').returns('123')
+      sandbox.stub(uut.publicIp, 'v4').resolves('123')
+
       // Force Circuit Relay
       uut.config.isCircuitRelay = true
       const result = await uut.start()
       // console.log('result: ', result)
+      assert.equal(result, true)
+    })
+
+    it('should exit quietly if this node is a Circuit Relay and there is an issue getting the IP address', async () => {
+      // Mock dependencies.
+      uut.IpfsCoord = IPFSCoordMock
+      sandbox.stub(uut.publicIp, 'v4').rejects(new Error('test error'))
+
+      // Force Circuit Relay
+      uut.config.isCircuitRelay = true
+
+      const result = await uut.start()
+      // console.log('result: ', result)
+
       assert.equal(result, true)
     })
 

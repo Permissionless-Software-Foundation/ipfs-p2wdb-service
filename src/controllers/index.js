@@ -1,23 +1,35 @@
+
+// Public npm libraries.
+
+// Local libraries
 import Adapters from '../adapters/index.js'
-import validationEvent from '../adapters/orbit/validation-event.js'
-import UseCases from '../use-cases/index.js'
 import JSONRPC from './json-rpc/index.js'
+import UseCases from '../use-cases/index.js'
 import RESTControllers from './rest-api/index.js'
 import TimerControllers from './timer-controllers.js'
-let _this
+import config from '../../config/index.js'
+import validationEvent from '../adapters/orbit/validation-event.js'
+
 class Controllers {
   constructor (localConfig = {}) {
     // Encapsulate dependencies
     this.adapters = new Adapters()
     this.useCases = new UseCases({ adapters: this.adapters })
-    this.timerControllers = new TimerControllers({
-      adapters: this.adapters,
-      useCases: this.useCases
-    })
+    this.timerControllers = new TimerControllers({ adapters: this.adapters, useCases: this.useCases })
+    this.config = config
+
+    // Bind 'this' object to each subfunction
+    this.initAdapters = this.initAdapters.bind(this)
+    this.initUseCases = this.initUseCases.bind(this)
+    this.attachRESTControllers = this.attachRESTControllers.bind(this)
+    this.attachControllers = this.attachControllers.bind(this)
+    this.attachRPCControllers = this.attachRPCControllers.bind(this)
+    this.peerEntryAddedEventHandler = this.peerEntryAddedEventHandler.bind(this)
+
     // Attach the event handler to the event.
     // This event is responsible for adding validated entries to MongoDB.
-    validationEvent.on('ValidationSucceeded', this.validationSucceededEventHandler)
-    _this = this
+    // This must come *after* the call to bind().
+    validationEvent.on('PeerEntryAdded', this.peerEntryAddedEventHandler)
   }
 
   // Spin up any adapter libraries that have async startup needs.
@@ -43,9 +55,14 @@ class Controllers {
 
   // Attach any other controllers other than REST API controllers.
   async attachControllers (app) {
-    // RPC controllers
+    // Wait for any startup processes to complete for the Adapters libraries.
+    // await this.adapters.start()
+
+    // Attach JSON RPC controllers
     this.attachRPCControllers()
-    // Add any additional controllers here.
+
+    // Attach and start the timer controllers
+    this.timerControllers.startTimers()
   }
 
   // Add the JSON RPC router to the ipfs-coord adapter.
@@ -59,14 +76,15 @@ class Controllers {
   }
 
   // Event handler that is triggered when a new entry is added to the P2WDB
-  // OrbitDB.
-  async validationSucceededEventHandler (data) {
+  // OrbitDB by a peer node.
+  async peerEntryAddedEventHandler (data) {
     try {
       // console.log(
       //   'ValidationSucceeded event triggering addPeerEntry() with this data: ',
       //   data
       // )
-      await _this.useCases.entry.addEntry.addPeerEntry(data)
+
+      await this.useCases.entry.addEntry.addPeerEntry(data)
     } catch (err) {
       console.error('Error trying to process peer data with addPeerEntry(): ', err)
       // Do not throw an error. This is a top-level function.

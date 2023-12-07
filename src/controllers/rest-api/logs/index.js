@@ -1,5 +1,13 @@
+/*
+  REST API library for /logs route.
+*/
+
+// Public npm libraries.
 import Router from 'koa-router'
+
+// Local libraries.
 import LogsRESTControllerLib from './controller.js'
+
 class LogsRouter {
   constructor (localConfig = {}) {
     // Dependency Injection.

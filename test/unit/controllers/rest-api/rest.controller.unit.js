@@ -1,13 +1,17 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import RESTControllers from '../../../../src/controllers/rest-api/index.js'
-import adapters from '../../mocks/adapters/index.js'
-import UseCasesMock from '../../mocks/use-cases/index.js'
+
 /*
   Unit tests for the REST API controllers/rest-api/index.js library.
 */
 // Public npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+// Local libraries
+import RESTControllers from '../../../../src/controllers/rest-api/index.js'
+// const mockContext = require('../../../unit/mocks/ctx-mock').context
+import adapters from '../../mocks/adapters/index.js'
+import UseCasesMock from '../../mocks/use-cases/index.js'
+
 describe('#RESTControllers', () => {
   let uut
   let sandbox

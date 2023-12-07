@@ -1,7 +1,8 @@
-// Global npm libraries
+
+// Public npm libraries.
 import Router from 'koa-router'
 
-// Local libraries
+// Local libraries.
 import ContactRESTControllerLib from './controller.js'
 
 class ContactRouter {
@@ -46,17 +47,5 @@ class ContactRouter {
     app.use(this.router.routes())
     app.use(this.router.allowedMethods())
   }
-
-  // Temporary prototype code to test an idea around bandwidth limiting IPFS peers.
-  // getAllowList (ctx) {
-  //   try {
-  //     const allowList = this.adapters.ipfs.ipfsCoord.adapters.ipfs.ipfs.config.get('Swarm.ResourceMgr.Allowlist')
-  //     console.log('allowList: ', allowList)
-
-  //     ctx.body = allowList
-  //   } catch (err) {
-  //     ctx.throw(422, err.message)
-  //   }
-  // }
 }
 export default ContactRouter

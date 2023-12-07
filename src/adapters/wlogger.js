@@ -4,8 +4,11 @@
   logging library.
 */
 
+// Global npm libraries
 import winston from 'winston'
 import 'winston-daily-rotate-file'
+
+// Local libraries
 import config from '../../config/index.js'
 
 // Hack to get __dirname back.
@@ -57,9 +60,6 @@ const logger = new Wlogger()
 // Allow the logger to write to the console.
 logger.outputToConsole()
 const wlogger = logger.wlogger
-export { wlogger }
-export { Wlogger }
-export default {
-  wlogger,
-  Wlogger
-}
+
+export { wlogger as default, Wlogger }
+// export default wlogger

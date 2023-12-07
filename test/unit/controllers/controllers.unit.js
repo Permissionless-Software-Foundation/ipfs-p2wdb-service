@@ -1,19 +1,25 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import Controllers from '../../../src/controllers/index.js'
 /*
   Unit tests for controllers index.js file.
 */
+
 // Public npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+// Local libraries
+import Controllers from '../../../src/controllers/index.js'
+
 describe('#Controllers', () => {
   let uut
   let sandbox
+
   beforeEach(() => {
     sandbox = sinon.createSandbox()
     uut = new Controllers()
   })
+
   afterEach(() => sandbox.restore())
+
   describe('#attachControllers', () => {
     it('should attach the controllers', async () => {
       // mock IPFS
@@ -21,11 +27,16 @@ describe('#Controllers', () => {
       uut.adapters.ipfs.ipfsCoordAdapter = {
         attachRPCRouter: () => { }
       }
+
+      // Mock the timer controllers
+      sandbox.stub(uut.timerControllers, 'startTimers').returns()
+
       const app = {
         use: () => { }
       }
       await uut.attachControllers(app)
     })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
@@ -41,18 +52,20 @@ describe('#Controllers', () => {
       }
     })
   })
-  describe('#validationSucceededEventHandler', () => {
+
+  describe('#peerEntryAddedEventHandler', () => {
     it('should pass data to the Entry Use-Case', async () => {
       // Mock dependencies
       sandbox.stub(uut.useCases.entry.addEntry, 'addPeerEntry').resolves({})
-      await uut.validationSucceededEventHandler()
+      await uut.peerEntryAddedEventHandler()
     })
+
     it('should catch and handle an error', async () => {
       // Force an error
       sandbox
         .stub(uut.useCases.entry.addEntry, 'addPeerEntry')
         .rejects(new Error('test error'))
-      await uut.validationSucceededEventHandler()
+      await uut.peerEntryAddedEventHandler()
       assert.isOk('Not throwing an error is a success')
     })
   })

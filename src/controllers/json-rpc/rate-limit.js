@@ -1,10 +1,11 @@
-import koa2Ratelimit from 'koa2-ratelimit'
+// import koa2Ratelimit from 'koa2-ratelimit'
 /*
   Rate limit
 */
 /* eslint no-useless-catch: 0 */
 // Local libraries
-const RateLimitLib = koa2Ratelimit.RateLimit
+import { RateLimit as RateLimitLib } from 'koa2-ratelimit'
+
 class RateLimit {
   constructor (options) {
     // Encapsulate dependencies

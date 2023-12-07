@@ -52,7 +52,7 @@ class LogsApi {
         }
       }
     } catch (err) {
-      console.error('Error in lib/logapi.js/getLogs()')
+      console.error('Error in lib/logapi.js/getLogs(): ', err)
       throw err
     }
   }

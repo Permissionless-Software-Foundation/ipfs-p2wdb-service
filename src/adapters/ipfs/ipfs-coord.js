@@ -1,12 +1,17 @@
-// Public npm libraries
-import IpfsCoord from 'ipfs-coord-esm'
-import publicIp from 'public-ip'
+/*
+  Clean Architecture Adapter for ipfs-coord.
+  This library deals with ipfs-coord library so that the apps business logic
+  doesn't need to have any specific knowledge of the library.
+*/
+
+// Global npm libraries
+import IpfsCoord from 'helia-coord'
 import SlpWallet from 'minimal-slp-wallet'
+import publicIp from 'public-ip'
 
 // Local libraries
 import config from '../../../config/index.js'
 
-// const JSONRPC = require('../../controllers/json-rpc/')
 let _this
 
 class IpfsCoordAdapter {
@@ -24,6 +29,8 @@ class IpfsCoordAdapter {
     // Encapsulate dependencies
     this.IpfsCoord = IpfsCoord
     this.ipfsCoord = {}
+    // this.bchjs = new BCHJS()
+    this.wallet = new SlpWallet()
     this.config = config
     this.publicIp = publicIp
     this.wallet = new SlpWallet()
@@ -36,10 +43,15 @@ class IpfsCoordAdapter {
 
   async start () {
     const circuitRelayInfo = {}
+
+    // Wait for the BCH wallet to create the wallet.
+    await this.wallet.walletInfoPromise
+
     // If configured as a Circuit Relay, get the public IP addresses for this node.
     if (this.config.isCircuitRelay) {
       try {
         const ip4 = await this.publicIp.v4()
+        console.log(`Setting CIRCUIT RELAY ip4 address: ${ip4}, and port ${this.config.ipfsTcpPort}`)
         // const ip6 = await publicIp.v6()
         circuitRelayInfo.ip4 = ip4
         circuitRelayInfo.tcpPort = this.config.ipfsTcpPort
@@ -50,26 +62,28 @@ class IpfsCoordAdapter {
       }
     }
 
-    await this.wallet.walletInfoPromise
+    const nullLog = () => {}
 
     const ipfsCoordOptions = {
       ipfs: this.ipfs,
       type: 'node.js',
       // type: 'browser',
-      // bchjs: this.bchjs,
       wallet: this.wallet,
-      privateLog: console.log,
+      // privateLog: console.log, // Default to console.log
+      privateLog: nullLog,
       isCircuitRelay: this.config.isCircuitRelay,
       circuitRelayInfo,
       apiInfo: this.config.apiInfo,
       announceJsonLd: this.config.announceJsonLd,
-      debugLevel: this.config.debugLevel
+      debugLevel: this.config.debugLevel,
+      v1Relays: this.config.v1Relays,
+      tcpPort: this.config.ipfsTcpPort
     }
 
     // Production env uses external go-ipfs node.
-    if (this.config.isProduction) {
-      ipfsCoordOptions.nodeType = 'external'
-    }
+    // if (this.config.isProduction) {
+    //   ipfsCoordOptions.nodeType = 'external'
+    // }
 
     this.ipfsCoord = new this.IpfsCoord(ipfsCoordOptions)
     // console.log('ipfsCoord: ', this.ipfsCoord)
@@ -97,7 +111,9 @@ class IpfsCoordAdapter {
 
   // Subscribe to the chat pubsub channel
   async subscribeToChat () {
-    await this.ipfsCoord.adapters.pubsub.subscribeToPubsubChannel(this.config.chatPubSubChan, console.log, this.ipfsCoord.thisNode)
+    const nullHandler = () => {}
+    await this.ipfsCoord.adapters.pubsub.subscribeToPubsubChannel(this.config.chatPubSubChan, nullHandler, this.ipfsCoord.thisNode)
   }
 }
+
 export default IpfsCoordAdapter

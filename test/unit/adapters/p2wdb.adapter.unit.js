@@ -1,15 +1,21 @@
+
+// Global npm libraries
 import sinon from 'sinon'
-import chai from 'chai'
+import { assert } from 'chai'
 import mongoose from 'mongoose'
+
+// Local libraries
 import config from '../../../config/index.js'
 import P2WDB from '../../../src/adapters/p2wdb/index.js'
 import KeyValue from '../../../src/adapters/localdb/models/key-value.js'
 import { OrbitDBAdapterMock as OrbitDBAdapterMock$0 } from '../mocks/orbitdb-mock.js'
 import WritePrice from '../../../src/adapters/write-price.js'
-const assert = chai.assert
+
 const OrbitDBAdapterMock = { OrbitDBAdapterMock: OrbitDBAdapterMock$0 }.OrbitDBAdapterMock
+
 let uut
 let sandbox
+
 describe('#p2wdb', () => {
   before(async () => {
     // Connect to the Mongo Database.
@@ -29,16 +35,20 @@ describe('#p2wdb', () => {
     })
     await entry.save()
   })
+
   beforeEach(() => {
     const writePrice = new WritePrice()
     uut = new P2WDB({ writePrice })
     uut.orbit = new OrbitDBAdapterMock()
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => sandbox.restore())
+
   after(() => {
     mongoose.connection.close()
   })
+
   describe('#constructor', () => {
     it('should throw an error if instance of WriteCost adapter is not provided', () => {
       try {
@@ -50,6 +60,7 @@ describe('#p2wdb', () => {
       }
     })
   })
+
   describe('#start', () => {
     it('should throw an error if IPFS instance is not passed.', async () => {
       try {
@@ -59,22 +70,25 @@ describe('#p2wdb', () => {
         assert.include(err.message, 'Must past instance of IPFS when instantiating P2WDB adapter.')
       }
     })
-    it('should throw an error if bch-js instance is not passed.', async () => {
+
+    it('should throw an error if wallet adapter instance is not passed.', async () => {
       try {
         await uut.start({ ipfs: {} })
         assert.fail('unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Must past instance of bchjs when instantiating P2WDB adapter.')
+        assert.include(err.message, 'Must past instance of wallet library when instantiating P2WDB adapter.')
       }
     })
+
     it('should return true after the database has started', async () => {
       // sandbox.stub(uut.ipfsAdapters, 'start').resolves(true)
       // mocking orbit db adapter
       uut.OribitAdapter = OrbitDBAdapterMock
-      const result = await uut.start({ ipfs: {}, bchjs: {} })
+      const result = await uut.start({ ipfs: {}, wallet: { bchWallet: { bchjs: {} } } })
       assert.isTrue(result)
       assert.isTrue(uut.isReady)
     })
+
     it('should catch and throw errors', async () => {
       try {
         // sandbox.stub(uut.ipfsAdapters, 'start').throws(new Error('test error'))
@@ -83,7 +97,8 @@ describe('#p2wdb', () => {
             throw new Error('test error')
           }
         }
-        await uut.start({ ipfs: {}, bchjs: {} })
+        await uut.start({ ipfs: {}, wallet: { bchWallet: { bchjs: {} } } })
+
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')

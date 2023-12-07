@@ -2,6 +2,8 @@
   Utility app to wipe the test database.
 */
 
+'use strict'
+
 import mongoose from 'mongoose'
 import config from '../config/index.js'
 

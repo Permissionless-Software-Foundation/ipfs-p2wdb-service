@@ -21,6 +21,7 @@ class OrbitDBMock {
         return 'load';
     }
 }
+
 class OrbitDBAdapterMock {
     constructor() {
         this.db = {
@@ -39,8 +40,11 @@ class OrbitDBAdapterMock {
         return { key: 'value' };
     }
 }
+
 export { OrbitDBMock };
+
 export { OrbitDBAdapterMock };
+
 export default {
     OrbitDBMock,
     OrbitDBAdapterMock

@@ -1,11 +1,14 @@
-import chai from 'chai'
-import sinon from 'sinon'
-import Server from '../../../bin/server.js'
+
 /*
   Unit tests for the bin/server.js file
 */
 // Public npm libraries
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+// Local libraries
+import Server from '../../../bin/server.js'
+
 describe('#server', () => {
   let uut, sandbox
   beforeEach(() => {

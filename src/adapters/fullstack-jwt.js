@@ -1,5 +1,14 @@
+/*
+  A library of utility functions for working with FullStack.cash JWT tokens.
+
+  Feel free to copy this library into your own app, as well as the unit tests
+  for this file.
+*/
+
 import JwtLib from 'jwt-bch-lib'
+
 import BCHJS from '@psf/bch-js'
+
 class FullStackJWT {
   constructor (localConfig = {}) {
     // Input Validation
@@ -41,6 +50,7 @@ class FullStackJWT {
         throw new Error('This account does not have a JWT')
       }
       console.log(`Retrieved JWT token: ${this.apiToken}\n`)
+
       // Ensure the JWT token is valid to use.
       const isValid = await this.jwtLib.validateApiToken()
       // Get a new token with the same API level, if the existing token is not
@@ -51,6 +61,7 @@ class FullStackJWT {
       } else {
         console.log('JWT token is valid.\n')
       }
+
       return this.apiToken
     } catch (err) {
       console.error(`Error trying to log into ${this.server} and retrieve JWT token.`)
