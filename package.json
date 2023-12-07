@@ -1,6 +1,6 @@
 {
   "name": "ipfs-p2wdb-service",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "P2WDB: pay-to-write database, a p2p censorship-resistent database.",
   "main": "index.js",
   "type": "module",
