@@ -10,6 +10,7 @@ import WebhookUseCases from './webhook/index.js'
 import UserUseCases from './user.js'
 import TicketUseCases from './ticket-use-cases.js'
 import config from '../../config/index.js'
+import PinUseCases from './pin.js'
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -23,6 +24,8 @@ class UseCases {
     this.webhook = new WebhookUseCases(localConfig)
     this.user = new UserUseCases(localConfig)
     this.ticket = new TicketUseCases(localConfig)
+    localConfig.entryUseCases = this.entry
+    this.pin = new PinUseCases(localConfig)
 
     // Encapsulate dependencies
     this.config = config

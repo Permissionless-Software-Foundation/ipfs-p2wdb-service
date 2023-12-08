@@ -20,6 +20,7 @@ import { webSockets } from '@libp2p/websockets'
 import publicIp from 'public-ip'
 import { multiaddr } from '@multiformats/multiaddr'
 import { webRTC } from '@libp2p/webrtc'
+import { unixfs } from '@helia/unixfs'
 
 // Local libraries
 import config from '../../../config/index.js'
@@ -175,6 +176,9 @@ class IpfsAdapter {
         datastore,
         libp2p
       })
+
+      const fs = unixfs(helia)
+      helia.fs = fs
 
       return helia
     } catch (err) {

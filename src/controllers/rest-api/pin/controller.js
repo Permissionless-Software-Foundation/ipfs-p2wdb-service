@@ -49,7 +49,7 @@ class PinRESTControllerLib {
      * to the IPFS node.
      *
      * @apiExample Example usage:
-     * curl -H "Content-Type: application/json" -X POST -d '{ "zcid": "zdpuB31nSGKrbA7jDvXSPVriYA8paG9Xf9BGEmkWP4omzSMK3" }' localhost:5010/pin/json
+     * curl -H "Content-Type: application/json" -X POST -d '{ "zcid": "zdpuB31nSGKrbA7jDvXSPVriYA8paG9Xf9BGEmkWP4omzSMK3" }' localhost:5667/pin/json
      *
      * @apiSuccessExample {json} Success-Response:
      *     HTTP/1.1 200 OK

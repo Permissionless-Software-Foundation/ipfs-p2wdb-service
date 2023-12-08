@@ -14,6 +14,7 @@ import LogsRESTController from './logs/index.js'
 import EntryRESTController from './entry/index.js'
 import WebhookRESTController from './webhook/index.js'
 import IpfsRESTController from './ipfs/index.js'
+import PinRESTController from './pin/index.js'
 
 class RESTControllers {
   constructor (localConfig = {}) {
@@ -34,21 +35,27 @@ class RESTControllers {
       adapters: this.adapters,
       useCases: this.useCases
     }
+
     // Attach the REST API Controllers associated with the /auth route
     const authRESTController = new AuthRESTController(dependencies)
     authRESTController.attach(app)
+
     // Attach the REST API Controllers associated with the /user route
     const userRouter = new UserRouter(dependencies)
     userRouter.attach(app)
+
     // Attach the REST API Controllers associated with the /contact route
     const contactRESTController = new ContactRESTController(dependencies)
     contactRESTController.attach(app)
+
     // Attach the REST API Controllers associated with the /logs route
     const logsRESTController = new LogsRESTController(dependencies)
     logsRESTController.attach(app)
+
     // Attach the REST API Controllers associated with the /entry route
     const entryRESTController = new EntryRESTController(dependencies)
     entryRESTController.attach(app)
+
     // Attach the REST API Controllers associated with the /webhook route
     const webhookRESTController = new WebhookRESTController(dependencies)
     webhookRESTController.attach(app)
@@ -56,6 +63,10 @@ class RESTControllers {
     // Attach the REST API Controllers associated with the /ipfs route
     const ipfsRESTController = new IpfsRESTController(dependencies)
     ipfsRESTController.attach(app)
+
+    // Attach the REST API Controllers associated with the /pin route
+    const pinRESTController = new PinRESTController(dependencies)
+    pinRESTController.attach(app)
   }
 }
 
