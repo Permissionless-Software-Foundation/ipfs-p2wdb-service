@@ -37,6 +37,9 @@ class PinUseCases {
 
     // Bind 'this' object to functions that lose context.
     this.getJsonFromP2wdb = this.getJsonFromP2wdb.bind(this)
+    this.pinCid = this.pinCid.bind(this)
+    this.pinJson = this.pinJson.bind(this)
+    this.validateCid = this.validateCid.bind(this)
   }
 
   // Given a CID, pin it with the IPFS node attached to this app.
@@ -51,24 +54,29 @@ class PinUseCases {
 
       // Get the file so that we have it locally.
       console.log(`Getting file ${cid}`)
-      const fs = this.adapters.ipfs.ipfs.fs
-      const test = fs.cat(cid)
-      console.log('test: ', test)
-      for await (const buf of fs.cat(cid)) {
-        // Make the linter happy.
-        const fakeFunc = () => {}
-        fakeFunc(buf)
-      }
-      // await this.adapters.ipfs.ipfs.get(cid)
-      console.log('File retrieved.')
 
       const cidClass = CID.parse(cid)
       console.log('cidClass: ', cidClass)
 
+      try {
+        await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
+      } catch (err) {
+        console.error(`\nError while trying to retrieve file with CID ${cid}. Skipping.`)
+        console.error(err)
+        console.error(' ')
+        return false
+      }
+
+      // await this.adapters.ipfs.ipfs.get(cid)
+      console.log('File retrieved.')
+
       // Pin the file (assume valid)
-      // await this.adapters.ipfs.ipfs.pin.add(cid)
-      await this.adapters.ipfs.ipfs.pins.add(cidClass)
-      console.log(`Pinned file ${cid}`)
+      try {
+        await this.adapters.ipfs.ipfs.pins.add(cidClass)
+        console.log(`Pinned file ${cid}`)
+      } catch (err) {
+        console.log(`Unable to pin CID ${cid}: ${err.message}`)
+      }
 
       // Verify the CID meets requirements for pinning.
       const isValid = await this.validateCid(cidClass)

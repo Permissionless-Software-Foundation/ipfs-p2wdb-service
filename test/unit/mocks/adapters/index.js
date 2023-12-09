@@ -19,6 +19,9 @@ class IpfsAdapter {
               addFile: async () => {},
               stat: async () => {},
               cat: () => asyncGenerator()
+            },
+            blockstore: {
+              get: async () => {}
             }
         };
     }
