@@ -82,6 +82,7 @@ class PinUseCases {
       // Get the entry from the P2WDB. Automatically retry if it fails.
       // const data = await this.retryQueue.addToQueue(this.getJsonFromP2wdb, { zcid })
       const data = await this.getJsonFromP2wdb({ zcid })
+      console.log('data: ', data)
 
       // Convert the data from a string to JSON
       let entry2

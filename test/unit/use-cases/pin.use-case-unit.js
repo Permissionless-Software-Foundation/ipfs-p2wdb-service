@@ -8,8 +8,8 @@ import sinon from 'sinon'
 
 // Local support libraries
 import PinLib from '../../../src/use-cases/pin.js'
-
 import adapters from '../mocks/adapters/index.js'
+import EntryUseCases from '../../../src/use-cases/entry/index.js'
 
 describe('#pin-use-case', () => {
   let uut
@@ -24,7 +24,9 @@ describe('#pin-use-case', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox()
 
-    uut = new PinLib({ adapters })
+    const entryUseCases = new EntryUseCases({ adapters })
+
+    uut = new PinLib({ adapters, entryUseCases })
   })
 
   afterEach(() => sandbox.restore())
@@ -149,8 +151,9 @@ describe('#pin-use-case', () => {
   describe('#pinJson', () => {
     it('should pin JSON stored in the P2WDB and return the CID', async () => {
       // Mock dependencies and force desired code path
-      sandbox.stub(uut.retryQueue, 'addToQueue').resolves('{"data": {"foo": "bar"}}')
-      sandbox.stub(uut.adapters.ipfs.ipfs, 'add').resolves({ cid: 'fake-cid' })
+      sandbox.stub(uut, 'getJsonFromP2wdb').resolves('{"data": {"foo": "bar"}}')
+      sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'addFile').resolves('fake-cid')
+      sandbox.stub(uut.adapters.ipfs.ipfs.pins, 'add').resolves({})
 
       const zcid = 'fake-zcid'
 
@@ -162,7 +165,7 @@ describe('#pin-use-case', () => {
     it('should catch and throw errors', async () => {
       try {
         // Mock dependencies and force desired code path
-        sandbox.stub(uut.retryQueue, 'addToQueue').rejects(new Error('test error'))
+        sandbox.stub(uut, 'getJsonFromP2wdb').rejects(new Error('test error'))
 
         await uut.pinJson()
 
@@ -175,7 +178,7 @@ describe('#pin-use-case', () => {
     it('should throw error if the P2WDB entry can be parsed into JSON', async () => {
       try {
         // Mock dependencies and force desired code path
-        sandbox.stub(uut.retryQueue, 'addToQueue').resolves('a string that does not parse')
+        sandbox.stub(uut, 'getJsonFromP2wdb').resolves('a string that does not parse')
 
         const zcid = 'fake-zcid'
 

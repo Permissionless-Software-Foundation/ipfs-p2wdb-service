@@ -5,6 +5,12 @@ class IpfsAdapter {
         this.ipfs = {
             files: {
                 stat: () => { }
+            },
+            pins: {
+              add: async () => {}
+            },
+            fs: {
+              addFile: async () => {}
             }
         };
     }
@@ -15,7 +21,7 @@ class IpfsCoordAdapter {
     this.ipfsCoord = {
       adapters: {
         ipfs: {
-          connectToPeer: async () => {}
+          connectToPeer: async () => {},
         }
       },
       useCases: {
