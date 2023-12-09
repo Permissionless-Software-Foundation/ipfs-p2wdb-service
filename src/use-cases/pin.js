@@ -7,6 +7,7 @@
 // Global npm libraries
 import axios from 'axios'
 import RetryQueue from '@chris.troutner/retry-queue'
+import { CID } from 'multiformats'
 
 // Local libraries
 import config from '../../config/index.js'
@@ -50,19 +51,29 @@ class PinUseCases {
 
       // Get the file so that we have it locally.
       console.log(`Getting file ${cid}`)
-      await this.adapters.ipfs.ipfs.get(cid)
+      const fs = this.adapters.ipfs.ipfs.fs
+      for await (const buf of fs.cat(cid)) {
+        // Make the linter happy.
+        const fakeFunc = () => {}
+        fakeFunc(buf)
+      }
+      // await this.adapters.ipfs.ipfs.get(cid)
       console.log('File retrieved.')
 
+      const cidClass = CID.parse(cid)
+      console.log('cidClass: ', cidClass)
+
       // Pin the file (assume valid)
-      await this.adapters.ipfs.ipfs.pin.add(cid)
+      // await this.adapters.ipfs.ipfs.pin.add(cid)
+      await this.adapters.ipfs.ipfs.pins.add(cidClass)
       console.log(`Pinned file ${cid}`)
 
       // Verify the CID meets requirements for pinning.
-      const isValid = await this.validateCid(cid)
+      const isValid = await this.validateCid(cidClass)
       if (!isValid) {
         // If the file does meet the size requirements, then unpin it.
         console.log(`File ${cid} is bigger than a megabyte. Unpinning file.`)
-        await this.adapters.ipfs.ipfs.pin.rm(cid)
+        await this.adapters.ipfs.ipfs.pins.rm(cidClass)
         return false
       }
 
@@ -156,7 +167,9 @@ class PinUseCases {
       const options = {
         size: true
       }
-      const fileStats = await this.adapters.ipfs.ipfs.files.stat(`/ipfs/${cid}`, options)
+      const fs = this.adapters.ipfs.ipfs.fs
+      // const fileStats = await this.adapters.ipfs.ipfs.files.stat(`/ipfs/${cid}`, options)
+      const fileStats = await fs.stat(cid, options)
       console.log('fileStats: ', fileStats)
 
       /*
@@ -170,7 +183,7 @@ class PinUseCases {
         }
       */
 
-      const fileSize = fileStats.cumulativeSize
+      const fileSize = fileStats.fileSize
       console.log(`CID is ${fileSize} bytes is size.`)
 
       const oneMegabyte = 1000000

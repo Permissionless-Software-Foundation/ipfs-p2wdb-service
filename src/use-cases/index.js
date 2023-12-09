@@ -41,6 +41,9 @@ class UseCases {
         this.ticket.start()
       }
 
+      // Inject the pin use cases into the webhook adapter
+      this.adapters.webhook.injectUseCases({ pinUseCases: this.pin })
+
       console.log('Async Use Cases have been started.')
 
       return true
