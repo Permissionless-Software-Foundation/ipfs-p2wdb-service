@@ -139,6 +139,7 @@ const config = {
   ],
 
   // Enable or disable the pinning service with an environment variable.
-  pinEnabled: true
+  pinEnabled: true,
+  maxPinSize: 1000000 // (1MB) Max pinning size in bytes
 }
 export default config

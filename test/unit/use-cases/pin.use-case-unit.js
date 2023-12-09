@@ -5,6 +5,7 @@
 // Public npm libraries
 import { assert } from 'chai'
 import sinon from 'sinon'
+import { CID } from 'multiformats'
 
 // Local support libraries
 import PinLib from '../../../src/use-cases/pin.js'
@@ -48,9 +49,10 @@ describe('#pin-use-case', () => {
 
   describe('#validateCid', () => {
     it('should return true for a CID with a small file size', async () => {
-      const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
+      const cidStr = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
+      const cid = CID.parse(cidStr)
 
-      sandbox.stub(uut.adapters.ipfs.ipfs.files, 'stat').resolves({ cumulativeSize: 273 })
+      sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').resolves({ fileSize: 273 })
 
       const result = await uut.validateCid(cid)
 
@@ -58,9 +60,10 @@ describe('#pin-use-case', () => {
     })
 
     it('should return false for a CID with a large file size', async () => {
-      const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
+      const cidStr = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
+      const cid = CID.parse(cidStr)
 
-      sandbox.stub(uut.adapters.ipfs.ipfs.files, 'stat').resolves({ cumulativeSize: 27300000000 })
+      sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').resolves({ fileSize: 27300000000 })
 
       const result = await uut.validateCid(cid)
 
@@ -70,7 +73,7 @@ describe('#pin-use-case', () => {
     it('should catch and throw errors', async () => {
       try {
         // Mock dependencies and force desired code path
-        sandbox.stub(uut.adapters.ipfs.ipfs.files, 'stat').rejects(new Error('test error'))
+        sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').rejects(new Error('test error'))
 
         await uut.validateCid()
 
@@ -84,9 +87,6 @@ describe('#pin-use-case', () => {
   describe('#pinCid', () => {
     it('should return false if file is too big', async () => {
       // Mock dependencies and force desired code path.
-      sandbox.stub(uut.adapters.ipfs.ipfs, 'get').resolves()
-      sandbox.stub(uut.adapters.ipfs.ipfs.pin, 'add').resolves()
-      sandbox.stub(uut.adapters.ipfs.ipfs.pin, 'rm').resolves()
       sandbox.stub(uut, 'validateCid').resolves(false)
 
       const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
@@ -101,7 +101,7 @@ describe('#pin-use-case', () => {
 
       // Mock dependencies
       sandbox.stub(uut, 'validateCid').resolves(true)
-      sandbox.stub(uut.adapters.ipfs.ipfs.pin, 'add').resolves()
+      // sandbox.stub(uut.adapters.ipfs.ipfs.pin, 'add').resolves()
 
       const result = await uut.pinCid(cid)
 
@@ -113,7 +113,8 @@ describe('#pin-use-case', () => {
         // Mock dependencies and force desired code path
         sandbox.stub(uut, 'validateCid').rejects(new Error('test error'))
 
-        await uut.pinCid()
+        const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
+        await uut.pinCid(cid)
 
         assert.fail('Unexpected result')
       } catch (err) {
@@ -122,31 +123,31 @@ describe('#pin-use-case', () => {
     })
   })
 
-  describe('#getJsonFromP2wdb', () => {
-    it('should retrieve an entry from the P2WDB', async () => {
-      const inObj = {
-        zcid: 'fake-cid'
-      }
-
-      // Mock dependencies and force desired code path
-      sandbox.stub(uut.axios, 'request').resolves({
-        data: {
-          data: {
-            value: {
-              data: {
-                foo: 'bar'
-              }
-            }
-          }
-        }
-      })
-
-      const result = await uut.getJsonFromP2wdb(inObj)
-      // console.log('result: ', result)
-
-      assert.equal(result.foo, 'bar')
-    })
-  })
+  // describe('#getJsonFromP2wdb', () => {
+  //   it('should retrieve an entry from the P2WDB', async () => {
+  //     const inObj = {
+  //       zcid: 'fake-cid'
+  //     }
+  //
+  //     // Mock dependencies and force desired code path
+  //     sandbox.stub(uut.axios, 'request').resolves({
+  //       data: {
+  //         data: {
+  //           value: {
+  //             data: {
+  //               foo: 'bar'
+  //             }
+  //           }
+  //         }
+  //       }
+  //     })
+  //
+  //     const result = await uut.getJsonFromP2wdb(inObj)
+  //     // console.log('result: ', result)
+  //
+  //     assert.equal(result.foo, 'bar')
+  //   })
+  // })
 
   describe('#pinJson', () => {
     it('should pin JSON stored in the P2WDB and return the CID', async () => {

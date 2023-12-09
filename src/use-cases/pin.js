@@ -52,6 +52,8 @@ class PinUseCases {
       // Get the file so that we have it locally.
       console.log(`Getting file ${cid}`)
       const fs = this.adapters.ipfs.ipfs.fs
+      const test = fs.cat(cid)
+      console.log('test: ', test)
       for await (const buf of fs.cat(cid)) {
         // Make the linter happy.
         const fakeFunc = () => {}
@@ -72,7 +74,7 @@ class PinUseCases {
       const isValid = await this.validateCid(cidClass)
       if (!isValid) {
         // If the file does meet the size requirements, then unpin it.
-        console.log(`File ${cid} is bigger than a megabyte. Unpinning file.`)
+        console.log(`File ${cid} is bigger than max size of ${this.config.maxPinSize} bytes. Unpinning file.`)
         await this.adapters.ipfs.ipfs.pins.rm(cidClass)
         return false
       }
@@ -170,25 +172,38 @@ class PinUseCases {
       const fs = this.adapters.ipfs.ipfs.fs
       // const fileStats = await this.adapters.ipfs.ipfs.files.stat(`/ipfs/${cid}`, options)
       const fileStats = await fs.stat(cid, options)
-      console.log('fileStats: ', fileStats)
+      // console.log('fileStats: ', fileStats)
 
       /*
-        fileStats:  {
-          size: 0,
-          cumulativeSize: 273,
-          blocks: 1,
-          type: 'directory',
-          withLocality: false,
-          cid: CID(bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta)
+      Example input:
+
+      fileStats:  {
+        cid: CID(bafybeifmevvmrtpqay6ejrabzw3frljfbbhetk5rfmdhp5eu2urrddvgte),
+        mode: 420,
+        mtime: undefined,
+        fileSize: 51526n,
+        dagSize: 51536n,
+        localFileSize: 51526n,
+        localDagSize: 51540n,
+        blocks: 1,
+        type: 'file',
+        unixfs: UnixFS {
+          type: 'file',
+          data: <Buffer ff d8 ff e0 00 10 4a 46 49 46 00 01 01 00 00 01 00 01 00 00 ff e2 01 d8 49 43 43 5f 50 52 4f 46 49 4c 45 00 01 01 00 00 01 c8 00 00 00 00 04 30 00 00 ... 51476 more bytes>,
+          blockSizes: [],
+          hashType: undefined,
+          fanout: undefined,
+          mtime: undefined,
+          _mode: 420,
+          _originalMode: 0
         }
+      }
       */
 
       const fileSize = fileStats.fileSize
       console.log(`CID is ${fileSize} bytes is size.`)
 
-      const oneMegabyte = 1000000
-
-      if (fileSize < oneMegabyte) {
+      if (fileSize < this.config.maxPinSize) {
         return true
       }
 

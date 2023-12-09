@@ -1,5 +1,10 @@
 import BchWallet from "minimal-slp-wallet";
 
+async function* asyncGenerator() {
+  yield 'Hello';
+  yield 'World';
+}
+
 class IpfsAdapter {
     constructor() {
         this.ipfs = {
@@ -7,10 +12,13 @@ class IpfsAdapter {
                 stat: () => { }
             },
             pins: {
-              add: async () => {}
+              add: async () => {},
+              rm: async () => {}
             },
             fs: {
-              addFile: async () => {}
+              addFile: async () => {},
+              stat: async () => {},
+              cat: () => asyncGenerator()
             }
         };
     }
@@ -69,7 +77,8 @@ const entry = {
 
 const webhook = {
     addWebhook: async () => { },
-    deleteWebhook: async () => { }
+    deleteWebhook: async () => { },
+    injectUseCases: () => {}
 };
 
 const localdb = {
