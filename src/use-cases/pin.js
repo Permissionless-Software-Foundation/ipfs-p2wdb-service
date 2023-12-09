@@ -83,7 +83,13 @@ class PinUseCases {
       if (!isValid) {
         // If the file does meet the size requirements, then unpin it.
         console.log(`File ${cid} is bigger than max size of ${this.config.maxPinSize} bytes. Unpinning file.`)
+
+        // Unpin the file.
         await this.adapters.ipfs.ipfs.pins.rm(cidClass)
+
+        // Delete the file from the blockstore
+        await this.adapters.ipfs.ipfs.blockstore.delete(cidClass)
+
         return false
       }
 

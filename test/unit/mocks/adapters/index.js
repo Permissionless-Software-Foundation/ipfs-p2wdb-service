@@ -21,7 +21,8 @@ class IpfsAdapter {
               cat: () => asyncGenerator()
             },
             blockstore: {
-              get: async () => {}
+              get: async () => {},
+              delete: async () => {}
             }
         };
     }
