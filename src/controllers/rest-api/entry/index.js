@@ -1,8 +1,14 @@
+
+// Global npm libraries
 import Router from 'koa-router'
 import cors from 'kcors'
+
+// Local libraries
 import EntryRESTControllerLib from './controller.js'
 // const Validators = require('../middleware/validators')
+
 let _this
+
 class EntryController {
   constructor (localConfig = {}) {
     // Dependency Injection.

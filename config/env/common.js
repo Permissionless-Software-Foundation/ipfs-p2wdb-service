@@ -136,6 +136,10 @@ const config = {
 
     // v2 Circuit Relay server (FullStack.cash)
     // '/ip4/78.46.129.7/tcp/4001/p2p/12D3KooWFQ11GQ5NubsJGhYZ4X3wrAGimLevxfm6HPExCrMYhpSL'
-  ]
+  ],
+
+  // Enable or disable the pinning service with an environment variable.
+  pinEnabled: process.env.ENABLE_PINNING ? !!process.env.ENABLE_PINNING : false,
+  maxPinSize: 1000000 // (1MB) Max pinning size in bytes
 }
 export default config

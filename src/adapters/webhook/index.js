@@ -5,6 +5,7 @@ import axios from 'axios'
 // Local libraries
 import validationEvent from '../orbit/validation-event.js'
 import WebhookModel from '../localdb/models/webhook.js'
+import config from '../../../config/index.js'
 
 let _this
 
@@ -16,6 +17,8 @@ class WebhookAdapter {
     // Encapsulate dependencies
     this.WebhookModel = WebhookModel
     this.axios = axios
+    this.config = config
+    this.pinUseCases = null // placeholder
 
     // Bind 'this' object to all subfunctions
     this.webhookEventHandler = this.webhookEventHandler.bind(this)
@@ -37,7 +40,7 @@ class WebhookAdapter {
       //   'TriggerWebhook event triggered from withing the webhook.js file. Data: ',
       //   eventData
       // )
-      console.log('TriggerWebhook event triggered from withing the webhook.js file.')
+      // console.log('TriggerWebhook event triggered from withing the webhook.js file.')
 
       // const { txid, signature, message, data, hash } = eventData
       const { data } = eventData
@@ -52,13 +55,20 @@ class WebhookAdapter {
         // Exit quietly. Entry does not comply with webhook protocol.
         return
       }
-      // console.log(`webhookEventHandler() jsonData: ${JSON.stringify(jsonData, null, 2)}`)
+      console.log(`webhookEventHandler() jsonData: ${JSON.stringify(jsonData, null, 2)}`)
 
       const appId = jsonData.appId
       console.log('webhookEventHandler() appId: ', appId)
 
       // Exit quietly if there is no appId in the JSON data.
       if (!appId) { return }
+
+      // For the 'p2wdb-pin-001' app ID, pin the data.
+      if (_this.config.pinEnabled) {
+        if (appId.includes('p2wdb-pin-001')) {
+          _this.pinUseCases.pinCid(jsonData.data.cid)
+        }
+      }
 
       // Get wildecard webhooks
       const wildcardMatches = await _this.WebhookModel.find({ appId: '*' })
@@ -131,6 +141,13 @@ class WebhookAdapter {
       console.error('Error in deleteWebhook: ', err)
       throw err
     }
+  }
+
+  // This funciton is called during startup to inject the pin use cases into
+  // this library.
+  injectUseCases (inObj = {}) {
+    // console.log('pin use-cases injected into webhook adapter.')
+    this.pinUseCases = inObj.pinUseCases
   }
 }
 export default WebhookAdapter

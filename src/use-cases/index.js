@@ -10,6 +10,7 @@ import WebhookUseCases from './webhook/index.js'
 import UserUseCases from './user.js'
 import TicketUseCases from './ticket-use-cases.js'
 import config from '../../config/index.js'
+import PinUseCases from './pin-use-cases.js'
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -23,6 +24,8 @@ class UseCases {
     this.webhook = new WebhookUseCases(localConfig)
     this.user = new UserUseCases(localConfig)
     this.ticket = new TicketUseCases(localConfig)
+    localConfig.entryUseCases = this.entry
+    this.pin = new PinUseCases(localConfig)
 
     // Encapsulate dependencies
     this.config = config
@@ -37,6 +40,9 @@ class UseCases {
         // want this to block startup of the server.
         this.ticket.start()
       }
+
+      // Inject the pin use cases into the webhook adapter
+      this.adapters.webhook.injectUseCases({ pinUseCases: this.pin })
 
       console.log('Async Use Cases have been started.')
 

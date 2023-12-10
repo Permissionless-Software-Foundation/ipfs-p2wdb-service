@@ -106,8 +106,12 @@ class P2WCanAppend {
       // A promise-based queue allows this to happen while respecting rate-limits
       // of the blockchain service provider.
       const inputObj = { txid, signature, message, entry }
-      validTx = await this.retryQueue.addToQueue(this.validateAgainstBlockchain, inputObj)
+      const result = await this.retryQueue.addToQueue(this.validateAgainstBlockchain, inputObj)
+      validTx = result.validTx
+      const tokensBurned = result.tokensBurned
       console.log(`Validation for TXID ${txid} completed. Result: ${validTx}`)
+
+      inputObj.tokensBurned = tokensBurned
 
       // If the entry has a hash value, then it is not an new entry, but an
       // entry that is being passed by a peer OrbitDB instance. Trigger an
@@ -176,7 +180,7 @@ class P2WCanAppend {
         throw new Error('message must be a string')
       }
 
-      let validTx = false
+      let validTx = false // default value
 
       let txData = await this.wallet.bchWallet.getTxData([txid])
       if (!txData) {
@@ -191,20 +195,21 @@ class P2WCanAppend {
       console.log('Signature is valid?: ', validSignature)
       if (!validSignature) {
         console.log(`Signature for TXID ${txData.txid} is not valid. Rejecting entry.`)
-        return false
+        return { validTx: false, tokensBurned: null }
       }
 
       // Validate the transaction matches the burning rules.
-      validTx = await this._validateTx(txData, entry)
+      const { isValid, tokensBurned } = await this._validateTx(txData, entry)
+      validTx = isValid
 
-      return validTx
+      return { validTx, tokensBurned }
     } catch (err) {
       console.error('Error in adapters/orbit/pay-to-write-access-controller.js/validateAgainstBlockchain(): ', err.message)
       // Add the invalid entry to the MongoDB if the error message matches
       // a known pattern.
       if (this.matchErrorMsg(err.message)) {
         await this.markInvalid(txid)
-        return false
+        return { validTx: false, tokensBurned: null }
       }
       // Throw an error if this is not an anticipated error message.
       throw err
@@ -255,7 +260,7 @@ class P2WCanAppend {
         throw new Error('txData must be an object containing tx data')
       }
 
-      let isValid = false
+      let isValid = false // default value
       const isValidSLPTx = txData.isValidSlp
 
       // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
@@ -264,7 +269,7 @@ class P2WCanAppend {
       // Return false if txid is not a valid SLP tx.
       if (!isValidSLPTx) {
         console.log(`TX ${txData.txid} is not a valid SLP transaction.`)
-        return false
+        return { isValid, tokensBurned: null }
       }
 
       // Return false if tokenId does not match.
@@ -275,7 +280,7 @@ class P2WCanAppend {
         if (!txData.tokenId) {
           throw new Error('Transaction data does not include a token ID.')
         }
-        return false
+        return { isValid, tokensBurned: null }
       }
 
       // Get the difference, or the amount of PSF tokens burned.
@@ -306,7 +311,8 @@ class P2WCanAppend {
         isValid = true
       }
 
-      return isValid
+      const tokensBurned = diff
+      return { isValid, tokensBurned }
     } catch (err) {
       console.error('Error in _validateTx(): ', err.message)
       if (!err.message) { console.log('Error: ', err) }
