@@ -58,8 +58,14 @@ class PinUseCases {
       const cidClass = CID.parse(cid)
       console.log('cidClass: ', cidClass)
 
+      let now = new Date()
+      console.log(`Starting download of ${cid} at ${now.toISOString()}`)
+
+      let fileSize = null
       try {
-        await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
+        const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
+        fileSize = file.length
+        console.log(`CID ${cid} is ${fileSize} bytes big.`)
       } catch (err) {
         console.error(`\nError while trying to retrieve file with CID ${cid}. Skipping.`)
         console.error(err)
@@ -67,8 +73,8 @@ class PinUseCases {
         return false
       }
 
-      // await this.adapters.ipfs.ipfs.get(cid)
-      console.log('File retrieved.')
+      now = new Date()
+      console.log(`Finished download of ${cid} at ${now.toISOString()}`)
 
       // Pin the file (assume valid)
       try {
@@ -79,7 +85,7 @@ class PinUseCases {
       }
 
       // Verify the CID meets requirements for pinning.
-      const isValid = await this.validateCid(cidClass)
+      const isValid = await this.validateCid({ cid: cidClass, fileSize })
       if (!isValid) {
         // If the file does meet the size requirements, then unpin it.
         console.log(`File ${cid} is bigger than max size of ${this.config.maxPinSize} bytes. Unpinning file.`)
@@ -174,58 +180,18 @@ class PinUseCases {
   }
 
   // Validate the CID by ensuring it meets the requirements for pinning.
-  async validateCid (cid) {
-    try {
-      const now = new Date()
-      console.log(`${now.toISOString()}`)
+  async validateCid (inObj = {}) {
+    const { cid, fileSize } = inObj
 
-      // Get the filesize of the CID
-      const options = {
-        size: true
-      }
-      const fs = this.adapters.ipfs.ipfs.fs
-      // const fileStats = await this.adapters.ipfs.ipfs.files.stat(`/ipfs/${cid}`, options)
-      const fileStats = await fs.stat(cid, options)
-      // console.log('fileStats: ', fileStats)
+    if (!fileSize) throw new Error(`${cid} has indeterminate file size.`)
 
-      /*
-      Example input:
+    console.log(`CID is ${fileSize} bytes is size.`)
 
-      fileStats:  {
-        cid: CID(bafybeifmevvmrtpqay6ejrabzw3frljfbbhetk5rfmdhp5eu2urrddvgte),
-        mode: 420,
-        mtime: undefined,
-        fileSize: 51526n,
-        dagSize: 51536n,
-        localFileSize: 51526n,
-        localDagSize: 51540n,
-        blocks: 1,
-        type: 'file',
-        unixfs: UnixFS {
-          type: 'file',
-          data: <Buffer ff d8 ff e0 00 10 4a 46 49 46 00 01 01 00 00 01 00 01 00 00 ff e2 01 d8 49 43 43 5f 50 52 4f 46 49 4c 45 00 01 01 00 00 01 c8 00 00 00 00 04 30 00 00 ... 51476 more bytes>,
-          blockSizes: [],
-          hashType: undefined,
-          fanout: undefined,
-          mtime: undefined,
-          _mode: 420,
-          _originalMode: 0
-        }
-      }
-      */
-
-      const fileSize = fileStats.fileSize
-      console.log(`CID is ${fileSize} bytes is size.`)
-
-      if (fileSize < this.config.maxPinSize) {
-        return true
-      }
-
-      return false
-    } catch (err) {
-      console.error('Error in validateCid(): ', err)
-      throw err
+    if (fileSize < this.config.maxPinSize) {
+      return true
     }
+
+    return false
   }
 }
 

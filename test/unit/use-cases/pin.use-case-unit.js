@@ -5,10 +5,10 @@
 // Public npm libraries
 import { assert } from 'chai'
 import sinon from 'sinon'
-import { CID } from 'multiformats'
+// import { CID } from 'multiformats'
 
 // Local support libraries
-import PinLib from '../../../src/use-cases/pin.js'
+import PinLib from '../../../src/use-cases/pin-use-cases.js'
 import adapters from '../mocks/adapters/index.js'
 import EntryUseCases from '../../../src/use-cases/entry/index.js'
 
@@ -50,38 +50,38 @@ describe('#pin-use-case', () => {
   describe('#validateCid', () => {
     it('should return true for a CID with a small file size', async () => {
       const cidStr = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
-      const cid = CID.parse(cidStr)
+      // const cid = CID.parse(cidStr)
 
-      sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').resolves({ fileSize: 273 })
+      // sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').resolves({ fileSize: 273 })
 
-      const result = await uut.validateCid(cid)
+      const result = await uut.validateCid({ cid: cidStr, fileSize: 1 })
 
       assert.equal(result, true)
     })
 
     it('should return false for a CID with a large file size', async () => {
       const cidStr = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
-      const cid = CID.parse(cidStr)
+      // const cid = CID.parse(cidStr)
 
-      sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').resolves({ fileSize: 27300000000 })
+      // sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').resolves({ fileSize: 27300000000 })
 
-      const result = await uut.validateCid(cid)
+      const result = await uut.validateCid({ cid: cidStr, fileSize: 27300000000 })
 
       assert.equal(result, false)
     })
 
-    it('should catch and throw errors', async () => {
-      try {
-        // Mock dependencies and force desired code path
-        sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').rejects(new Error('test error'))
-
-        await uut.validateCid()
-
-        assert.fail('Unexpected result')
-      } catch (err) {
-        assert.equal(err.message, 'test error')
-      }
-    })
+    // it('should catch and throw errors', async () => {
+    //   try {
+    //     // Mock dependencies and force desired code path
+    //     sandbox.stub(uut.adapters.ipfs.ipfs.fs, 'stat').rejects(new Error('test error'))
+    //
+    //     await uut.validateCid()
+    //
+    //     assert.fail('Unexpected result')
+    //   } catch (err) {
+    //     assert.equal(err.message, 'test error')
+    //   }
+    // })
   })
 
   describe('#pinCid', () => {
@@ -100,8 +100,8 @@ describe('#pin-use-case', () => {
       const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
 
       // Mock dependencies
+      sandbox.stub(uut.adapters.ipfs.ipfs.blockstore, 'get').resolves([1, 2, 3])
       sandbox.stub(uut, 'validateCid').resolves(true)
-      // sandbox.stub(uut.adapters.ipfs.ipfs.pin, 'add').resolves()
 
       const result = await uut.pinCid(cid)
 
@@ -111,6 +111,7 @@ describe('#pin-use-case', () => {
     it('should catch and throw errors', async () => {
       try {
         // Mock dependencies and force desired code path
+        sandbox.stub(uut.adapters.ipfs.ipfs.blockstore, 'get').resolves([1, 2, 3])
         sandbox.stub(uut, 'validateCid').rejects(new Error('test error'))
 
         const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'

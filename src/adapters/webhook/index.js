@@ -36,11 +36,11 @@ class WebhookAdapter {
   // that appId is found, it will trigger a call to the webhooks URL.
   async webhookEventHandler (eventData) {
     try {
-      // console.log(
-      //   'TriggerWebhook event triggered from withing the webhook.js file. Data: ',
-      //   eventData
-      // )
-      console.log('TriggerWebhook event triggered from withing the webhook.js file.')
+      console.log(
+        'TriggerWebhook event triggered from withing the webhook.js file. Data: ',
+        eventData
+      )
+      // console.log('TriggerWebhook event triggered from withing the webhook.js file.')
 
       // const { txid, signature, message, data, hash } = eventData
       const { data } = eventData

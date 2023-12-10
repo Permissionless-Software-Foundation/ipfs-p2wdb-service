@@ -270,7 +270,8 @@ describe('#can-append-validator.js', () => {
 
       const result = await uut._validateTx(mockData.validTx01, mockData.validEntry01)
 
-      assert.equal(result, false)
+      assert.equal(result.isValid, false)
+      assert.equal(result.tokensBurned, null)
     })
 
     it('should throw error if TX data does not include a token ID', async () => {
@@ -290,13 +291,15 @@ describe('#can-append-validator.js', () => {
 
       const result = await uut._validateTx(mockData.validTx01, mockData.validEntry01)
 
-      assert.equal(result, false)
+      assert.equal(result.isValid, false)
+      assert.equal(result.tokensBurned, null)
     })
 
     it('should return true for a valid burn TX', async () => {
       const result = await uut._validateTx(mockData.validTx01, mockData.validEntry01)
 
-      assert.equal(result, true)
+      assert.equal(result.isValid, true)
+      assert.isNumber(result.tokensBurned)
     })
   })
 
@@ -364,29 +367,32 @@ describe('#can-append-validator.js', () => {
         message: 'fake-message'
       })
 
-      assert.equal(result, false)
+      assert.equal(result.validTx, false)
+      assert.equal(result.tokensBurned, null)
     })
 
     it('should return false for TX not matching burning rules', async () => {
       // Mock dependencies
       sandbox.stub(uut.wallet.bchWallet, 'getTxData').resolves([mockData.validTx01])
       sandbox.stub(uut, '_validateSignature').resolves(true)
-      sandbox.stub(uut, '_validateTx').resolves(false)
+      sandbox.stub(uut, '_validateTx').resolves({ isValid: false, tokensBurned: null })
 
       const result = await uut.validateAgainstBlockchain({
         txid: 'fake-txid',
         signature: 'fake-sig',
         message: 'fake-message'
       })
+      console.log('result: ', result)
 
-      assert.equal(result, false)
+      assert.equal(result.validTx, false)
+      assert.equal(result.tokensBurned, null)
     })
 
     it('should return true for a valid TX', async () => {
       // Mock dependencies
       sandbox.stub(uut.wallet.bchWallet, 'getTxData').resolves([mockData.validTx01])
       sandbox.stub(uut, '_validateSignature').resolves(true)
-      sandbox.stub(uut, '_validateTx').resolves(true)
+      sandbox.stub(uut, '_validateTx').resolves({ isValid: true, tokensBurned: 0.1 })
 
       const result = await uut.validateAgainstBlockchain({
         txid: 'fake-txid',
@@ -394,7 +400,8 @@ describe('#can-append-validator.js', () => {
         message: 'fake-message'
       })
 
-      assert.equal(result, true)
+      assert.equal(result.validTx, true)
+      assert.equal(result.tokensBurned, 0.1)
     })
 
     it('should return false if TX can not be found, and mark entry as invalid', async () => {
@@ -408,7 +415,8 @@ describe('#can-append-validator.js', () => {
         message: 'fake-message'
       })
 
-      assert.equal(result, false)
+      assert.equal(result.validTx, false)
+      assert.equal(result.tokensBurned, null)
     })
   })
 
@@ -477,7 +485,7 @@ describe('#can-append-validator.js', () => {
       sandbox.stub(uut, 'validateEntry').returns()
       sandbox.stub(uut.KeyValue, 'find').resolves([])
       sandbox.stub(uut, 'checkDate').returns(false)
-      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves({ validTx: true, tokensBurned: 0.1 })
       mockData.validEntry01.hash = undefined
       sandbox.stub(uut.validationEvent, 'emit').returns()
 
@@ -527,7 +535,7 @@ describe('#can-append-validator.js', () => {
       sandbox.stub(uut, 'validateEntry').returns()
       sandbox.stub(uut.KeyValue, 'find').resolves([])
       sandbox.stub(uut, 'checkDate').returns(false)
-      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves({ validTx: true, tokensBurned: 0.1 })
       mockData.validEntry01.hash = undefined
       sandbox.stub(uut.validationEvent, 'emit').returns()
       sandbox.stub(uut.bchjs.Util, 'sleep').resolves()
@@ -545,7 +553,7 @@ describe('#can-append-validator.js', () => {
       sandbox.stub(uut, 'validateEntry').returns()
       sandbox.stub(uut.KeyValue, 'find').resolves([])
       sandbox.stub(uut, 'checkDate').returns(false)
-      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves({ validTx: true, tokensBurned: 0.1 })
       sandbox.stub(uut.validationEvent, 'emit').returns()
 
       const result = await uut.canAppend(mockData.validEntry01)

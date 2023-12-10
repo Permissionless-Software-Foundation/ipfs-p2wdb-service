@@ -10,7 +10,7 @@ import WebhookUseCases from './webhook/index.js'
 import UserUseCases from './user.js'
 import TicketUseCases from './ticket-use-cases.js'
 import config from '../../config/index.js'
-import PinUseCases from './pin.js'
+import PinUseCases from './pin-use-cases.js'
 
 class UseCases {
   constructor (localConfig = {}) {
