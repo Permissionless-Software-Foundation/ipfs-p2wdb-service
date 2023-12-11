@@ -64,7 +64,7 @@ class PinUseCases {
 
       let fileSize = null
       try {
-        const file = await this.retryQueue.addToQueue(this._getCid, {cid: cidClass})
+        const file = await this.retryQueue.addToQueue(this._getCid, { cid: cidClass })
         // const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
         fileSize = file.length
         console.log(`CID ${cid} is ${fileSize} bytes big.`)
@@ -83,7 +83,7 @@ class PinUseCases {
       // Verify the CID meets requirements for pinning.
       const isValid = await this.validateCid({ cid: cidClass, fileSize })
 
-      if(isValid) {
+      if (isValid) {
         // Pin the file (assume valid)
         try {
           await this.adapters.ipfs.ipfs.pins.add(cidClass)
@@ -112,13 +112,13 @@ class PinUseCases {
     }
   }
 
-  async _getCid(inObj = {}) {
+  async _getCid (inObj = {}) {
     const { cid } = inObj
 
     try {
       const file = this.adapters.ipfs.ipfs.blockstore.get(cid)
       return file
-    } catch(err) {
+    } catch (err) {
       console.error('Error in _getCid(): ', err)
       throw err
     }
