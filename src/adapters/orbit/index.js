@@ -40,6 +40,7 @@ class OrbitDBAdapter {
     this.validationEvent = validationEvent
     this.createOrbitDB = createOrbitDB
     this.P2WCanAppend = P2WCanAppend
+    this.p2wCanAppend = null // placeholder.
     this.useAccessController = useAccessController
     this.useDatabaseType = useDatabaseType
     this.process = process
@@ -83,15 +84,15 @@ class OrbitDBAdapter {
       // dbName = 'psf-bch-p2wdb-keyvalue-v4.0.0-0004'
 
       // Initialize the P2WCanAppend library
-      const p2wdbCanAppend = new this.P2WCanAppend({
+      this.p2wCanAppend = new this.P2WCanAppend({
         wallet: this.wallet,
         writePrice: this.writePrice
       })
 
       // Inject an instance of the CanAppend library into the Access Controller.
-      PayToWriteAccessController.injectDeps(p2wdbCanAppend)
+      PayToWriteAccessController.injectDeps(this.p2wCanAppend)
 
-      PayToWriteDatabase.injectDeps(p2wdbCanAppend.canAppend)
+      PayToWriteDatabase.injectDeps(this.p2wCanAppend.canAppend)
 
       this.useAccessController(PayToWriteAccessController)
       this.useDatabaseType(PayToWriteDatabase)

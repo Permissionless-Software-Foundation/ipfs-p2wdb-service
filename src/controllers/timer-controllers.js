@@ -35,7 +35,7 @@ class TimerControllers {
     // this.startTimers()
 
     // Constants
-    this.forceSyncPeriod = 60000 * 1
+    this.forceSyncPeriod = 60000 * 10
   }
 
   // Start all the time-based controllers.
@@ -53,6 +53,7 @@ class TimerControllers {
 
     // Create a timer to force periodic sync of the database across peers.
     this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+    setTimeout(this.forceSync, 60000) // Start the first sync right away.
 
     // Any new timer control functions can be added here. They will be started
     // when the server starts.
@@ -76,6 +77,23 @@ class TimerControllers {
       clearInterval(this.forceSyncHandle)
 
       console.log('Timer Interval: Syncing P2WDB to peers...')
+
+      const _this = this
+
+      const start = new Date()
+      setInterval(function () {
+        const now = new Date()
+        const diff = (now.getTime() - start.getTime()) / 60000
+        console.log(`forceSync() has been running for ${diff} minutes`)
+
+        const lastCanAppendCall = _this.adapters.p2wdb.orbit.p2wCanAppend.lastAppendCall
+        const appendDiff = (now.getTime() - lastCanAppendCall.getTime()) / 60000
+        console.log(`Last CanAppend() call made ${appendDiff} minutes ago.`)
+
+        if (diff > 5 && appendDiff > 5) {
+          _this.forceSyncHandle = setInterval(_this.forceSync, _this.forceSyncPeriod)
+        }
+      }, 60000)
 
       const db = this.adapters.p2wdb.orbit.db
       const res = await db.all()

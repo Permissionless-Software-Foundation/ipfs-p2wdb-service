@@ -33,6 +33,7 @@ class P2WDB {
     this.ipfsAdapters = new IpfsAdapters()
     this.KeyValue = KeyValue
     this.OribitAdapter = OribitAdapter
+    this.orbit = null // placeholder
 
     // Properties of this class instance.
     this.isReady = false

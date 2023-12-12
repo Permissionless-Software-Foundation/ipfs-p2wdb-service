@@ -31,6 +31,9 @@ class P2WCanAppend {
     this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
     this.validationEvent = validationEvent
 
+    // State
+    this.lastAppendCall = new Date()
+
     // Bind 'this' object to all subfunctions.
     this.canAppend = this.canAppend.bind(this)
     this.validateEntry = this.validateEntry.bind(this)
@@ -49,6 +52,9 @@ class P2WCanAppend {
   // It returns true or false.
   async canAppend (entry) {
     try {
+      // Update the last time this function was called.
+      this.lastAppendCall = new Date()
+
       // Input validation
       this.validateEntry(entry)
 
@@ -71,7 +77,7 @@ class P2WCanAppend {
       const mongoRes = await this.KeyValue.find({ key: txid })
       if (mongoRes.length > 0) {
         // console.log('mongoRes: ', mongoRes)
-        // console.log('Result retrieved from Mongo database.')
+        console.log('Result retrieved from Mongo database.')
 
         // Return the previously saved validation result.
         const isValid = mongoRes[0].isValid

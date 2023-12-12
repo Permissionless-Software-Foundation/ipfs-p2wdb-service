@@ -35,6 +35,9 @@ class PinUseCases {
     this.retryQueue = new RetryQueue()
     this.config = config
 
+    // state
+    this.promiseCnt = 0
+
     // Bind 'this' object to functions that lose context.
     this.getJsonFromP2wdb = this.getJsonFromP2wdb.bind(this)
     this.pinCid = this.pinCid.bind(this)
@@ -64,6 +67,9 @@ class PinUseCases {
 
       let fileSize = null
       try {
+        this.promiseCnt++
+        console.log(`promiseCnt: ${this.promiseCnt}`)
+
         const file = await this.retryQueue.addToQueue(this._getCid, { cid: cidClass })
         // const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
         fileSize = file.length
@@ -77,6 +83,7 @@ class PinUseCases {
         return false
       }
 
+      this.promiseCnt--
       now = new Date()
       console.log(`Finished download of ${cid} at ${now.toISOString()}`)
 
@@ -90,7 +97,9 @@ class PinUseCases {
           console.log(`Pinned file ${cid}`)
         } catch (err) {
           console.log(`Unable to pin CID ${cid}: ${err.message}`)
-          process.exit(-1)
+          if (!err.message.includes('Already pinned')) {
+            process.exit(-1)
+          }
         }
       } else {
         // If the file does meet the size requirements, then unpin it.
