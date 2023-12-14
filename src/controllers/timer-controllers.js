@@ -135,10 +135,12 @@ class TimerControllers {
       // Do not throw an error. This is a top-level function.
       console.error('Error in timer-controllers.js/forceSync(): ', err)
 
-      // Renable the timer interval
-      // if (this.shouldStartForceSyncInterval) {
-      //   this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
-      // }
+      // Unexpected error, like db.all() is not a function because a new peer
+      // hasn't initialized the database.
+      if (this.shouldStartForceSyncInterval) {
+        clearInterval(this.syncManagerTimerHandle)
+        this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+      }
 
       return false
     }
