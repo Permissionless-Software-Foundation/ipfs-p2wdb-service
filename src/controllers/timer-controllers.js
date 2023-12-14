@@ -63,7 +63,7 @@ class TimerControllers {
 
     // Create a timer to force periodic sync of the database across peers.
     this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
-    setTimeout(this.forceSync, 60000) // Start the first sync right away.
+    // setTimeout(this.forceSync, 60000) // Start the first sync right away.
 
     // Any new timer control functions can be added here. They will be started
     // when the server starts.
