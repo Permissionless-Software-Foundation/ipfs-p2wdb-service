@@ -125,7 +125,7 @@ class TimerControllers {
       }
 
       // New peer with an empty database.
-      if(res.length === 0 && !this.stopSync && !this.syncHasStopped && !this.waitingToStop) {
+      if (res.length === 0 && !this.stopSync && !this.syncHasStopped && !this.waitingToStop) {
         clearInterval(this.syncManagerTimerHandle)
         this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
       }
