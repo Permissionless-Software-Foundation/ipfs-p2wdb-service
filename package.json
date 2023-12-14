@@ -34,7 +34,7 @@
     "@libp2p/circuit-relay-v2": "1.0.7",
     "@libp2p/identify": "1.0.6",
     "@libp2p/tcp": "9.0.7",
-    "@multiformats/multiaddr-matcher": "^1.1.0",
+    "@multiformats/multiaddr-matcher": "1.1.0",
     "@psf/bch-js": "6.7.3",
     "axios": "0.27.2",
     "bcryptjs": "2.4.3",
