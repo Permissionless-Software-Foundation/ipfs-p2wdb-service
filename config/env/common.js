@@ -70,7 +70,8 @@ const config = {
     // : 'psf-bch-p2wdb-keyvalue-v4.0.0-0001',
     // : '',
     // : '/orbitdb/zdpuAxsSm9BNCBchqXXLLqtwkmCcGepzJ96q4AMH8KSdjomtS',
-    : '/orbitdb/zdpuAvnyvhFXi7XhofRaZb9F1y91nkuLh9ziVCJC4QJni2Ghe',
+    // : '/orbitdb/zdpuAvnyvhFXi7XhofRaZb9F1y91nkuLh9ziVCJC4QJni2Ghe',
+    : '/orbitdb/zdpuAuiV2EdU1b25eFKnmBZMsJX4ivySReMHbwn9AeG8egjyQ',
 
   // Maximum size of a new database entry.
   maxDataSize: process.env.MAX_DATA_SIZE
