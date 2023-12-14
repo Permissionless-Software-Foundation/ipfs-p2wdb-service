@@ -124,10 +124,11 @@ class TimerControllers {
         clearInterval(this.syncManagerTimerHandle)
       }
 
-      // Renable the timer interval
-      // if (this.shouldStartForceSyncInterval) {
-      //   this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
-      // }
+      // New peer with an empty database.
+      if(res.length === 0 && !this.stopSync && !this.syncHasStopped && !this.waitingToStop) {
+        clearInterval(this.syncManagerTimerHandle)
+        this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+      }
 
       return res.length
     } catch (err) {
