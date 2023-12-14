@@ -122,11 +122,20 @@ const PayToWriteDatabase = () => async ({ ipfs, identity, address, name, access,
    * @memberof module:Databases.Databases-PayToWriteDatabase
    * @instance
    */
-  const all = async () => {
+  const all = async (inObj = {}) => {
+    const { shouldStop } = inObj
+
     const values = []
     for await (const entry of iterator()) {
+      console.log('Looping through db.all()')
+      if (shouldStop()) {
+        break
+      }
+
       values.unshift(entry)
     }
+    console.log('~~~~~~~Exiting all()~~~~~~~')
+
     return values
   }
 
