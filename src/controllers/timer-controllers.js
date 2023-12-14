@@ -119,7 +119,7 @@ class TimerControllers {
       console.log('...finished syncing database.')
 
       // If the DB is fully synced, then disable the sync manager
-      if(db.length > 1000) clearInterval(this.syncManagerTimerHandle)
+      if (db.length > 1000) clearInterval(this.syncManagerTimerHandle)
 
       // Renable the timer interval
       // if (this.shouldStartForceSyncInterval) {
