@@ -119,7 +119,7 @@ class TimerControllers {
       console.log('...finished syncing database.')
 
       // If the DB is fully synced, then disable the sync manager
-      if (db.length > 1000) {
+      if (res.length > 1000) {
         console.log('OrbitDB appears synced. Disabling sync manager.')
         clearInterval(this.syncManagerTimerHandle)
       }
