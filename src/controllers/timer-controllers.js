@@ -118,8 +118,12 @@ class TimerControllers {
 
       console.log('...finished syncing database.')
 
+      const now = new Date()
+      const syncTookMins = (now.getTime() - this.syncStartTime.getTime()) / 60000
+      console.log(`forceSync() ran for ${syncTookMins} minutes`)
+
       // If the DB is fully synced, then disable the sync manager
-      if (res.length > 1000) {
+      if (syncTookMins < 3) {
         console.log('OrbitDB appears synced. Disabling sync manager.')
         clearInterval(this.syncManagerTimerHandle)
       }
