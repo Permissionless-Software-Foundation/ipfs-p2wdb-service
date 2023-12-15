@@ -77,7 +77,7 @@ class P2WCanAppend {
       const mongoRes = await this.KeyValue.find({ key: txid })
       if (mongoRes.length > 0) {
         // console.log('mongoRes: ', mongoRes)
-        console.log('Result retrieved from Mongo database.')
+        // console.log('Result retrieved from Mongo database.')
 
         // Return the previously saved validation result.
         const isValid = mongoRes[0].isValid
