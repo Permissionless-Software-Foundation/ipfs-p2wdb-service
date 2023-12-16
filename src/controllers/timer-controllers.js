@@ -162,12 +162,12 @@ class TimerControllers {
       const appendDiff = (now.getTime() - lastCanAppendCall.getTime()) / 60000
       console.log(`Last CanAppend() call made ${appendDiff} minutes ago.`)
 
-      const pinPromiseCnt = this.useCases.pin.promiseCnt
-      console.log(`Pinning promises: ${pinPromiseCnt}`)
+      // const pinPromiseCnt = this.useCases.pin.promiseCnt
+      // console.log(`Pinning promises: ${pinPromiseCnt}`)
 
       console.log(`stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
 
-      if (diff > 5 && appendDiff > 5 && pinPromiseCnt < 5) {
+      if (diff > 5 && appendDiff > 5) {
         // this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
 
         // if (!this.waitingToStop && !this.syncHasStopped && !this.stopSync && this.firstSyncRun) {
@@ -191,7 +191,7 @@ class TimerControllers {
           console.log('Calling forceSync()')
           this.forceSync()
         }
-      } else if (appendDiff > 5 && pinPromiseCnt < 5) {
+      } else if (appendDiff > 5) {
         if (this.waitingToStop && this.syncHasStopped && this.stopSync) {
           // Syncing has stopped and it can be started again.
 
