@@ -120,6 +120,9 @@ class TimerControllers {
             await this.useCases.pin.pinCid(cid)
           }
         }
+
+        // Restart the timer interval
+        this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
       }
     } catch (err) {
       console.error('Error in pinMngr(): ', err)
