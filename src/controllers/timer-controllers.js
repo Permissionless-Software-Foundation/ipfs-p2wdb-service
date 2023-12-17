@@ -32,12 +32,14 @@ class TimerControllers {
     this.forceSync = this.forceSync.bind(this)
     this.shouldStop = this.shouldStop.bind(this)
     this.manageSync = this.manageSync.bind(this)
+    this.pinMngr = this.pinMngr.bind(this)
 
     // Automatically start the timers when this library is loaded.
     // this.startTimers()
 
     // state
     this.forceSyncPeriod = 60000 * 5
+    this.pinMngrPeriod = 60000 * 10
     this.stopSync = false
     this.syncHasStopped = false
     this.waitingToStop = false
@@ -46,6 +48,7 @@ class TimerControllers {
     // this.shouldStartForceSyncInterval = true
     // this.shouldStartSyncMonitorInterval = true
     this.syncStartTime = null
+    this.isFullySynced = false // True when DB is fully synced.
   }
 
   // Start all the time-based controllers.
@@ -69,6 +72,10 @@ class TimerControllers {
     // when the server starts.
     // this.optimizeWalletHandle = setInterval(this.exampleTimerFunc, 60000 * 10)
 
+    if (this.config.pinEnabled) {
+      this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
+    }
+
     return true
   }
 
@@ -76,6 +83,48 @@ class TimerControllers {
     clearInterval(this.optimizeWalletHandle)
     clearInterval(this.manageTicketsHandle)
     clearInterval(this.forceSyncHandle)
+    clearInterval(this.pinMngrHandle)
+  }
+
+  // If this node is configured to pin IPFS content, then cycle through all
+  // the database entries and look for any that still need to be pinned.
+  async pinMngr () {
+    try {
+      // Only start the pin manager if the database is fully synced.
+      if (this.isFullySynced) {
+        // Clear the interval while this is executing, so that multiple instances
+        // do not execute.
+        clearInterval(this.pinMngrHandle)
+
+        const db = this.adapters.p2wdb.orbit.db
+
+        for await (const record of db.iterator()) {
+          console.log('pinMngr iterating over db: ', record)
+
+          const jsonStr = record.value.data
+          let data
+          try {
+            data = JSON.parse(jsonStr)
+          } catch (err) {
+            console.log('Could not parse this JSON string: ', jsonStr)
+            continue
+          }
+
+          if (data.appId === 'p2wdb-pin-001') {
+            const cid = data.data.cid
+            console.log(`Ready to pin this CID: ${cid}`)
+
+            // const pinPromiseCnt = this.useCases.pin.promiseCnt
+            // console.log(`Pinning promises: ${pinPromiseCnt}`)
+
+            await this.useCases.pin.pinCid(cid)
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error in pinMngr(): ', err)
+      // Do not throw error. This is a top-level function.
+    }
   }
 
   // This function is injected into the db.all() function. It is called each
@@ -126,6 +175,7 @@ class TimerControllers {
       if (syncTookMins < 3) {
         console.log('OrbitDB appears synced. Disabling sync manager.')
         clearInterval(this.syncManagerTimerHandle)
+        this.isFullySynced = true
       }
 
       // New peer with an empty database.
