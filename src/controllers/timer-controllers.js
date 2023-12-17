@@ -3,6 +3,10 @@
   kicked off periodicially.
 */
 
+// Global npm libraries
+import RetryQueue from '@chris.troutner/retry-queue'
+
+// Local libraries
 import config from '../../config/index.js'
 
 class TimerControllers {
@@ -25,6 +29,10 @@ class TimerControllers {
 
     // Encapsulate dependencies
     this.config = config
+    this.retryQueue = new RetryQueue({
+      concurrency: 6,
+      attempts: 3
+    })
 
     // Bind 'this' object to all subfunctions.
     this.optimizeWallet = this.optimizeWallet.bind(this)
@@ -39,7 +47,7 @@ class TimerControllers {
 
     // state
     this.forceSyncPeriod = 60000 * 5
-    this.pinMngrPeriod = 60000 * 10
+    this.pinMngrPeriod = 60000 * 60
     this.stopSync = false
     this.syncHasStopped = false
     this.waitingToStop = false
@@ -74,6 +82,9 @@ class TimerControllers {
 
     if (this.config.pinEnabled) {
       this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
+
+      // Kick off the first pinning after 10 minutes
+      setTimeout(this.pinMgr, 60000 * 10)
     }
 
     return true
@@ -120,11 +131,15 @@ class TimerControllers {
             // const pinPromiseCnt = this.useCases.pin.promiseCnt
             // console.log(`Pinning promises: ${pinPromiseCnt}`)
 
-            await this.useCases.pin.pinCid(cid)
+            // await this.useCases.pin.pinCid(cid)
+
+            // Add the pin call to the queue. Do not await, this will load the
+            // queue with promises to work through.
+            this.retryQueue.addToQueue(this.useCases.pin.pinCidWithTimeout, cid)
           }
         }
 
-        console.log('Completed pinning all content.')
+        console.log('Initialized download of all pin requests.')
 
         // Restart the timer interval
         this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)

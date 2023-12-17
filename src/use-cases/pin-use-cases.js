@@ -44,6 +44,8 @@ class PinUseCases {
     this.pinJson = this.pinJson.bind(this)
     this.validateCid = this.validateCid.bind(this)
     this._getCid = this._getCid.bind(this)
+    this.pinTimer = this.pinTimer.bind(this)
+    this.pinCidWithTimeout = this.pinCidWithTimeout.bind(this)
   }
 
   // Given a CID, pin it with the IPFS node attached to this app.
@@ -119,6 +121,28 @@ class PinUseCases {
       console.error('Error in pinCid()')
       throw err
     }
+  }
+
+  // Returns a promise that resolves after a period of time. This can be used
+  // to abort a pin attempt so that the process can move on to other pinning
+  // candidates, and not be blocked by a pin that can't resolve.
+  pinTimer() {
+    return new Promise(resolve => setTimeout(resolve, 60000));
+  }
+
+  async pinCidWithTimeout(cid) {
+    const raceVal = Promise.race([
+      this.pinTimer(),
+      this.pinCid(cid)
+    ])
+
+    if(!raceVal) {
+      console.log(`Could not get content behind CID ${cid}. Download timed out.`)
+    } else {
+      console.log(`Successfully pinned CID ${cid}`)
+    }
+
+    return raceVal
   }
 
   async _getCid (inObj = {}) {
