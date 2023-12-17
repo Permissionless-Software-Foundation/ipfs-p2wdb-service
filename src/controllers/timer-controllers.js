@@ -98,8 +98,11 @@ class TimerControllers {
 
         const db = this.adapters.p2wdb.orbit.db
 
+        let cnt = 0
+
         for await (const record of db.iterator()) {
-          console.log('pinMngr iterating over db: ', record)
+          console.log(`${cnt}) pinMngr iterating over db: `, record)
+          cnt++
 
           const jsonStr = record.value.data
           let data
@@ -120,6 +123,8 @@ class TimerControllers {
             await this.useCases.pin.pinCid(cid)
           }
         }
+
+        console.log('Completed pinning all content.')
 
         // Restart the timer interval
         this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
@@ -175,6 +180,9 @@ class TimerControllers {
       console.log(`forceSync() ran for ${syncTookMins} minutes`)
 
       // If the DB is fully synced, then disable the sync manager
+      // The db.all() call will resolve after a few seconds if the DB is fully
+      // synced. Otherwise it will take a lot longer, and the sync manager will
+      // goad it into syncing.
       if (syncTookMins < 3) {
         console.log('OrbitDB appears synced. Disabling sync manager.')
         clearInterval(this.syncManagerTimerHandle)
