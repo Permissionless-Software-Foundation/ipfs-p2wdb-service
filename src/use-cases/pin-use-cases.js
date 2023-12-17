@@ -126,17 +126,17 @@ class PinUseCases {
   // Returns a promise that resolves after a period of time. This can be used
   // to abort a pin attempt so that the process can move on to other pinning
   // candidates, and not be blocked by a pin that can't resolve.
-  pinTimer() {
-    return new Promise(resolve => setTimeout(resolve, 60000));
+  pinTimer () {
+    return new Promise(resolve => setTimeout(resolve, 60000))
   }
 
-  async pinCidWithTimeout(cid) {
+  async pinCidWithTimeout (cid) {
     const raceVal = Promise.race([
       this.pinTimer(),
       this.pinCid(cid)
     ])
 
-    if(!raceVal) {
+    if (!raceVal) {
       console.log(`Could not get content behind CID ${cid}. Download timed out.`)
     } else {
       console.log(`Successfully pinned CID ${cid}`)
