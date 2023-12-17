@@ -84,7 +84,7 @@ class TimerControllers {
       this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
 
       // Kick off the first pinning after 10 minutes
-      setTimeout(this.pinMgr, 60000 * 10)
+      setTimeout(this.pinMngr, 60000 * 10)
     }
 
     return true
