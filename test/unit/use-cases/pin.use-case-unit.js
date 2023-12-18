@@ -45,6 +45,19 @@ describe('#pin-use-case', () => {
         )
       }
     })
+
+    it('should throw an error if Entry Use Cases instance is not provided', () => {
+      try {
+        uut = new PinLib({ adapters })
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(
+          err.message,
+          'Instance of entry Use Cases must be passed in when instantiating Pin Use Case library.'
+        )
+      }
+    })
   })
 
   describe('#validateCid', () => {
@@ -84,71 +97,90 @@ describe('#pin-use-case', () => {
     // })
   })
 
-  // describe('#pinCid', () => {
-  //   it('should return false if file is too big', async () => {
-  //     // Mock dependencies and force desired code path.
-  //     sandbox.stub(uut, 'validateCid').resolves(false)
-  //
-  //     const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
-  //
-  //     const result = await uut.pinCid(cid)
-  //
-  //     assert.equal(result, false)
-  //   })
-  //
-  //   it('should return true if file is successfully pinned', async () => {
-  //     const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
-  //
-  //     // Mock dependencies
-  //     sandbox.stub(uut.adapters.ipfs.ipfs.blockstore, 'get').resolves([1, 2, 3])
-  //     sandbox.stub(uut, 'validateCid').resolves(true)
-  //
-  //     const result = await uut.pinCid(cid)
-  //
-  //     assert.equal(result, true)
-  //   })
-  //
-  //   it('should catch and throw errors', async () => {
-  //     try {
-  //       // Mock dependencies and force desired code path
-  //       sandbox.stub(uut.adapters.ipfs.ipfs.blockstore, 'get').resolves([1, 2, 3])
-  //       sandbox.stub(uut, 'validateCid').rejects(new Error('test error'))
-  //
-  //       const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
-  //       await uut.pinCid(cid)
-  //
-  //       assert.fail('Unexpected result')
-  //     } catch (err) {
-  //       assert.equal(err.message, 'test error')
-  //     }
-  //   })
-  // })
+  describe('#_getCid', () => {
+    it('should get a file from the IPFS network', async () => {
+      sandbox.stub(uut.adapters.ipfs.ipfs.blockstore, 'get').resolves(true)
 
-  // describe('#getJsonFromP2wdb', () => {
-  //   it('should retrieve an entry from the P2WDB', async () => {
-  //     const inObj = {
-  //       zcid: 'fake-cid'
-  //     }
-  //
-  //     // Mock dependencies and force desired code path
-  //     sandbox.stub(uut.axios, 'request').resolves({
-  //       data: {
-  //         data: {
-  //           value: {
-  //             data: {
-  //               foo: 'bar'
-  //             }
-  //           }
-  //         }
-  //       }
-  //     })
-  //
-  //     const result = await uut.getJsonFromP2wdb(inObj)
-  //     // console.log('result: ', result)
-  //
-  //     assert.equal(result.foo, 'bar')
-  //   })
-  // })
+      const result = await uut._getCid({ cid: 'fake-cid' })
+
+      assert.equal(result, true)
+    })
+
+    it('should throw an error if there is a file download issue', async () => {
+      try {
+        sandbox.stub(uut.adapters.ipfs.ipfs.blockstore, 'get').rejects(new Error('test error'))
+
+        await uut._getCid({ cid: 'fake-cid' })
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#pinCid', () => {
+    it('should return false if file is too big', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut, '_getCid').resolves([1])
+      sandbox.stub(uut, 'validateCid').resolves(false)
+
+      const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
+
+      const result = await uut.pinCid(cid)
+
+      assert.equal(result, false)
+    })
+
+    it('should return true if file is successfully pinned', async () => {
+      const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
+
+      // Mock dependencies
+      sandbox.stub(uut.adapters.ipfs.ipfs.blockstore, 'get').resolves([1, 2, 3])
+      sandbox.stub(uut, 'validateCid').resolves(true)
+
+      const result = await uut.pinCid(cid)
+
+      assert.equal(result, true)
+    })
+
+    it('should catch and throw errors', async () => {
+      try {
+        // Mock dependencies and force desired code path
+        sandbox.stub(uut.adapters.ipfs.ipfs.blockstore, 'get').resolves([1, 2, 3])
+        sandbox.stub(uut, 'validateCid').rejects(new Error('test error'))
+
+        const cid = 'bafybeidmxb6au63p6t7wxglks3t6rxgt6t26f3gx26ezamenznkjdnwqta'
+        await uut.pinCid(cid)
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.equal(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#getJsonFromP2wdb', () => {
+    it('should retrieve an entry from the P2WDB', async () => {
+      const inObj = {
+        zcid: 'fake-cid'
+      }
+
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut.entryUseCases.readEntry, 'readByHash').resolves({
+        value: {
+          data: {
+            foo: 'bar'
+          }
+        }
+      })
+
+      const result = await uut.getJsonFromP2wdb(inObj)
+      // console.log('result: ', result)
+
+      assert.equal(result.foo, 'bar')
+    })
+  })
 
   describe('#pinJson', () => {
     it('should pin JSON stored in the P2WDB and return the CID', async () => {
