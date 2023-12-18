@@ -76,6 +76,7 @@ class TimerControllers {
     clearInterval(this.optimizeWalletHandle)
     clearInterval(this.manageTicketsHandle)
     clearInterval(this.forceSyncHandle)
+    clearInterval(this.syncManagerTimerHandle)
   }
 
   // This function is injected into the db.all() function. It is called each
@@ -162,12 +163,9 @@ class TimerControllers {
       const appendDiff = (now.getTime() - lastCanAppendCall.getTime()) / 60000
       console.log(`Last CanAppend() call made ${appendDiff} minutes ago.`)
 
-      const pinPromiseCnt = this.useCases.pin.promiseCnt
-      console.log(`Pinning promises: ${pinPromiseCnt}`)
-
       console.log(`stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
 
-      if (diff > 5 && appendDiff > 5 && pinPromiseCnt < 5) {
+      if (diff > 5 && appendDiff > 5) {
         // this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
 
         // if (!this.waitingToStop && !this.syncHasStopped && !this.stopSync && this.firstSyncRun) {
@@ -190,8 +188,10 @@ class TimerControllers {
 
           console.log('Calling forceSync()')
           this.forceSync()
+
+          return 2
         }
-      } else if (appendDiff > 5 && pinPromiseCnt < 5) {
+      } else if (appendDiff > 5) {
         if (this.waitingToStop && this.syncHasStopped && this.stopSync) {
           // Syncing has stopped and it can be started again.
 
@@ -210,16 +210,17 @@ class TimerControllers {
           // this.shouldStartForceSyncInterval = false
           // console.log('Setting shouldStartForceSyncInterval to false')
           this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+
+          return 3
         }
-        // } else {
-        //   console.log(`clearing forceSync Timer Interval: stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
-        //   // Turn off the timer while syncing is happening.
-        //   clearInterval(this.forceSyncHandle)
-        // }
       }
+
+      return 1
     } catch (err) {
       console.error('Error in manageSync(): ', err)
       // Do not throw error, this is a top-level function
+
+      return false
     }
   }
 
