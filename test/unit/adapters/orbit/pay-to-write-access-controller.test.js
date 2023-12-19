@@ -73,6 +73,18 @@ describe('P2WDBAccessController', function () {
 
   let accessController
 
+  describe('#storageHandler', () => {
+    it('should execute the storage function', async () => {
+      const myFunc = {
+        get: async () => 1
+      }
+
+      const result = await P2WDBAccessController.storageHandler({ storage: myFunc, arg: 2 })
+
+      strictEqual(result, 1)
+    })
+  })
+
   describe('Default write access', () => {
     before(async () => {
       accessController = await P2WDBAccessController()({
@@ -92,6 +104,22 @@ describe('P2WDBAccessController', function () {
 
     it('sets default write', async () => {
       deepStrictEqual(accessController.write, [testIdentity1.id])
+    })
+
+    it('handles databases with p2w prefix', async () => {
+      P2WDBAccessController.storageHandler = () => {
+        return Buffer.from('a264747970656370327765777269746581612a', 'hex')
+      }
+
+      accessController = await P2WDBAccessController()({
+        orbitdb: orbitdb1,
+        identities: identities1,
+        address: '/p2w/zdpuAuiV2EdU1b25eFKnmBZMsJX4ivySReMHbwn9AeG8egjyQ'
+      })
+
+      // console.log('accessController: ', accessController)
+
+      strictEqual(accessController.address, 'zdpuAuiV2EdU1b25eFKnmBZMsJX4ivySReMHbwn9AeG8egjyQ')
     })
 
     // Dev Note: These tests are left here for reference. These were specific

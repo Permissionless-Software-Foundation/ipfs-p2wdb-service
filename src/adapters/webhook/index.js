@@ -86,6 +86,8 @@ class WebhookAdapter {
       if (matches.length > 0) {
         await this.triggerWebhook(matches, jsonData)
       }
+
+      return true
     } catch (err) {
       console.error('Error in webhookEventHandler(): ', err)
       // Do not throw error. This is a top-level function.

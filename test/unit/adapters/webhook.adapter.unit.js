@@ -66,6 +66,33 @@ describe('#WebhookAdapter', () => {
       // is working properly.
       assert.equal(1, 1)
     })
+
+    it('should pin a file in pinning is enabled', async () => {
+      // Force config to be desired value.
+      const oldConfig = uut.config
+      uut.config.pinEnabled = true
+
+      const eventData = {
+        data: '{"appId":"p2wdb-pin-001","data": {"cid": "fake-cid"}}'
+      }
+
+      // Mock dependendent functions
+      // Force the database to return no matches
+      sandbox.stub(uut.WebhookModel, 'find').returns([])
+
+      // Inject a mock of pinUseCases.
+      const pinUseCases = {
+        pinCid: async () => {}
+      }
+      uut.injectUseCases({ pinUseCases })
+
+      const result = await uut.webhookEventHandler(eventData)
+
+      // Restore the config
+      uut.config = oldConfig
+
+      assert.equal(result, true)
+    })
   })
 
   describe('#triggerWebhook', () => {

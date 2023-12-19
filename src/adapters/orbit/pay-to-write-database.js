@@ -27,11 +27,11 @@ const PayToWriteDatabase = () => async ({ ipfs, identity, address, name, access,
   const database = await Database({ ipfs, identity, address, name, access, directory, meta, headsStorage, entryStorage, indexStorage, referencesCount, syncAutomatically, onUpdate })
 
   const { addOperation, log } = database
-  console.log('--->log instantiated<---')
+  // console.log('--->log instantiated<---')
 
   if (localP2wdbCanAppend) {
     log.injectDeps(localP2wdbCanAppend)
-    console.log('--->p2wdbCanAppend injected into oplog<---')
+    // console.log('--->p2wdbCanAppend injected into oplog<---')
   }
 
   /**
@@ -127,14 +127,14 @@ const PayToWriteDatabase = () => async ({ ipfs, identity, address, name, access,
 
     const values = []
     for await (const entry of iterator()) {
-      console.log('Looping through db.all()')
+      // console.log('Looping through db.all()')
       if (shouldStop()) {
         break
       }
 
       values.unshift(entry)
     }
-    console.log('~~~~~~~Exiting all()~~~~~~~')
+    // console.log('~~~~~~~Exiting all()~~~~~~~')
 
     return values
   }

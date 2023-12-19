@@ -82,7 +82,7 @@ class TimerControllers {
   // This function is injected into the db.all() function. It is called each
   // time that function loops through syncing.
   shouldStop () {
-    console.log(`shouldStop() called: stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
+    // console.log(`shouldStop() called: stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
     if (this.stopSync) {
       this.syncHasStopped = true
       return true
@@ -101,7 +101,7 @@ class TimerControllers {
       // this.shouldStartForceSyncInterval = false
 
       console.log('Timer Interval: Syncing P2WDB to peers...')
-      console.log(`forceSync(): stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
+      // console.log(`forceSync(): stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
       // console.log(`this.shouldStartForceSyncInterval: ${this.shouldStartForceSyncInterval}, this.shouldStartSyncMonitorInterval: ${this.shouldStartSyncMonitorInterval}`)
 
       this.syncStartTime = new Date()
@@ -110,18 +110,18 @@ class TimerControllers {
       this.syncManagerTimerHandle = setInterval(this.manageSync, 60000)
       // }
 
-      console.log('this.syncManagerTimerHandle._idleTimeout: ', this.syncManagerTimerHandle._idleTimeout)
+      // console.log('this.syncManagerTimerHandle._idleTimeout: ', this.syncManagerTimerHandle._idleTimeout)
 
-      console.log('Calling db.all()')
+      // console.log('Calling db.all()')
       const db = this.adapters.p2wdb.orbit.db
       const res = await db.all({ shouldStop: this.shouldStop })
-      console.log('db length: ', res.length)
+      // console.log('db length: ', res.length)
 
       console.log('...finished syncing database.')
 
       const now = new Date()
       const syncTookMins = (now.getTime() - this.syncStartTime.getTime()) / 60000
-      console.log(`forceSync() ran for ${syncTookMins} minutes`)
+      // console.log(`forceSync() ran for ${syncTookMins} minutes`)
 
       // If the DB is fully synced, then disable the sync manager
       if (syncTookMins < 3) {

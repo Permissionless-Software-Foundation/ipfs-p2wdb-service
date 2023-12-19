@@ -94,5 +94,23 @@ describe('#adapters', () => {
         assert.include(err.message, 'test error')
       }
     })
+
+    it('should report that pinning is enabled', async () => {
+      // Mock dependencies
+      uut.config.getJwtAtStartup = true
+      uut.config.useIpfs = true
+      uut.config.env = 'not-a-test'
+      uut.config.pinEnabled = true
+
+      sandbox.stub(uut.fullStackJwt, 'getJWT').resolves()
+      sandbox.stub(uut.fullStackJwt, 'instanceBchjs').resolves()
+      sandbox.stub(uut.ipfs, 'start').resolves()
+      sandbox.stub(uut.p2wdb, 'start').resolves()
+      sandbox.stub(uut.writePrice, 'getMcWritePrice').resolves(0.2)
+
+      const result = await uut.start()
+
+      assert.equal(result, true)
+    })
   })
 })

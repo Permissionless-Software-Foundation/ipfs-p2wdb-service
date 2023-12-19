@@ -159,14 +159,19 @@ describe('#wallet', () => {
       const mockWallet = new BchWallet()
       await mockWallet.walletInfoPromise
       sandbox.stub(mockWallet, 'initialize').resolves()
+
       // Mock dependencies
       sandbox.stub(uut, '_instanceWallet').resolves(mockWallet)
+      uut.config.authPass = 'fake-auth-pass'
+
       // Ensure we open the test file, not the production wallet file.
       uut.WALLET_FILE = testWalletFile
       const walletData = await uut.openWallet()
+
       // console.log('walletData: ', walletData)
       const result = await uut.instanceWalletWithoutInitialization(walletData)
       // console.log('result: ', result)
+
       assert.property(result, 'walletInfoPromise')
       assert.property(result, 'walletInfo')
     })
