@@ -24,6 +24,9 @@ describe('Auth', () => {
     process.env.TEST_TYPE = 'e2e'
     const app = new Server()
 
+    // Hardcode config settings
+    config.getJwtAtStartup = false
+
     // This should be the first instruction. It starts the REST API server.
     await app.startServer()
 

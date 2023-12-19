@@ -62,12 +62,15 @@ const p2wdb = {
     },
     insert: async () => { },
     orbit: {
-        validationEvent: {
-            on: () => { }
-        },
-        db: {
-          all: async () => {}
-        }
+      validationEvent: {
+          on: () => { }
+      },
+      db: {
+        all: async () => {}
+      },
+      p2wCanAppend: {
+        lastAppendCall: new Date()
+      }
     }
 };
 

@@ -31,6 +31,9 @@ class P2WCanAppend {
     this.retryQueue = new RetryQueue({ bchjs: this.bchjs })
     this.validationEvent = validationEvent
 
+    // State
+    this.lastAppendCall = new Date()
+
     // Bind 'this' object to all subfunctions.
     this.canAppend = this.canAppend.bind(this)
     this.validateEntry = this.validateEntry.bind(this)
@@ -49,6 +52,9 @@ class P2WCanAppend {
   // It returns true or false.
   async canAppend (entry) {
     try {
+      // Update the last time this function was called.
+      this.lastAppendCall = new Date()
+
       // Input validation
       this.validateEntry(entry)
 

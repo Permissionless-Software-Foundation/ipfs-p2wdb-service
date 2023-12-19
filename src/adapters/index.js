@@ -91,6 +91,12 @@ class Adapters {
           }
         }
 
+        if (this.config.pinEnabled) {
+          console.log('File Pinning Feature is ENABLED')
+        } else {
+          console.log('File Pinning Feature is DISABLED')
+        }
+
         // if (this.config.useIpfs) {
         //   await this.ipfs.start()
         // }

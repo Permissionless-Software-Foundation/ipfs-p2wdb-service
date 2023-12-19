@@ -65,7 +65,7 @@ let p2wCanAppendLib = null
  * @memberof module:AccessControllers
  */
 const P2WDBAccessController = ({ write, storage } = {}) => async ({ orbitdb, identities, address }) => {
-  console.log('P2WDBAccessController() executed')
+  // console.log('P2WDBAccessController() executed')
 
   storage = storage || await ComposedStorage(
     await LRUStorage({ size: 1000 }),
@@ -79,7 +79,10 @@ const P2WDBAccessController = ({ write, storage } = {}) => async ({ orbitdb, ide
     address = address.replaceAll('/p2w/', '')
     // console.log('address 2: ', address)
 
-    const manifestBytes = await storage.get(address.replaceAll('/ipfs/', ''))
+    address = address.replaceAll('/ipfs/', '')
+
+    // const manifestBytes = await storage.get(address)
+    const manifestBytes = await P2WDBAccessController.storageHandler({ storage, arg: address })
     const { value } = await Block.decode({ bytes: manifestBytes, codec, hasher })
     write = value.write
   } else {
@@ -131,6 +134,14 @@ P2WDBAccessController.injectDeps = (p2wdbCanAppend) => {
   console.log('-->Injecting dependencies<--')
 
   p2wCanAppendLib = p2wdbCanAppend
+}
+
+// This was created to allow for 100% unit test coverage of this library. It
+// wraps the storage promise in a function that can be mocked in tests.
+P2WDBAccessController.storageHandler = (inObj = {}) => {
+  const { storage, arg } = inObj
+
+  return storage.get(arg)
 }
 
 export default P2WDBAccessController

@@ -30,12 +30,22 @@ class TimerControllers {
     this.optimizeWallet = this.optimizeWallet.bind(this)
     this.manageTickets = this.manageTickets.bind(this)
     this.forceSync = this.forceSync.bind(this)
+    this.shouldStop = this.shouldStop.bind(this)
+    this.manageSync = this.manageSync.bind(this)
 
     // Automatically start the timers when this library is loaded.
     // this.startTimers()
 
-    // Constants
-    this.forceSyncPeriod = 60000 * 1
+    // state
+    this.forceSyncPeriod = 60000 * 5
+    this.stopSync = false
+    this.syncHasStopped = false
+    this.waitingToStop = false
+    this.firstSyncRun = true
+    this.syncManagerTimerHandle = {}
+    // this.shouldStartForceSyncInterval = true
+    // this.shouldStartSyncMonitorInterval = true
+    this.syncStartTime = null
   }
 
   // Start all the time-based controllers.
@@ -53,6 +63,7 @@ class TimerControllers {
 
     // Create a timer to force periodic sync of the database across peers.
     this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+    // setTimeout(this.forceSync, 60000) // Start the first sync right away.
 
     // Any new timer control functions can be added here. They will be started
     // when the server starts.
@@ -65,6 +76,19 @@ class TimerControllers {
     clearInterval(this.optimizeWalletHandle)
     clearInterval(this.manageTicketsHandle)
     clearInterval(this.forceSyncHandle)
+    clearInterval(this.syncManagerTimerHandle)
+  }
+
+  // This function is injected into the db.all() function. It is called each
+  // time that function loops through syncing.
+  shouldStop () {
+    // console.log(`shouldStop() called: stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
+    if (this.stopSync) {
+      this.syncHasStopped = true
+      return true
+    }
+
+    return false
   }
 
   // Force the OrbitDB to sync by iterating over the database entries. If there
@@ -74,25 +98,127 @@ class TimerControllers {
     try {
       // Turn off the timer while syncing is happening.
       clearInterval(this.forceSyncHandle)
+      // this.shouldStartForceSyncInterval = false
 
       console.log('Timer Interval: Syncing P2WDB to peers...')
+      // console.log(`forceSync(): stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
+      // console.log(`this.shouldStartForceSyncInterval: ${this.shouldStartForceSyncInterval}, this.shouldStartSyncMonitorInterval: ${this.shouldStartSyncMonitorInterval}`)
 
+      this.syncStartTime = new Date()
+
+      // if(this.syncManagerTimerHandle && !this.syncManagerTimerHandle._idleTimeout && !this.syncHasStopped) {
+      this.syncManagerTimerHandle = setInterval(this.manageSync, 60000)
+      // }
+
+      // console.log('this.syncManagerTimerHandle._idleTimeout: ', this.syncManagerTimerHandle._idleTimeout)
+
+      // console.log('Calling db.all()')
       const db = this.adapters.p2wdb.orbit.db
-      const res = await db.all()
-      console.log('db length: ', res.length)
+      const res = await db.all({ shouldStop: this.shouldStop })
+      // console.log('db length: ', res.length)
 
       console.log('...finished syncing database.')
 
-      // Renable the timer interval
-      this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+      const now = new Date()
+      const syncTookMins = (now.getTime() - this.syncStartTime.getTime()) / 60000
+      // console.log(`forceSync() ran for ${syncTookMins} minutes`)
+
+      // If the DB is fully synced, then disable the sync manager
+      if (syncTookMins < 3) {
+        console.log('OrbitDB appears synced. Disabling sync manager.')
+        clearInterval(this.syncManagerTimerHandle)
+      }
+
+      // New peer with an empty database.
+      if (res.length === 0 && !this.stopSync && !this.syncHasStopped && !this.waitingToStop) {
+        clearInterval(this.syncManagerTimerHandle)
+        this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+      }
 
       return res.length
     } catch (err) {
       // Do not throw an error. This is a top-level function.
       console.error('Error in timer-controllers.js/forceSync(): ', err)
 
-      // Renable the timer interval
-      this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+      // Unexpected error, like db.all() is not a function because a new peer
+      // hasn't initialized the database.
+      if (this.shouldStartForceSyncInterval) {
+        clearInterval(this.syncManagerTimerHandle)
+        this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+      }
+
+      return false
+    }
+  }
+
+  // This is a separate timer interval handler that managed sync. When it stalls,
+  // it stops and restarts the forceSync timer interval.
+  manageSync () {
+    try {
+      const now = new Date()
+      const diff = (now.getTime() - this.syncStartTime.getTime()) / 60000
+      console.log(`forceSync() has been running for ${diff} minutes`)
+
+      const lastCanAppendCall = this.adapters.p2wdb.orbit.p2wCanAppend.lastAppendCall
+      const appendDiff = (now.getTime() - lastCanAppendCall.getTime()) / 60000
+      console.log(`Last CanAppend() call made ${appendDiff} minutes ago.`)
+
+      console.log(`stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
+
+      if (diff > 5 && appendDiff > 5) {
+        // this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+
+        // if (!this.waitingToStop && !this.syncHasStopped && !this.stopSync && this.firstSyncRun) {
+        if (!this.waitingToStop && !this.syncHasStopped && !this.stopSync) {
+          // The sync needs to be stopped
+
+          console.log('Signaling sync should stop.')
+
+          this.stopSync = true
+          this.syncHasStopped = false
+          this.waitingToStop = true
+          // this.firstSyncRun = false
+
+          // Renable the timer interval, which will simultaniously stop the sync
+          // and attempt to start it again.
+          // this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+
+          clearInterval(this.syncManagerTimerHandle)
+          console.log('canceling syncManagerTimerHandle. _idleTimeout: ', this.syncManagerTimerHandle._idleTimeout)
+
+          console.log('Calling forceSync()')
+          this.forceSync()
+
+          return 2
+        }
+      } else if (appendDiff > 5) {
+        if (this.waitingToStop && this.syncHasStopped && this.stopSync) {
+          // Syncing has stopped and it can be started again.
+
+          console.log('Signaling that sync should resume.')
+
+          // Re-initialize state
+          this.stopSync = false
+          this.syncHasStopped = false
+          this.waitingToStop = false
+
+          clearInterval(this.syncManagerTimerHandle)
+          console.log('canceling syncManagerTimerHandle. _idleTimeout: ', this.syncManagerTimerHandle._idleTimeout)
+
+          // Renable the timer interval, which will simultaniously stop the sync
+          // and attempt to start it again.
+          // this.shouldStartForceSyncInterval = false
+          // console.log('Setting shouldStartForceSyncInterval to false')
+          this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+
+          return 3
+        }
+      }
+
+      return 1
+    } catch (err) {
+      console.error('Error in manageSync(): ', err)
+      // Do not throw error, this is a top-level function
 
       return false
     }
