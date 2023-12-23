@@ -35,6 +35,9 @@ class PinUseCases {
     this.retryQueue = new RetryQueue()
     this.config = config
 
+    // State
+    this.pinTimeoutPeriod = 60000
+
     // Bind 'this' object to functions that lose context.
     this.getJsonFromP2wdb = this.getJsonFromP2wdb.bind(this)
     this.pinCid = this.pinCid.bind(this)
@@ -102,14 +105,16 @@ class PinUseCases {
   // to abort a pin attempt so that the process can move on to other pinning
   // candidates, and not be blocked by a pin that can't resolve.
   pinTimer () {
-    return new Promise(resolve => setTimeout(resolve, 60000))
+    return new Promise(resolve => setTimeout(resolve(false), this.pinTimeoutPeriod))
   }
 
+  // Attempts to pin a CID, but will exit if the pinning takes too long.
   async pinCidWithTimeout (cid) {
-    const raceVal = Promise.race([
-      this.pinTimer(),
-      this.pinCid(cid)
+    const raceVal = await Promise.race([
+      this.pinCid(cid),
+      this.pinTimer()
     ])
+    console.log('raceVal: ', raceVal)
 
     if (!raceVal) {
       console.log(`Could not get content behind CID ${cid}. Download timed out.`)
