@@ -249,14 +249,17 @@ describe('#Timer-Controllers', () => {
     it('should pin content via retry-queue', async () => {
       // Mock the OrbitDB iterator() function.
       const mockAsyncGenerator = {
-        [Symbol.asyncIterator]: () => ({
-          next: sinon.stub().returns(Promise.resolve({
-            value: { value: { data: '{"appId":"p2wdb-pin-001","data":{"cid":"bafybeifr3jzmkh3vikhwa4qwzl4udbnv624uo46i2sgx42c6qeiuuzs6oq"},"timestamp":"2023-02-06T04:58:58.358Z","localTimeStamp":"2/6/2023, 4:58:58 AM"}' } },
-            done: true
-          })),
-          return: sinon.stub().returns(Promise.resolve({ done: true })),
-          throw: sinon.stub().returns(Promise.reject(new Error('mocked error')))
-        })
+        [Symbol.asyncIterator]: () => {
+          const nextStub = sinon.stub()
+          nextStub.onFirstCall().returns(Promise.resolve({ value: { value: { data: '{"appId":"p2wdb-pin-001","data":{"cid":"bafybeifr3jzmkh3vikhwa4qwzl4udbnv624uo46i2sgx42c6qeiuuzs6oq"},"timestamp":"2023-02-06T04:58:58.358Z","localTimeStamp":"2/6/2023, 4:58:58 AM"}' } }, done: false }))
+          nextStub.onSecondCall().returns(Promise.resolve({ done: true }))
+
+          return {
+            next: nextStub,
+            return: sinon.stub().returns(Promise.resolve({ done: true })),
+            throw: sinon.stub().returns(Promise.reject(new Error('mocked error')))
+          }
+        }
       }
 
       // Mock dependencies and force desired code path
