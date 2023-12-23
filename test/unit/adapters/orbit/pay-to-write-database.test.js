@@ -279,7 +279,7 @@ describe('PayToWriteDatabase Database', function () {
   })
 
   describe('#all', () => {
-    before(async () => {
+    beforeEach(async () => {
       db = await PayToWriteDatabase()({ ipfs, identity: testIdentity1, address: databaseId, accessController })
     })
 
@@ -300,6 +300,20 @@ describe('PayToWriteDatabase Database', function () {
       // console.log('result: ', result)
 
       assert.isArray(result)
+      assert.equal(result.length, 1)
+    })
+
+    it('should exit when shouldStop() returns true', async () => {
+      // Add an entry to the database.
+      await db.put('key1', 'value1')
+
+      const shouldStop = () => true
+
+      const result = await db.all({ shouldStop })
+      // console.log('result: ', result)
+
+      assert.isArray(result)
+      assert.equal(result.length, 0)
     })
   })
 

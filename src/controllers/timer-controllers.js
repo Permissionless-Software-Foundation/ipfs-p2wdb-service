@@ -94,6 +94,7 @@ class TimerControllers {
     clearInterval(this.optimizeWalletHandle)
     clearInterval(this.manageTicketsHandle)
     clearInterval(this.forceSyncHandle)
+    clearInterval(this.syncManagerTimerHandle)
     clearInterval(this.pinMngrHandle)
   }
 
@@ -153,7 +154,7 @@ class TimerControllers {
   // This function is injected into the db.all() function. It is called each
   // time that function loops through syncing.
   shouldStop () {
-    console.log(`shouldStop() called: stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
+    // console.log(`shouldStop() called: stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
     if (this.stopSync) {
       this.syncHasStopped = true
       return true
@@ -172,7 +173,7 @@ class TimerControllers {
       // this.shouldStartForceSyncInterval = false
 
       console.log('Timer Interval: Syncing P2WDB to peers...')
-      console.log(`forceSync(): stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
+      // console.log(`forceSync(): stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
       // console.log(`this.shouldStartForceSyncInterval: ${this.shouldStartForceSyncInterval}, this.shouldStartSyncMonitorInterval: ${this.shouldStartSyncMonitorInterval}`)
 
       this.syncStartTime = new Date()
@@ -181,18 +182,18 @@ class TimerControllers {
       this.syncManagerTimerHandle = setInterval(this.manageSync, 60000)
       // }
 
-      console.log('this.syncManagerTimerHandle._idleTimeout: ', this.syncManagerTimerHandle._idleTimeout)
+      // console.log('this.syncManagerTimerHandle._idleTimeout: ', this.syncManagerTimerHandle._idleTimeout)
 
-      console.log('Calling db.all()')
+      // console.log('Calling db.all()')
       const db = this.adapters.p2wdb.orbit.db
       const res = await db.all({ shouldStop: this.shouldStop })
-      console.log('db length: ', res.length)
+      // console.log('db length: ', res.length)
 
       console.log('...finished syncing database.')
 
       const now = new Date()
       const syncTookMins = (now.getTime() - this.syncStartTime.getTime()) / 60000
-      console.log(`forceSync() ran for ${syncTookMins} minutes`)
+      // console.log(`forceSync() ran for ${syncTookMins} minutes`)
 
       // If the DB is fully synced, then disable the sync manager
       // The db.all() call will resolve after a few seconds if the DB is fully
@@ -266,6 +267,8 @@ class TimerControllers {
 
           console.log('Calling forceSync()')
           this.forceSync()
+
+          return 2
         }
       } else if (appendDiff > 5) {
         if (this.waitingToStop && this.syncHasStopped && this.stopSync) {
@@ -286,16 +289,17 @@ class TimerControllers {
           // this.shouldStartForceSyncInterval = false
           // console.log('Setting shouldStartForceSyncInterval to false')
           this.forceSyncHandle = setInterval(this.forceSync, this.forceSyncPeriod)
+
+          return 3
         }
-        // } else {
-        //   console.log(`clearing forceSync Timer Interval: stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
-        //   // Turn off the timer while syncing is happening.
-        //   clearInterval(this.forceSyncHandle)
-        // }
       }
+
+      return 1
     } catch (err) {
       console.error('Error in manageSync(): ', err)
       // Do not throw error, this is a top-level function
+
+      return false
     }
   }
 

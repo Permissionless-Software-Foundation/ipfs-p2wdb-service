@@ -35,9 +35,6 @@ class PinUseCases {
     this.retryQueue = new RetryQueue()
     this.config = config
 
-    // state
-    this.promiseCnt = 0
-
     // Bind 'this' object to functions that lose context.
     this.getJsonFromP2wdb = this.getJsonFromP2wdb.bind(this)
     this.pinCid = this.pinCid.bind(this)
@@ -68,24 +65,12 @@ class PinUseCases {
       console.log(`Starting download of ${cid} at ${now.toISOString()}`)
 
       let fileSize = null
-      try {
-        this.promiseCnt++
-        console.log(`promiseCnt: ${this.promiseCnt}`)
 
-        const file = await this.retryQueue.addToQueue(this._getCid, { cid: cidClass })
-        // const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
-        fileSize = file.length
-        console.log(`CID ${cid} is ${fileSize} bytes big.`)
-      } catch (err) {
-        console.error(`\nError while trying to retrieve file with CID ${cid}. Skipping.`)
-        console.error(err)
-        console.error(' ')
+      const file = await this.retryQueue.addToQueue(this._getCid, { cid: cidClass })
+      // const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
+      fileSize = file.length
+      console.log(`CID ${cid} is ${fileSize} bytes big.`)
 
-        process.exit(-1)
-        return false
-      }
-
-      this.promiseCnt--
       now = new Date()
       console.log(`Finished download of ${cid} at ${now.toISOString()}`)
 
@@ -93,22 +78,12 @@ class PinUseCases {
       const isValid = await this.validateCid({ cid: cidClass, fileSize })
 
       if (isValid) {
-        // Pin the file (assume valid)
-        try {
-          await this.adapters.ipfs.ipfs.pins.add(cidClass)
-          console.log(`Pinned file ${cid}`)
-        } catch (err) {
-          console.log(`Unable to pin CID ${cid}: ${err.message}`)
-          if (!err.message.includes('Already pinned')) {
-            process.exit(-1)
-          }
-        }
+        // Pin the file
+        await this.adapters.ipfs.ipfs.pins.add(cidClass)
+        console.log(`Pinned file ${cid}`)
       } else {
         // If the file does meet the size requirements, then unpin it.
         console.log(`File ${cid} is bigger than max size of ${this.config.maxPinSize} bytes. Unpinning file.`)
-
-        // Unpin the file.
-        // await this.adapters.ipfs.ipfs.pins.rm(cidClass)
 
         // Delete the file from the blockstore
         await this.adapters.ipfs.ipfs.blockstore.delete(cidClass)
@@ -145,11 +120,13 @@ class PinUseCases {
     return raceVal
   }
 
+  // This function wraps the IPFS get() function so that it can be called by
+  // the retry queue.
   async _getCid (inObj = {}) {
     const { cid } = inObj
 
     try {
-      const file = this.adapters.ipfs.ipfs.blockstore.get(cid)
+      const file = await this.adapters.ipfs.ipfs.blockstore.get(cid)
       return file
     } catch (err) {
       console.error('Error in _getCid(): ', err)

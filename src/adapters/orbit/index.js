@@ -110,8 +110,8 @@ class OrbitDBAdapter {
             writePrice: this.writePrice
           }
         )
-        console.log(`------>Successfully opened OrbitDB: ${dbName}`)
-        console.log('db.address: ', this.db.address)
+        console.log(`Successfully opened OrbitDB: ${dbName}`)
+        // console.log('db.address: ', this.db.address)
 
         // console.log('Syncing database...')
         // const res = await this.db.all()
