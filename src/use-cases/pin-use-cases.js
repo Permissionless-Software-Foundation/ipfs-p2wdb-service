@@ -114,7 +114,7 @@ class PinUseCases {
       this.pinCid(cid),
       this.pinTimer()
     ])
-    console.log('raceVal: ', raceVal)
+    // console.log('raceVal: ', raceVal)
 
     if (!raceVal) {
       console.log(`Could not get content behind CID ${cid}. Download timed out.`)

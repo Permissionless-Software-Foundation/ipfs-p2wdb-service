@@ -46,7 +46,7 @@ class TimerControllers {
     // this.startTimers()
 
     // state
-    this.forceSyncPeriod = 60000 * 1
+    this.forceSyncPeriod = 60000 * 5
     this.pinMngrPeriod = 60000 * 60
     this.stopSync = false
     this.syncHasStopped = false
@@ -84,7 +84,7 @@ class TimerControllers {
       this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
 
       // Kick off the first pinning after 10 minutes
-      setTimeout(this.pinMngr, 60000 * 2)
+      setTimeout(this.pinMngr, 60000 * 10)
     }
 
     return true
@@ -110,11 +110,11 @@ class TimerControllers {
 
         const db = this.adapters.p2wdb.orbit.db
 
-        let cnt = 0
+        // let cnt = 0
 
         for await (const record of db.iterator()) {
-          console.log(`${cnt}) pinMngr iterating over db: `, record)
-          cnt++
+          // console.log(`${cnt}) pinMngr iterating over db: `, record)
+          // cnt++
 
           // console.log('record.value.data: ', record.value.data)
 
