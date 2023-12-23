@@ -46,7 +46,7 @@ class TimerControllers {
     // this.startTimers()
 
     // state
-    this.forceSyncPeriod = 60000 * 5
+    this.forceSyncPeriod = 60000 * 1
     this.pinMngrPeriod = 60000 * 60
     this.stopSync = false
     this.syncHasStopped = false
@@ -84,7 +84,7 @@ class TimerControllers {
       this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
 
       // Kick off the first pinning after 10 minutes
-      setTimeout(this.pinMngr, 60000 * 10)
+      setTimeout(this.pinMngr, 60000 * 2)
     }
 
     return true
@@ -116,6 +116,8 @@ class TimerControllers {
           console.log(`${cnt}) pinMngr iterating over db: `, record)
           cnt++
 
+          // console.log('record.value.data: ', record.value.data)
+
           const jsonStr = record.value.data
           let data
           try {
@@ -144,7 +146,11 @@ class TimerControllers {
 
         // Restart the timer interval
         this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
+
+        return true
       }
+
+      return false
     } catch (err) {
       console.error('Error in pinMngr(): ', err)
       // Do not throw error. This is a top-level function.

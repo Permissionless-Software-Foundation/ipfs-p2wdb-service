@@ -93,7 +93,7 @@ class PinUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in pinCid()')
+      console.error('Error in pinCid(): ', err)
       throw err
     }
   }

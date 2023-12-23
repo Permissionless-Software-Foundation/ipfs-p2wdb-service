@@ -1,6 +1,6 @@
 import BchWallet from "minimal-slp-wallet";
 
-async function* asyncGenerator() {
+async function* asyncGenerator1() {
   yield 'Hello';
   yield 'World';
 }
@@ -18,7 +18,7 @@ class IpfsAdapter {
             fs: {
               addFile: async () => {},
               stat: async () => {},
-              cat: () => asyncGenerator()
+              cat: () => asyncGenerator1()
             },
             blockstore: {
               get: async () => {},
@@ -66,7 +66,9 @@ const p2wdb = {
           on: () => { }
       },
       db: {
-        all: async () => {}
+        all: async () => {},
+        // iterator: async () => asyncGenerator2
+        iterator: async () => {}
       },
       p2wCanAppend: {
         lastAppendCall: new Date()

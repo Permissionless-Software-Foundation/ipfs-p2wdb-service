@@ -75,7 +75,8 @@ class UseCasesMock {
     }
 
     pin = {
-      pinJson: async () => {}
+      pinJson: async () => {},
+      pinCidWithTimeout: async () => {}
     }
 }
 
