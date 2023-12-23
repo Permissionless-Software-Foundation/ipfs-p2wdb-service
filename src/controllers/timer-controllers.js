@@ -154,6 +154,8 @@ class TimerControllers {
     } catch (err) {
       console.error('Error in pinMngr(): ', err)
       // Do not throw error. This is a top-level function.
+
+      return false
     }
   }
 
