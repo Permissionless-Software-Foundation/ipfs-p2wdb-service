@@ -159,7 +159,7 @@ class TimerControllers {
         console.log('Initialized download of all pin requests.')
 
         // Restart the timer interval
-        this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
+        // this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
 
         return true
       }
