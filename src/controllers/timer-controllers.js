@@ -31,8 +31,8 @@ class TimerControllers {
     this.config = config
     this.retryQueue = new RetryQueue({
       concurrency: 6,
-      attempts: 3
-      // timeout: 60000
+      attempts: 1,
+      timeout: 60000
     })
 
     // Bind 'this' object to all subfunctions.
@@ -47,6 +47,8 @@ class TimerControllers {
     // this.startTimers()
 
     // state
+    // this.forceSyncPeriod = 60000 * 1
+    // this.pinMngrPeriod = 60000 * 4
     this.forceSyncPeriod = 60000 * 5
     this.pinMngrPeriod = 60000 * 60
     this.stopSync = false
@@ -86,6 +88,7 @@ class TimerControllers {
 
       // Kick off the first pinning after 10 minutes
       setTimeout(this.pinMngr, 60000 * 10)
+      // setTimeout(this.pinMngr, 60000 * 5)
     }
 
     const _this = this
@@ -148,8 +151,8 @@ class TimerControllers {
 
             // Add the pin call to the queue. Do not await, this will load the
             // queue with promises to work through.
-            // this.retryQueue.addToQueue(this.useCases.pin.pinCidWithTimeout, cid)
-            this.retryQueue.addToQueue(this.useCases.pin.pinCid, cid)
+            this.retryQueue.addToQueue(this.useCases.pin.pinCidWithTimeout, cid)
+            // this.retryQueue.addToQueue(this.useCases.pin.pinCid, cid)
           }
         }
 

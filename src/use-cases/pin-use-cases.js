@@ -81,6 +81,9 @@ class PinUseCases {
       const queueSize = this.retryQueue.validationQueue.size
       console.log(`The pin queue contains ${queueSize} promises.`)
 
+      // ToDo: Implement database model, to prevent re-download of invalid
+      // CIDs.
+
       const file = await this.retryQueue.addToQueue(this._getCid, { cid: cidClass })
       // const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
       fileSize = file.length
@@ -125,7 +128,10 @@ class PinUseCases {
   // to abort a pin attempt so that the process can move on to other pinning
   // candidates, and not be blocked by a pin that can't resolve.
   pinTimer () {
-    return new Promise(resolve => setTimeout(resolve(false), this.pinTimeoutPeriod))
+    return new Promise(resolve => setTimeout(function () {
+      console.log('pinTimer() canceling download.')
+      return resolve(false)
+    }, this.pinTimeoutPeriod))
   }
 
   // Attempts to pin a CID, but will exit if the pinning takes too long.
