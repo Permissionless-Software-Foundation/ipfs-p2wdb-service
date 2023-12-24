@@ -88,6 +88,12 @@ class TimerControllers {
       setTimeout(this.pinMngr, 60000 * 10)
     }
 
+    const _this = this
+    setInterval(function () {
+      const queueSize = _this.retryQueue.validationQueue.size
+      console.log(`The pin MANAGER queue contains ${queueSize} promises.`)
+    }, 60000)
+
     return true
   }
 

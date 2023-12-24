@@ -49,6 +49,12 @@ class PinUseCases {
     this._getCid = this._getCid.bind(this)
     this.pinTimer = this.pinTimer.bind(this)
     this.pinCidWithTimeout = this.pinCidWithTimeout.bind(this)
+
+    const _this = this
+    setInterval(function () {
+      const queueSize = _this.retryQueue.validationQueue.size
+      console.log(`The pin queue contains ${queueSize} promises.`)
+    }, 60000)
   }
 
   // Given a CID, pin it with the IPFS node attached to this app.
