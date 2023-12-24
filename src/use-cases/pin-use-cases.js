@@ -32,6 +32,8 @@ class PinUseCases {
 
     // State
     this.pinTimeoutPeriod = 60000
+    this.promiseTracker = {} // track promises for pinning content
+    this.promiseTrackerCnt = 0
 
     // Encapsulate dependencies
     this.axios = axios
@@ -81,8 +83,14 @@ class PinUseCases {
       const queueSize = this.retryQueue.validationQueue.size
       console.log(`The pin queue contains ${queueSize} promises.`)
 
-      // ToDo: Implement database model, to prevent re-download of invalid
-      // CIDs.
+      // If the pin is already being tracked, then skip.
+      let tracker
+      if (this.pinIsBeingTracked(cid)) {
+        console.log('This pin is already being tracked. Skipping.')
+        return true
+      } else {
+        tracker = this.trackPin(cid)
+      }
 
       const file = await this.retryQueue.addToQueue(this._getCid, { cid: cidClass })
       // const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
@@ -94,6 +102,10 @@ class PinUseCases {
 
       // Verify the CID meets requirements for pinning.
       const isValid = await this.validateCid({ cid: cidClass, fileSize })
+
+      this.promiseTrackerCnt--
+      tracker.isValid = isValid
+      tracker.completed = true
 
       if (isValid) {
         // Pin the file
@@ -122,6 +134,45 @@ class PinUseCases {
       console.error('Error in pinCid(): ', err)
       throw err
     }
+  }
+
+  trackPin (cid) {
+    const obj = {
+      // cid,
+      created: new Date(),
+      completed: false,
+      isValid: true // Assume valid
+    }
+
+    // this.promiseTracker.push(obj)
+
+    this.promiseTracker[cid] = obj
+    this.promiseTrackerCnt++
+
+    console.log(`promiseTracker has ${this.promiseTrackerCnt} entries.`)
+
+    return this.promiseTracker[cid]
+  }
+
+  pinIsBeingTracked (cid) {
+    const thisPromise = this.promiseTracker[cid]
+
+    if (thisPromise) return true
+
+    return false
+  }
+
+  pinHasCompleted (inObj = {}) {
+    const { cid, isValid } = inObj
+
+    const thisPromise = this.promiseTracker[cid]
+    thisPromise.isValid = isValid
+
+    if (thisPromise.completed) return true
+
+    // this.promiseTrackerCnt--
+
+    return false
   }
 
   // Returns a promise that resolves after a period of time. This can be used

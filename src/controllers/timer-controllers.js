@@ -47,10 +47,10 @@ class TimerControllers {
     // this.startTimers()
 
     // state
-    // this.forceSyncPeriod = 60000 * 1
-    // this.pinMngrPeriod = 60000 * 4
-    this.forceSyncPeriod = 60000 * 5
-    this.pinMngrPeriod = 60000 * 60
+    this.forceSyncPeriod = 60000 * 1
+    this.pinMngrPeriod = 60000 * 4
+    // this.forceSyncPeriod = 60000 * 5
+    // this.pinMngrPeriod = 60000 * 60
     this.stopSync = false
     this.syncHasStopped = false
     this.waitingToStop = false
@@ -87,8 +87,8 @@ class TimerControllers {
       this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
 
       // Kick off the first pinning after 10 minutes
-      setTimeout(this.pinMngr, 60000 * 10)
-      // setTimeout(this.pinMngr, 60000 * 5)
+      // setTimeout(this.pinMngr, 60000 * 10)
+      setTimeout(this.pinMngr, 60000 * 5)
     }
 
     const _this = this
