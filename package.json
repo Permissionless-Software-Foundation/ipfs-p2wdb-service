@@ -28,7 +28,7 @@
     "@chainsafe/libp2p-noise": "13.0.1",
     "@chainsafe/libp2p-yamux": "5.0.0",
     "@chris.troutner/orbitdb-helia": "1.0.13",
-    "@chris.troutner/retry-queue": "1.0.8",
+    "@chris.troutner/retry-queue": "1.0.9",
     "@helia/unixfs": "1.4.3",
     "@libp2p/bootstrap": "9.0.8",
     "@libp2p/tcp": "8.0.9",

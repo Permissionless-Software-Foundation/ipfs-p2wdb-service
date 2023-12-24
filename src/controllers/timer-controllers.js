@@ -32,6 +32,7 @@ class TimerControllers {
     this.retryQueue = new RetryQueue({
       concurrency: 6,
       attempts: 3
+      // timeout: 60000
     })
 
     // Bind 'this' object to all subfunctions.
@@ -136,9 +137,13 @@ class TimerControllers {
 
             // await this.useCases.pin.pinCid(cid)
 
+            const queueSize = this.retryQueue.validationQueue.size
+            console.log(`The pin MANAGER queue contains ${queueSize} promises.`)
+
             // Add the pin call to the queue. Do not await, this will load the
             // queue with promises to work through.
-            this.retryQueue.addToQueue(this.useCases.pin.pinCidWithTimeout, cid)
+            // this.retryQueue.addToQueue(this.useCases.pin.pinCidWithTimeout, cid)
+            this.retryQueue.addToQueue(this.useCases.pin.pinCid, cid)
           }
         }
 

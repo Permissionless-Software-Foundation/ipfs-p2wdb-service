@@ -30,13 +30,16 @@ class PinUseCases {
       )
     }
 
-    // Encapsulate dependencies
-    this.axios = axios
-    this.retryQueue = new RetryQueue()
-    this.config = config
-
     // State
     this.pinTimeoutPeriod = 60000
+
+    // Encapsulate dependencies
+    this.axios = axios
+    this.retryQueue = new RetryQueue({
+      timeout: this.pinTimeoutPeriod,
+      concurrency: 6
+    })
+    this.config = config
 
     // Bind 'this' object to functions that lose context.
     this.getJsonFromP2wdb = this.getJsonFromP2wdb.bind(this)
@@ -69,6 +72,9 @@ class PinUseCases {
 
       let fileSize = null
 
+      const queueSize = this.retryQueue.validationQueue.size
+      console.log(`The pin queue contains ${queueSize} promises.`)
+
       const file = await this.retryQueue.addToQueue(this._getCid, { cid: cidClass })
       // const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
       fileSize = file.length
@@ -82,7 +88,15 @@ class PinUseCases {
 
       if (isValid) {
         // Pin the file
-        await this.adapters.ipfs.ipfs.pins.add(cidClass)
+        try {
+          await this.adapters.ipfs.ipfs.pins.add(cidClass)
+        } catch (err) {
+          if (err.message.includes('Already pinned')) {
+            console.log(`CID ${cid} already pinned.`)
+          } else {
+            throw err
+          }
+        }
         console.log(`Pinned file ${cid}`)
       } else {
         // If the file does meet the size requirements, then unpin it.
