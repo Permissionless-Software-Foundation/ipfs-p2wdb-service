@@ -34,6 +34,7 @@ class PinUseCases {
     this.pinTimeoutPeriod = 60000
     this.promiseTracker = {} // track promises for pinning content
     this.promiseTrackerCnt = 0
+    this.pinSuccess = 0
 
     // Encapsulate dependencies
     this.axios = axios
@@ -118,7 +119,9 @@ class PinUseCases {
             throw err
           }
         }
-        console.log(`Pinned file ${cid}`)
+
+        this.pinSuccess++
+        console.log(`Pinned file ${cid}. ${this.pinSuccess} files successfully pinned.`)
       } else {
         // If the file does meet the size requirements, then unpin it.
         console.log(`File ${cid} is bigger than max size of ${this.config.maxPinSize} bytes. Unpinning file.`)
