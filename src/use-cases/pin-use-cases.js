@@ -56,8 +56,8 @@ class PinUseCases {
     const _this = this
     setInterval(function () {
       const queueSize = _this.retryQueue.validationQueue.size
-      console.log(`The pin queue contains ${queueSize} promises.`)
-    }, 60000)
+      console.log(`Pin queue has ${queueSize} files requested for download.`)
+    }, 60000 * 5)
   }
 
   // Given a CID, pin it with the IPFS node attached to this app.
