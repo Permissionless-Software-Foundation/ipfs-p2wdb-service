@@ -81,7 +81,7 @@ class PinUseCases {
       let fileSize = null
 
       const queueSize = this.retryQueue.validationQueue.size
-      console.log(`The pin queue contains ${queueSize} promises.`)
+      console.log(`Download requested for ${queueSize} files.`)
 
       // If the pin is already being tracked, then skip.
       let tracker

@@ -94,7 +94,7 @@ class TimerControllers {
     const _this = this
     setInterval(function () {
       const queueSize = _this.retryQueue.validationQueue.size
-      console.log(`The pin MANAGER queue contains ${queueSize} promises.`)
+      console.log(`Waiting to start download for ${queueSize} files.`)
     }, 60000)
 
     return true
