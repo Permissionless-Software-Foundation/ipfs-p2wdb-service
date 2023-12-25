@@ -70,13 +70,13 @@ class PinUseCases {
       console.log(`Attempting to pinning CID: ${cid}`)
 
       // Get the file so that we have it locally.
-      console.log(`Getting file ${cid}`)
+      // console.log(`Getting file ${cid}`)
 
       const cidClass = CID.parse(cid)
-      console.log('cidClass: ', cidClass)
+      // console.log('cidClass: ', cidClass)
 
       let now = new Date()
-      console.log(`Starting download of ${cid} at ${now.toISOString()}`)
+      // console.log(`Starting download of ${cid} at ${now.toISOString()}`)
 
       let fileSize = null
 
@@ -180,7 +180,7 @@ class PinUseCases {
   // candidates, and not be blocked by a pin that can't resolve.
   pinTimer () {
     return new Promise(resolve => setTimeout(function () {
-      console.log('pinTimer() canceling download.')
+      // console.log('pinTimer() canceling download.')
       return resolve(false)
     }, this.pinTimeoutPeriod))
   }
@@ -193,11 +193,11 @@ class PinUseCases {
     ])
     // console.log('raceVal: ', raceVal)
 
-    if (!raceVal) {
-      console.log(`Could not get content behind CID ${cid}. Download timed out.`)
-    } else {
-      console.log(`Successfully pinned CID ${cid}`)
-    }
+    // if (!raceVal) {
+    //   console.log(`Could not get content behind CID ${cid}. Download timed out.`)
+    // } else {
+    //   console.log(`Successfully pinned CID ${cid}`)
+    // }
 
     return raceVal
   }
