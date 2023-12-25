@@ -152,7 +152,7 @@ class PinUseCases {
     this.promiseTracker[cid] = obj
     this.promiseTrackerCnt++
 
-    console.log(`promiseTracker has ${this.promiseTrackerCnt} entries.`)
+    // console.log(`promiseTracker has ${this.promiseTrackerCnt} entries.`)
 
     return this.promiseTracker[cid]
   }
