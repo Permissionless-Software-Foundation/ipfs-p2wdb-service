@@ -238,4 +238,49 @@ describe('#Timer-Controllers', () => {
       assert.equal(result, false)
     })
   })
+
+  describe('#pinMngr', () => {
+    it('should return false if database is not synced', async () => {
+      const result = await uut.pinMngr()
+
+      assert.equal(result, false)
+    })
+
+    it('should pin content via retry-queue', async () => {
+      // Mock the OrbitDB iterator() function.
+      const mockAsyncGenerator = {
+        [Symbol.asyncIterator]: () => {
+          const nextStub = sinon.stub()
+          nextStub.onFirstCall().returns(Promise.resolve({ value: { value: { data: '{"appId":"p2wdb-pin-001","data":{"cid":"bafybeifr3jzmkh3vikhwa4qwzl4udbnv624uo46i2sgx42c6qeiuuzs6oq"},"timestamp":"2023-02-06T04:58:58.358Z","localTimeStamp":"2/6/2023, 4:58:58 AM"}' } }, done: false }))
+          nextStub.onSecondCall().returns(Promise.resolve({ value: { value: { data: 'mocked value 2' } }, done: false }))
+          nextStub.onThirdCall().returns(Promise.resolve({ done: true }))
+
+          return {
+            next: nextStub,
+            return: sinon.stub().returns(Promise.resolve({ done: true })),
+            throw: sinon.stub().returns(Promise.reject(new Error('mocked error')))
+          }
+        }
+      }
+
+      // Mock dependencies and force desired code path
+      uut.isFullySynced = true
+      sandbox.stub(uut.adapters.p2wdb.orbit.db, 'iterator').returns(mockAsyncGenerator)
+      sandbox.stub(uut.useCases.pin, 'pinCidWithTimeout').resolves()
+
+      const result = await uut.pinMngr()
+
+      assert.equal(result, true)
+    })
+
+    it('should catch and report errors, and return false', async () => {
+      // Mock dependencies and force desired code path
+      uut.isFullySynced = true
+      sandbox.stub(uut.adapters.p2wdb.orbit.db, 'iterator').throws(new Error('test error'))
+
+      const result = await uut.pinMngr()
+
+      assert.equal(result, false)
+    })
+  })
 })
