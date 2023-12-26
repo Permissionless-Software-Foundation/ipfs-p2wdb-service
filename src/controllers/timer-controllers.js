@@ -117,7 +117,7 @@ class TimerControllers {
       const res = await db.all({ shouldStop: this.shouldStop })
       // console.log('db length: ', res.length)
 
-      console.log('...finished syncing database.')
+      console.log(`...finished syncing database. DB has ${res.length} entries.`)
 
       const now = new Date()
       const syncTookMins = (now.getTime() - this.syncStartTime.getTime()) / 60000
