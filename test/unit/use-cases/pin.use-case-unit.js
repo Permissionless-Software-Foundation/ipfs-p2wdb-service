@@ -224,4 +224,36 @@ describe('#pin-use-case', () => {
       }
     })
   })
+
+  describe('#pinTimer', () => {
+    it('should resolve false after the timeout', async () => {
+      uut.pinTimeoutPeriod = 1
+
+      const result = await uut.pinTimer()
+
+      assert.equal(result, false)
+    })
+  })
+
+  describe('#pinCidWithTimeout', () => {
+    it('should return false if pinning times out', async () => {
+      // Mock dependencies and force desired code path
+      uut.pinCid = () => { return new Promise(resolve => setTimeout(resolve, 10)) }
+      uut.pinTimeoutPeriod = 1
+
+      const result = await uut.pinCidWithTimeout()
+
+      assert.equal(result, false)
+    })
+
+    it('should return the result of the pinning, if pinning completes in time', async () => {
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut, 'pinCid').resolves(true)
+      uut.pinTimeoutPeriod = 10
+
+      const result = await uut.pinCidWithTimeout()
+
+      assert.equal(result, true)
+    })
+  })
 })

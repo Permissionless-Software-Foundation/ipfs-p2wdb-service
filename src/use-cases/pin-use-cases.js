@@ -30,9 +30,18 @@ class PinUseCases {
       )
     }
 
+    // State
+    this.pinTimeoutPeriod = 60000
+    this.promiseTracker = {} // track promises for pinning content
+    this.promiseTrackerCnt = 0
+    this.pinSuccess = 0
+
     // Encapsulate dependencies
     this.axios = axios
-    this.retryQueue = new RetryQueue()
+    this.retryQueue = new RetryQueue({
+      timeout: this.pinTimeoutPeriod,
+      concurrency: 6
+    })
     this.config = config
 
     // Bind 'this' object to functions that lose context.
@@ -41,6 +50,14 @@ class PinUseCases {
     this.pinJson = this.pinJson.bind(this)
     this.validateCid = this.validateCid.bind(this)
     this._getCid = this._getCid.bind(this)
+    this.pinTimer = this.pinTimer.bind(this)
+    this.pinCidWithTimeout = this.pinCidWithTimeout.bind(this)
+
+    const _this = this
+    setInterval(function () {
+      const queueSize = _this.retryQueue.validationQueue.size
+      console.log(`Pin queue has ${queueSize} files requested for download.`)
+    }, 60000 * 5)
   }
 
   // Given a CID, pin it with the IPFS node attached to this app.
@@ -54,15 +71,27 @@ class PinUseCases {
       console.log(`Attempting to pinning CID: ${cid}`)
 
       // Get the file so that we have it locally.
-      console.log(`Getting file ${cid}`)
+      // console.log(`Getting file ${cid}`)
 
       const cidClass = CID.parse(cid)
-      console.log('cidClass: ', cidClass)
+      // console.log('cidClass: ', cidClass)
 
       let now = new Date()
-      console.log(`Starting download of ${cid} at ${now.toISOString()}`)
+      // console.log(`Starting download of ${cid} at ${now.toISOString()}`)
 
       let fileSize = null
+
+      const queueSize = this.retryQueue.validationQueue.size
+      console.log(`Download requested for ${queueSize} files.`)
+
+      // If the pin is already being tracked, then skip.
+      let tracker
+      if (this.pinIsBeingTracked(cid)) {
+        console.log('This pin is already being tracked. Skipping.')
+        return true
+      } else {
+        tracker = this.trackPin(cid)
+      }
 
       const file = await this.retryQueue.addToQueue(this._getCid, { cid: cidClass })
       // const file = await this.adapters.ipfs.ipfs.blockstore.get(cidClass)
@@ -75,10 +104,24 @@ class PinUseCases {
       // Verify the CID meets requirements for pinning.
       const isValid = await this.validateCid({ cid: cidClass, fileSize })
 
+      this.promiseTrackerCnt--
+      tracker.isValid = isValid
+      tracker.completed = true
+
       if (isValid) {
         // Pin the file
-        await this.adapters.ipfs.ipfs.pins.add(cidClass)
-        console.log(`Pinned file ${cid}`)
+        try {
+          await this.adapters.ipfs.ipfs.pins.add(cidClass)
+        } catch (err) {
+          if (err.message.includes('Already pinned')) {
+            console.log(`CID ${cid} already pinned.`)
+          } else {
+            throw err
+          }
+        }
+
+        this.pinSuccess++
+        console.log(`Pinned file ${cid}. ${this.pinSuccess} files successfully pinned.`)
       } else {
         // If the file does meet the size requirements, then unpin it.
         console.log(`File ${cid} is bigger than max size of ${this.config.maxPinSize} bytes. Unpinning file.`)
@@ -91,9 +134,75 @@ class PinUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in pinCid()')
+      console.error('Error in pinCid(): ', err)
       throw err
     }
+  }
+
+  trackPin (cid) {
+    const obj = {
+      // cid,
+      created: new Date(),
+      completed: false,
+      isValid: true // Assume valid
+    }
+
+    // this.promiseTracker.push(obj)
+
+    this.promiseTracker[cid] = obj
+    this.promiseTrackerCnt++
+
+    // console.log(`promiseTracker has ${this.promiseTrackerCnt} entries.`)
+
+    return this.promiseTracker[cid]
+  }
+
+  pinIsBeingTracked (cid) {
+    const thisPromise = this.promiseTracker[cid]
+
+    if (thisPromise) return true
+
+    return false
+  }
+
+  pinHasCompleted (inObj = {}) {
+    const { cid, isValid } = inObj
+
+    const thisPromise = this.promiseTracker[cid]
+    thisPromise.isValid = isValid
+
+    if (thisPromise.completed) return true
+
+    // this.promiseTrackerCnt--
+
+    return false
+  }
+
+  // Returns a promise that resolves after a period of time. This can be used
+  // to abort a pin attempt so that the process can move on to other pinning
+  // candidates, and not be blocked by a pin that can't resolve.
+  pinTimer () {
+    return new Promise(resolve => setTimeout(function () {
+      // console.log('pinTimer() canceling download.')
+      return resolve(false)
+    }, this.pinTimeoutPeriod))
+  }
+
+  // Attempts to pin a CID, but will exit if the pinning takes too long.
+  async pinCidWithTimeout (cid) {
+    const raceVal = await Promise.race([
+      this.pinCid(cid),
+      this.pinTimer()
+    ])
+    // console.log('raceVal: ', raceVal)
+
+    // if (!raceVal) {
+    //   console.log(`Could not get content behind CID ${cid}. Download timed out.`)
+    // } else {
+    //   console.log(`Successfully pinned CID ${cid}`)
+    // }
+
+    return raceVal
   }
 
   // This function wraps the IPFS get() function so that it can be called by

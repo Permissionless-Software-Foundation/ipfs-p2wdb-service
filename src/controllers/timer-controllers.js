@@ -3,6 +3,10 @@
   kicked off periodicially.
 */
 
+// Global npm libraries
+import RetryQueue from '@chris.troutner/retry-queue'
+
+// Local libraries
 import config from '../../config/index.js'
 
 class TimerControllers {
@@ -25,6 +29,11 @@ class TimerControllers {
 
     // Encapsulate dependencies
     this.config = config
+    this.retryQueue = new RetryQueue({
+      concurrency: 6,
+      attempts: 1,
+      timeout: 60000
+    })
 
     // Bind 'this' object to all subfunctions.
     this.optimizeWallet = this.optimizeWallet.bind(this)
@@ -32,12 +41,16 @@ class TimerControllers {
     this.forceSync = this.forceSync.bind(this)
     this.shouldStop = this.shouldStop.bind(this)
     this.manageSync = this.manageSync.bind(this)
+    this.pinMngr = this.pinMngr.bind(this)
 
     // Automatically start the timers when this library is loaded.
     // this.startTimers()
 
     // state
+    // this.forceSyncPeriod = 60000 * 1
+    // this.pinMngrPeriod = 60000 * 4
     this.forceSyncPeriod = 60000 * 5
+    this.pinMngrPeriod = 60000 * 60
     this.stopSync = false
     this.syncHasStopped = false
     this.waitingToStop = false
@@ -46,6 +59,7 @@ class TimerControllers {
     // this.shouldStartForceSyncInterval = true
     // this.shouldStartSyncMonitorInterval = true
     this.syncStartTime = null
+    this.isFullySynced = false // True when DB is fully synced.
   }
 
   // Start all the time-based controllers.
@@ -69,6 +83,20 @@ class TimerControllers {
     // when the server starts.
     // this.optimizeWalletHandle = setInterval(this.exampleTimerFunc, 60000 * 10)
 
+    if (this.config.pinEnabled) {
+      this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
+
+      // Kick off the first pinning after 10 minutes
+      setTimeout(this.pinMngr, 60000 * 10)
+      // setTimeout(this.pinMngr, 60000 * 5)
+    }
+
+    const _this = this
+    setInterval(function () {
+      const queueSize = _this.retryQueue.validationQueue.size
+      if (queueSize) console.log(`Waiting to start download for ${queueSize} files.`)
+    }, 60000)
+
     return true
   }
 
@@ -77,6 +105,72 @@ class TimerControllers {
     clearInterval(this.manageTicketsHandle)
     clearInterval(this.forceSyncHandle)
     clearInterval(this.syncManagerTimerHandle)
+    clearInterval(this.pinMngrHandle)
+  }
+
+  // If this node is configured to pin IPFS content, then cycle through all
+  // the database entries and look for any that still need to be pinned.
+  async pinMngr () {
+    try {
+      // Only start the pin manager if the database is fully synced.
+      if (this.isFullySynced) {
+        // Clear the interval while this is executing, so that multiple instances
+        // do not execute.
+        clearInterval(this.pinMngrHandle)
+
+        const db = this.adapters.p2wdb.orbit.db
+
+        // let cnt = 0
+
+        for await (const record of db.iterator()) {
+          // console.log(`${cnt}) pinMngr iterating over db: `, record)
+          // cnt++
+
+          // console.log('record.value.data: ', record.value.data)
+
+          const jsonStr = record.value.data
+          let data
+          try {
+            data = JSON.parse(jsonStr)
+          } catch (err) {
+            console.log('Could not parse this JSON string: ', jsonStr)
+            continue
+          }
+
+          if (data.appId === 'p2wdb-pin-001') {
+            const cid = data.data.cid
+            console.log(`Ready to pin this CID: ${cid}`)
+
+            // const pinPromiseCnt = this.useCases.pin.promiseCnt
+            // console.log(`Pinning promises: ${pinPromiseCnt}`)
+
+            // await this.useCases.pin.pinCid(cid)
+
+            const queueSize = this.retryQueue.validationQueue.size
+            console.log(`The pin MANAGER queue contains ${queueSize} promises.`)
+
+            // Add the pin call to the queue. Do not await, this will load the
+            // queue with promises to work through.
+            this.retryQueue.addToQueue(this.useCases.pin.pinCidWithTimeout, cid)
+            // this.retryQueue.addToQueue(this.useCases.pin.pinCid, cid)
+          }
+        }
+
+        console.log('Initialized download of all pin requests.')
+
+        // Restart the timer interval
+        // this.pinMngrHandle = setInterval(this.pinMngr, this.pinMngrPeriod)
+
+        return true
+      }
+
+      return false
+    } catch (err) {
+      console.error('Error in pinMngr(): ', err)
+      // Do not throw error. This is a top-level function.
+
+      return false
+    }
   }
 
   // This function is injected into the db.all() function. It is called each
@@ -124,9 +218,13 @@ class TimerControllers {
       // console.log(`forceSync() ran for ${syncTookMins} minutes`)
 
       // If the DB is fully synced, then disable the sync manager
+      // The db.all() call will resolve after a few seconds if the DB is fully
+      // synced. Otherwise it will take a lot longer, and the sync manager will
+      // goad it into syncing.
       if (syncTookMins < 3) {
         console.log('OrbitDB appears synced. Disabling sync manager.')
         clearInterval(this.syncManagerTimerHandle)
+        this.isFullySynced = true
       }
 
       // New peer with an empty database.
@@ -162,6 +260,9 @@ class TimerControllers {
       const lastCanAppendCall = this.adapters.p2wdb.orbit.p2wCanAppend.lastAppendCall
       const appendDiff = (now.getTime() - lastCanAppendCall.getTime()) / 60000
       console.log(`Last CanAppend() call made ${appendDiff} minutes ago.`)
+
+      // const pinPromiseCnt = this.useCases.pin.promiseCnt
+      // console.log(`Pinning promises: ${pinPromiseCnt}`)
 
       console.log(`stopSync: ${this.stopSync}, syncHasStopped: ${this.syncHasStopped}, waitingToStop: ${this.waitingToStop}`)
 
