@@ -30,10 +30,13 @@ class IpfsCoordAdapter {
     this.IpfsCoord = IpfsCoord
     this.ipfsCoord = {}
     // this.bchjs = new BCHJS()
-    this.wallet = new SlpWallet()
+    // this.wallet = new SlpWallet()
     this.config = config
     this.publicIp = publicIp
-    this.wallet = new SlpWallet()
+    this.wallet = new SlpWallet(undefined, {
+      authPass: config.authPass,
+      restURL: config.apiServer
+    })
 
     // Properties of this class instance.
     this.isReady = false
@@ -62,7 +65,7 @@ class IpfsCoordAdapter {
       }
     }
 
-    const nullLog = () => {}
+    const nullLog = () => { }
 
     const ipfsCoordOptions = {
       ipfs: this.ipfs,
@@ -111,7 +114,7 @@ class IpfsCoordAdapter {
 
   // Subscribe to the chat pubsub channel
   async subscribeToChat () {
-    const nullHandler = () => {}
+    const nullHandler = () => { }
     await this.ipfsCoord.adapters.pubsub.subscribeToPubsubChannel(this.config.chatPubSubChan, nullHandler, this.ipfsCoord.thisNode)
   }
 }
