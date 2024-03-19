@@ -14,7 +14,7 @@ import axios from 'axios'
 let _this
 
 class AddEntry {
-  constructor(localConfig = {}) {
+  constructor (localConfig = {}) {
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error('Instance of adapters must be passed in when instantiating Entry Use Cases library.')
@@ -40,7 +40,7 @@ class AddEntry {
     _this = this
   }
 
-  async addUserEntry(rawData) {
+  async addUserEntry (rawData) {
     try {
       console.log('addUserEntry() rawData: ', rawData)
 
@@ -70,7 +70,7 @@ class AddEntry {
   // Trigger by an event when a peer adds a new entry to the mongo database.
   // This function is primarily triggered by the canAppend() library after
   // it has successfully validated a new entry.
-  async addPeerEntry(peerData) {
+  async addPeerEntry (peerData) {
     console.log('Entering addPeerEntry()')
     // console.log('Entering addPeerEntry() with this data: ', peerData)
 
@@ -139,7 +139,7 @@ class AddEntry {
   // }
 
   // Attempt to extract the appId property from the data.
-  _extractAppId(peerData) {
+  _extractAppId (peerData) {
     try {
       // The parse() command will throw an error if the data isn't JSON.
       // In that case, the catch() function will exit quietly.
@@ -156,7 +156,7 @@ class AddEntry {
 
   // User is paying in BCH for P2WDB instance to burn PSF tokens and write
   // data on their behalf.
-  async addBchEntry(rawData) {
+  async addBchEntry (rawData) {
     try {
       // const { address, data, appId } = rawData
       const { address, data, appId } = rawData
@@ -226,7 +226,7 @@ class AddEntry {
   // - Retrieve a ticket and use it to write data to the database.
   // - Move the BCH payment to the root wallet.
   // - Delete the payment DB model.
-  async addTicketEntry(rawData) {
+  async addTicketEntry (rawData) {
     try {
       // const { address, data, appId } = rawData
       const { address, data, appId } = rawData
@@ -329,8 +329,7 @@ class AddEntry {
   }
 
   // This function is used for easier mocking during tests.
-  async _createTempWallet(wif) {
-
+  async _createTempWallet (wif) {
     const advancedConfig = { interface: 'consumer-api' }
 
     // Detect and configure different blockchain infrastructure settings.
