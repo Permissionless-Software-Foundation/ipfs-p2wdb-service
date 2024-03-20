@@ -141,6 +141,6 @@ const config = {
   // Enable or disable the pinning service with an environment variable.
   pinEnabled: process.env.ENABLE_PINNING ? !!process.env.ENABLE_PINNING : false,
   maxPinSize: 1000000, // (1MB) Max pinning size in bytes
-  enableBchPayment :  !!process.env.ENABLE_BCH_PAYMENT
+  enableBchPayment: !!process.env.ENABLE_BCH_PAYMENT
 }
 export default config
