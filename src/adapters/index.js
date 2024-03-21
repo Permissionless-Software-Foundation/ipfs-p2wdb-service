@@ -26,7 +26,10 @@ class Adapters {
     this.passport = new Passport()
     this.nodemailer = new Nodemailer()
     this.jsonFiles = new JSONFiles()
-    this.bchjs = new BCHJS()
+    this.bchjs = new BCHJS({
+      authPass: config.authPass,
+      restURL: config.apiServer
+    })
     this.entry = new EntryAdapter()
     this.webhook = new WebhookAdapter()
     this.writePrice = new WritePrice()

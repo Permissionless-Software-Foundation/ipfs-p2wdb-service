@@ -330,7 +330,16 @@ class AddEntry {
 
   // This function is used for easier mocking during tests.
   async _createTempWallet (wif) {
-    const tempWallet = new this.adapters.wallet.BchWallet(wif, { interface: 'consumer-api' })
+    const advancedConfig = { interface: 'consumer-api' }
+
+    // Detect and configure different blockchain infrastructure settings.
+    if (_this.config.useFullStackCash) {
+      advancedConfig.interface = 'rest-api'
+      advancedConfig.restURL = _this.config.apiServer
+      advancedConfig.authPass = _this.config.authPass
+    }
+
+    const tempWallet = new this.adapters.wallet.BchWallet(wif, advancedConfig)
     await tempWallet.walletInfoPromise
     return tempWallet
   }
