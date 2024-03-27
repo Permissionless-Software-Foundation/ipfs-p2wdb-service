@@ -33,7 +33,18 @@ class WalletAdapter {
         // console.log('Wallet file not found. Creating new wallet.json file.')
         // Create a new wallet.
         // No-Update flag creates wallet without making any network calls.
-        const walletInstance = new this.BchWallet(undefined, { noUpdate: true })
+        const advancedConfig = { noUpdate: true }
+        console.log(`Using FullStack.cash: ${this.config.useFullStackCash}`)
+        if (this.config.useFullStackCash) {
+          advancedConfig.interface = 'rest-api'
+          advancedConfig.restURL = this.config.apiServer
+          advancedConfig.apiToken = this.config.apiToken
+          advancedConfig.authPass = this.config.authPass
+        } else {
+          advancedConfig.interface = 'consumer-api'
+          advancedConfig.restURL = this.config.consumerUrl
+        }
+        const walletInstance = new this.BchWallet(undefined, advancedConfig)
         // Wait for wallet to initialize.
         await walletInstance.walletInfoPromise
         walletData = walletInstance.walletInfo
